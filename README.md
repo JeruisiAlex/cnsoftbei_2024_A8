@@ -20,18 +20,27 @@ Jeruisi：项目经理
 - 使用windows应用
   - 在国产操作系统上通过局域网连接一台windows电脑来使用windows软件
   - 类似于使用电脑本身的软件而不是将整个windows电脑桌面投影的虚拟机形式
- 
+
 ### 可选需求
 - 安装windows应用
   - 表现为类似在linux上双击.exe安装包，然后在windows上安装应用
 - 卸载windows应用
 - 保存windows应用的数据
 
-## 实现方案
+## 应用传输协议选择
 
+- RDP
+  - RDP是Windows本身就有的一个封装的完整的远程桌面传输协议
+- FreeRDP
+  - linux上可以使用 FreeRDP 来访问 RDP 获取 windows 上的视频，音频，传递键鼠输入
+  - FreeRDP 是开源的且有丰富的 API
 
 ## 开发语言选择
-c/c++ c# Java
 
-## 应用传输协议选择
-VNC RDP
+- C系列
+  - 因为 windows 本身很多都是用 C/C++写的
+  - RDP 和 FreeRDP 也是用 C/C++实现的
+  - 用C系列语言比较好调用相关的接口
+
+## 实现方案
+
