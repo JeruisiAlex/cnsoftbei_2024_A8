@@ -31,7 +31,7 @@ Jeruisi：项目经理
 
 
 ## 开发语言选择
-c/c++ Java
+c/c++ c# Java
 
 ## 应用传输协议选择
 VNC RDP
