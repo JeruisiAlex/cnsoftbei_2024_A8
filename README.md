@@ -6,8 +6,8 @@
 ## 开发团队介绍
 - 队名：SSSS.软件王
 - Jeruisi：项目经理
-- 1
-- 2
+- TieZhuGieGie：linux端开发
+- Pin：windows端开发
 
 
 
@@ -15,10 +15,10 @@
 - main：保存工程文档，包括组会文件，开发计划，需求分析，设计说明，测试文档，用户使用说明等文档
 - w_dev：windows端的合并文件
 - w_j：windows端开发人员Jeruisi的分支
-- w_：windows端开发人员的分支
+- w_p：windows端开发人员Pin的分支
 - l_dev：linux端的合并文件
 - l_j：linux端开发人员Jeruisi的分支
-- l_：linux端开发人员分支
+- l_t：linux端开发人员TieZhuGieGie分支
 - w_build：windows端的可执行文件
 - l_build：linux端的可执行文件
 
@@ -37,6 +37,13 @@
   - 表现为类似在linux上双击.exe安装包，然后在windows上安装应用
 - 卸载windows应用
 - 保存windows应用的数据
+
+
+
+## 操作系统选择
+
+- 国产操作系统选择：银河麒麟（KylinOS）桌面操作系统V10 SP1 2303版本
+- windows操作系统选择：windows 10 pro（即win10专业版）
 
 
 
