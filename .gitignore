@@ -1,0 +1,43 @@
+# 编译生成的文件
+*.o
+*.out
+*.exe
+*.dll
+*.obj
+
+# 依赖目录
+build/
+cmake-build-debug/
+.idea/
+
+# 用户特定配置文件
+*.user.ini
+
+# 编辑器临时文件
+*.swp
+*.swo
+*.swn
+*.tmp
+*.bak
+*.valgrind.log
+
+# 项目文件
+*.iws
+*.iml
+*.ipr
+*.idea
+*.sln
+*.suo
+*.classpath
+*.project
+*.settings
+target/
+
+# 日志文件
+*.log
+
+# 依赖管理文件
+# 如果使用了包管理器，比如vcpkg，可以添加相应的文件
+vcpkg/
+
+# 其他自定义忽略规则
