@@ -97,3 +97,26 @@
 
 - 在 linux 虚拟机上打开网络设置中的代理，在进行一些不需要梯子的操作时，比如安装一些软件访问国内百度等网站，记得关闭这个代理以及 clash![003](linux环境安装_image\003.jpg)
 
+### git配置
+
+* 获取个人账户的 token：
+
+![](linux环境安装_image\005.png)
+
+![](linux环境安装_image\006.png)
+
+![](linux环境安装_image\007.png)
+
+> [!NOTE]
+>
+> 注意保存好密钥。可以创建一个 .txt 文件把密钥保存好
+
+* 在终端输入：`git config --global credential.helper cache`
+
+> 上面的命令会保证密钥在 15min 不用重复输入
+>
+> 如果 15min 后密钥失效，则再输入一次上面的命令
+
+* 再 `git push`
+* 在弹出的框内输入个人信息。username 就输github的用户名。password 就输入之前保存的 token
+
