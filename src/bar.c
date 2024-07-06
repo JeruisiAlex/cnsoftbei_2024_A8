@@ -1,5 +1,4 @@
 #include "../include/ui.h"
-
 /* 实现左侧导航栏功能 */
 
 // 切换堆栈页面的回调函数
@@ -19,7 +18,7 @@ void on_switch_page(GtkButton *button, gpointer data) {
 }
 
 // 增加左侧导航栏按钮
-void add_bar_button(GtkWidget *content_stack, GtkWidget *sidebar_box, const char *content) {
+void add_bar_button(GtkWidget *content_stack, GtkWidget *sidebar_box, char *content) {
     GtkWidget *button;
     button = gtk_button_new_with_label(content);
     g_signal_connect(button, "clicked", G_CALLBACK(on_switch_page), content_stack);
@@ -36,3 +35,4 @@ void add_bar_button(GtkWidget *content_stack, GtkWidget *sidebar_box, const char
         gtk_widget_set_name(GTK_WIDGET(button), "active-button");
     }
 }
+

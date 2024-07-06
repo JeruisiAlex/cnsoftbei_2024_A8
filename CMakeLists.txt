@@ -24,4 +24,3 @@ add_executable(cnsoftbei_2024_A8
 
 #
 target_link_libraries (cnsoftbei_2024_A8 ${FC_DEP_LIBS} ${FREERDP_LIBRARIES} ${FREERDP_CLIENT_LIBRARIES})
-

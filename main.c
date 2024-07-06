@@ -1,7 +1,7 @@
 #include "./include/ui.h"
 
-GtkWidget * active_button = NULL;
-char * CSS =
+GtkWidget *active_button = NULL;
+char *CSS =
     "#headerbar {"
     "  font-weight: bold;"
     "  font-size: 30px;"
@@ -54,6 +54,16 @@ char * CSS =
     "  border-radius: 30px;" /* 调整滑块边框半径 */
     "  background: white;"
     "  transition: 0.5s;"
+    "}"
+    "scrollbar {"
+    "  background-color: #D6EAF8;"
+    "}"
+    "scrollbar slider {"
+    "  background-color: #A0A0A0;"
+    "  border-radius: 10px;"
+    "  min-width: 15px;" /* 滑块的宽度 */
+    "  min-height: 10px;" /* 滑块的高度 */
+    "  background-color: #85C1E9;"
     "}";
 
 int main(int argc, char *argv[]) {
@@ -64,12 +74,9 @@ int main(int argc, char *argv[]) {
     GtkWidget *sidebar_box;
     GtkWidget *content_stack;
     GtkWidget *content_grid1, *content_grid2, *content_grid3, *content_grid4, *content_grid5;
-    GtkCssProvider *provider;
-    GdkDisplay *display;
-    GdkScreen *screen;
 
     // 记录现在的行数
-    int row1 = 0, row2 = 0, row3 = 0, row4 = 0;
+    int row1 = 0, row2 = 0, row3 = 0, row4 = 0,row5 = 0;
 
     // 初始化GTK
     gtk_init(&argc, &argv);
@@ -97,10 +104,15 @@ int main(int argc, char *argv[]) {
     gtk_widget_set_name(sidebar_box, "sidebar");
     gtk_box_pack_start(GTK_BOX(main_box), sidebar_box, FALSE, FALSE, 0);
 
+    // 创建滚动窗口
+    GtkWidget *scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_box_pack_start(GTK_BOX(main_box), scrolled_window, TRUE, TRUE, 0);
+
     // 创建内容堆栈
     content_stack = gtk_stack_new();
     gtk_stack_set_transition_type(GTK_STACK(content_stack), GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT);
-    gtk_box_pack_start(GTK_BOX(main_box), content_stack, TRUE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(scrolled_window), content_stack);
 
     // 添加侧边栏按钮
     add_bar_button(content_stack, sidebar_box, "主机信息");
@@ -111,10 +123,10 @@ int main(int argc, char *argv[]) {
 
     // 使用函数创建并添加网格
     content_grid1 = create_and_add_grid(content_stack, "主机信息");
-    content_grid2 = create_and_add_grid(content_stack, "历史连接");
-    content_grid3 = create_and_add_grid(content_stack, "局域网连接");
-    content_grid4 = create_and_add_grid(content_stack, "应用程序");
-    content_grid5 = create_and_add_grid(content_stack, "发布程序");
+    content_grid2 = create_and_add_grid_with_scrollfuc(content_stack, "历史连接");
+    content_grid3 = create_and_add_grid_with_scrollfuc(content_stack, "局域网连接");
+    content_grid4 = create_and_add_grid_with_scrollfuc(content_stack, "应用程序");
+    content_grid5 = create_and_add_grid_with_scrollfuc(content_stack, "发布程序");
 
     // 添加内容到主机信息
     add_content(content_grid1, "IP：", row1, 0, 0);
@@ -127,27 +139,25 @@ int main(int argc, char *argv[]) {
     // row1++;
 
     // 添加内容到历史连接
-    add_history_box(content_grid2, "192.168.0.1", "用户名: admin", "密码: 123456", row2, 0);
-    add_history_box(content_grid2, "192.168.0.2", "用户名: user", "密码: password", row2, 1);
+    for(row2;row2<10;row2++) {
+        add_history_box(content_grid2, "192.168.0.1", "用户名: admin", "密码: ******", row2, 0);
+        add_history_box(content_grid2, "192.168.0.2", "用户名: user", "密码: ******", row2, 1);
+        add_history_box(content_grid2, "192.168.0.3", "用户名: TieZhu", "密码: ******", row2, 3);
+        add_history_box(content_grid2, "192.168.0.4", "用户名: pp", "密码: ******", row2, 4);
+    }
 
     // 添加内容到局域网连接
-    add_lan_box(content_grid3,"192.168.0.5",row3,0);
-    add_lan_box(content_grid3,"192.168.0.5",row3,1);
+    add_lan_box(content_grid3,"IP：192.168.0.5",row3,0);
+    add_lan_box(content_grid3,"IP：192.168.0.5",row3,1);
 
     // 添加内容到应用程序
+    add_software(content_grid4,"../assets/software/clion.svg","Clion",row4,0);
 
     // 添加内容到发布程序
+    add_published_software(content_grid5,"../assets/software/clion.svg","Clion 2024 2.4","别名：Clion",row5,0);
 
-    // 创建并加载CSS提供者
-    provider = gtk_css_provider_new();
-    gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(provider),CSS, -1, NULL);
-
-    // 获取屏幕和显示
-    display = gdk_display_get_default();
-    screen = gdk_display_get_default_screen(display);
-
-    // 添加CSS样式到屏幕
-    gtk_style_context_add_provider_for_screen(screen, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+    // 加载CSS
+    load_css();
 
     // 为侧边栏添加样式类
     GtkStyleContext *context = gtk_widget_get_style_context(sidebar_box);
