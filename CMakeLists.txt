@@ -14,7 +14,13 @@ list(APPEND FC_DEP_LIBS ${GTK3_LIBRARIES})
 #
 
 
-add_executable(cnsoftbei_2024_A8 main.c)
+add_executable(cnsoftbei_2024_A8
+        main.c
+        include/ui.h
+        src/frame.c
+        src/bar.c
+        src/content.c
+)
 
 #
 target_link_libraries (cnsoftbei_2024_A8 ${FC_DEP_LIBS} ${FREERDP_LIBRARIES} ${FREERDP_CLIENT_LIBRARIES})
