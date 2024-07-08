@@ -3,13 +3,6 @@
 
 int CreateUI(int argc,char *argv[]) {
 
-    int res;
-    // 找到主机名
-    if((res = GetName()) != 0) {
-        printf("主机名获取失败，请联系丁铁柱！\n");
-        return res;
-    }
-
     GtkWidget *window;
     GtkWidget *contentStack;
 
