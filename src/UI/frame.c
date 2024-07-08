@@ -1,5 +1,4 @@
 #include "../../include/ui.h"
-#include "../../include/info.h"
 
 int CreateUI(int argc,char *argv[]) {
 

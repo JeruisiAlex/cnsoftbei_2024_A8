@@ -1,10 +1,13 @@
 #include "./include/ui.h"
+#include "include/err.h"
+#include "include/kernel.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
-char hostName[256];
-
 int main(int argc, char *argv[]) {
+
+    GetHostName();
 
     CreateUI(argc,argv);
 
