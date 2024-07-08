@@ -1,7 +1,11 @@
 #include "./include/ui.h"
+#include "./include/info.h"
 
-GtkWidget *active_button = NULL;
-char *CSS =
+#include <stdio.h>
+#include <stdlib.h>
+
+GtkWidget *activeButton = NULL;
+char *css =
     "#headerbar {"
     "  font-weight: bold;"
     "  font-size: 30px;"
@@ -66,7 +70,16 @@ char *CSS =
     "  background-color: #85C1E9;"
     "}";
 
+char hostName[256];
+
 int main(int argc, char *argv[]) {
+
+    // 找到ip
+    if(GetName() != 0) {
+        printf("主机名获取失败，请联系丁铁柱！\n");
+        return 0;
+    }
+    printf("HOST NAME:%s\n",hostName);
 
     GtkWidget *window;
     GtkWidget *header_bar;
@@ -85,7 +98,7 @@ int main(int argc, char *argv[]) {
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "Remote-operation");
     gtk_window_set_default_size(GTK_WINDOW(window), 1200, 800);
-    g_signal_connect(window, "destroy", G_CALLBACK(on_window_destroy), NULL);
+    g_signal_connect(window, "destroy", G_CALLBACK(OnWindowDestroy), NULL);
 
     // 创建自定义标题栏
     header_bar = gtk_header_bar_new();
@@ -115,49 +128,55 @@ int main(int argc, char *argv[]) {
     gtk_container_add(GTK_CONTAINER(scrolled_window), content_stack);
 
     // 添加侧边栏按钮
-    add_bar_button(content_stack, sidebar_box, "主机信息");
-    add_bar_button(content_stack, sidebar_box, "历史连接");
-    add_bar_button(content_stack, sidebar_box, "局域网连接");
-    add_bar_button(content_stack, sidebar_box, "应用程序");
-    add_bar_button(content_stack, sidebar_box, "发布程序");
+    AddSeparator(sidebar_box);
+    AddBarButton(content_stack, sidebar_box, "主页");
+    AddSeparator(sidebar_box);
+    AddBarButton(content_stack, sidebar_box, "主机信息");
+    AddSeparator(sidebar_box);
+    AddBarButton(content_stack, sidebar_box, "局域网连接");
+    AddSeparator(sidebar_box);
+    AddBarButton(content_stack, sidebar_box, "应用程序");
+    AddSeparator(sidebar_box);
+    AddBarButton(content_stack, sidebar_box, "发布程序");
+    AddSeparator(sidebar_box);
 
     // 使用函数创建并添加网格
-    content_grid1 = create_and_add_grid(content_stack, "主机信息");
-    content_grid2 = create_and_add_grid_with_scrollfuc(content_stack, "历史连接");
-    content_grid3 = create_and_add_grid_with_scrollfuc(content_stack, "局域网连接");
-    content_grid4 = create_and_add_grid_with_scrollfuc(content_stack, "应用程序");
-    content_grid5 = create_and_add_grid_with_scrollfuc(content_stack, "发布程序");
-
-    // 添加内容到主机信息
-    add_content(content_grid1, "IP：", row1, 0, 0);
-    add_content(content_grid1, "192.168.112.128", row1, 1, -1);
-    row1++;
-    add_content(content_grid1, "端口：", row1, 0, 0);
-    add_content(content_grid1, "1314", row1, 1, -1);
-    // add_content(content_grid1, "开机启动：", row1, 0, 0);
-    // add_switch(content_grid1, row1, 1); // 添加 switch
-    // row1++;
+    content_grid1 = CreateHome(content_stack, "主页");
+    content_grid2 = CreateAndAddGrid(content_stack, "主机信息");
+    content_grid3 = CreateAndAddGridWithScrollFuc(content_stack, "局域网连接");
+    content_grid4 = CreateAndAddGridWithScrollFuc(content_stack, "应用程序");
+    content_grid5 = CreateAndAddGridWithScrollFuc(content_stack, "发布程序");
 
     // 添加内容到历史连接
-    for(row2;row2<10;row2++) {
-        add_history_box(content_grid2, "192.168.0.1", "用户名: admin", "密码: ******", row2, 0);
-        add_history_box(content_grid2, "192.168.0.2", "用户名: user", "密码: ******", row2, 1);
-        add_history_box(content_grid2, "192.168.0.3", "用户名: TieZhu", "密码: ******", row2, 3);
-        add_history_box(content_grid2, "192.168.0.4", "用户名: pp", "密码: ******", row2, 4);
+    for(row1;row2<10;row2++) {
+        AddHistoryBox(content_grid1, "192.168.0.1", "用户名: admin", "密码: ******", row1, 0);
+        AddHistoryBox(content_grid1, "192.168.0.2", "用户名: user", "密码: ******", row1, 1);
+        AddHistoryBox(content_grid1, "192.168.0.3", "用户名: TieZhu", "密码: ******", row1, 3);
+        AddHistoryBox(content_grid1, "192.168.0.4", "用户名: pp", "密码: ******", row1, 4);
     }
 
+    // 添加内容到主机信息
+    AddContent(content_grid2, "主机名：", row2, 0, 0);
+    AddContent(content_grid2, hostName, row2, 1, -1);
+    row2++;
+    AddContent(content_grid2, "端口：", row2, 0, 0);
+    AddContent(content_grid2, PORT, row2, 1, -1);
+    // add_content(content_grid1, "开机启动：", row2, 0, 0);
+    // add_switch(content_grid1, row2, 1); // 添加 switch
+    // row2++;
+
     // 添加内容到局域网连接
-    add_lan_box(content_grid3,"IP：192.168.0.5",row3,0);
-    add_lan_box(content_grid3,"IP：192.168.0.5",row3,1);
+    AddLanBox(content_grid3,"IP：192.168.0.5",row3,0);
+    AddLanBox(content_grid3,"IP：192.168.0.5",row3,1);
 
     // 添加内容到应用程序
-    add_software(content_grid4,"../assets/software/clion.svg","Clion",row4,0);
+    AddSoftware(content_grid4,"../assets/software/clion.svg","Clion",row4,0);
 
     // 添加内容到发布程序
-    add_published_software(content_grid5,"../assets/software/clion.svg","Clion 2024 2.4","别名：Clion",row5,0);
+    AddPublishedSoftware(content_grid5,"../assets/software/clion.svg","Clion 2024 2.4","别名：Clion",row5,0);
 
     // 加载CSS
-    load_css();
+    LoadCss();
 
     // 为侧边栏添加样式类
     GtkStyleContext *context = gtk_widget_get_style_context(sidebar_box);

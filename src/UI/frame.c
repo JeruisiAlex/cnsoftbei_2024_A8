@@ -1,16 +1,16 @@
-#include "../include/ui.h"
+#include "../../include/ui.h"
 
 
 // 主窗口关闭时的回调函数
-void on_window_destroy(GtkWidget *widget, gpointer data) {
+void OnWindowDestroy(GtkWidget *widget, gpointer data) {
     gtk_main_quit();
 }
 
 // 加载CSS
-void load_css() {
+void LoadCss() {
     // 创建并加载CSS提供者
     GtkCssProvider *provider = gtk_css_provider_new();
-    gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(provider), CSS, -1, NULL);
+    gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(provider), css, -1, NULL);
 
     // 获取屏幕和显示
     GdkDisplay *display = gdk_display_get_default();
