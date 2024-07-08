@@ -67,7 +67,7 @@ GtkWidget * CreateBar(GtkWidget *mainBox) {
     AddSeparator(sidebarBox);
     AddBarButton(contentStack, sidebarBox, "主页");
     AddSeparator(sidebarBox);
-    AddBarButton(contentStack, sidebarBox, "主机信息");
+    AddBarButton(contentStack, sidebarBox, "历史连接");
     AddSeparator(sidebarBox);
     AddBarButton(contentStack, sidebarBox, "局域网连接");
     AddSeparator(sidebarBox);
@@ -75,6 +75,7 @@ GtkWidget * CreateBar(GtkWidget *mainBox) {
     AddSeparator(sidebarBox);
     AddBarButton(contentStack, sidebarBox, "发布程序");
     AddSeparator(sidebarBox);
+    AddBarButton(contentStack, sidebarBox, "主机信息");
 
     // 加载CSS
     LoadCss();

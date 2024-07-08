@@ -71,8 +71,10 @@ static char * css =
     "  background-color: #85C1E9;"
     "}";
 
-static int width = 1200; // 窗口宽度
-static int height = 800; // 窗口高度
+static double wdPercen = 0.5; // 窗口宽度比例
+static double htPercen = 0.5; // 窗口高度比例
+static gint screenWidth;
+static gint screenHeight;
 
 int CreateUI(int argc,char *argv[]);
 
@@ -104,6 +106,6 @@ void AddLanBox(GtkWidget *grid, char *ip, int row, int col);
 GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label);
 void AddSoftware(GtkWidget *grid,char * imgpath ,char *name, int row, int col);
 void AddPublishedSoftware(GtkWidget *grid,char * imgpath, char *name,char *alias,int row, int col);
-void CreateHome(GtkWidget *contentStack, const char *title,GtkWidget **leftBox,GtkWidget **rightBox);
+GtkWidget * CreateHome(GtkWidget* contentStack,char * label);
 
 #endif //UI_H

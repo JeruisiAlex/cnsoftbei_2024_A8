@@ -8,6 +8,11 @@ int CreateUI(int argc,char *argv[]) {
     // 初始化GTK
     gtk_init(&argc, &argv);
 
+    // 获取屏幕大小
+    GdkScreen *screen = gdk_screen_get_default();
+    screenWidth = gdk_screen_get_width(screen);
+    screenHeight = gdk_screen_get_height(screen);
+
     // 创建主窗口
     window = CreateWindow();
 
@@ -47,7 +52,7 @@ void LoadCss() {
 // 创建主窗口
 GtkWidget * CreateWindow() {
     GtkWidget * window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_default_size(GTK_WINDOW(window), width, height);
+    gtk_window_set_default_size(GTK_WINDOW(window), (gint)((double)screenWidth * wdPercen), (gint)((double)screenHeight * htPercen));
     g_signal_connect(window, "destroy", G_CALLBACK(OnWindowDestroy), NULL);
     return window;
 }

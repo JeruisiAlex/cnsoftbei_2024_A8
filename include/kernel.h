@@ -8,7 +8,7 @@
 
 #include <unistd.h>
 
-#define PORT 6789
+#define PORT "6789"
 
 extern char hostName[256];
 
