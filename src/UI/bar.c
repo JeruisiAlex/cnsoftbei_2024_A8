@@ -44,4 +44,44 @@ void AddSeparator(GtkWidget* box) {
     gtk_box_pack_start(GTK_BOX(box), spacer, FALSE, FALSE, 0);
 }
 
+// 创建侧边导航栏，并为导航栏添加内容。返回内容栈。
+GtkWidget * CreateBar(GtkWidget *mainBox) {
 
+    // 创建侧边栏盒子
+    GtkWidget *sidebarBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    gtk_box_set_homogeneous(GTK_BOX(sidebarBox), FALSE); // 不均匀分布
+    gtk_widget_set_name(sidebarBox, "sidebar");
+    gtk_box_pack_start(GTK_BOX(mainBox), sidebarBox, FALSE, FALSE, 0);
+
+    // 创建滚动窗口
+    GtkWidget *scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_box_pack_start(GTK_BOX(mainBox), scrolled_window, TRUE, TRUE, 0);
+
+    // 创建内容堆栈
+    GtkWidget *contentStack = gtk_stack_new();
+    gtk_stack_set_transition_type(GTK_STACK(contentStack), GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT);
+    gtk_container_add(GTK_CONTAINER(scrolled_window), contentStack);
+
+    // 添加侧边栏按钮
+    AddSeparator(sidebarBox);
+    AddBarButton(contentStack, sidebarBox, "主页");
+    AddSeparator(sidebarBox);
+    AddBarButton(contentStack, sidebarBox, "主机信息");
+    AddSeparator(sidebarBox);
+    AddBarButton(contentStack, sidebarBox, "局域网连接");
+    AddSeparator(sidebarBox);
+    AddBarButton(contentStack, sidebarBox, "应用程序");
+    AddSeparator(sidebarBox);
+    AddBarButton(contentStack, sidebarBox, "发布程序");
+    AddSeparator(sidebarBox);
+
+    // 加载CSS
+    LoadCss();
+
+    // 为侧边栏添加样式类
+    GtkStyleContext *context = gtk_widget_get_style_context(sidebarBox);
+    gtk_style_context_add_class(context, "sidebar");
+
+    return contentStack;
+}

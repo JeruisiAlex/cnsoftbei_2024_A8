@@ -2,6 +2,48 @@
 
 /* 实现右侧内容栈的功能 */
 
+void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
+
+    // 对于主页，有一左一右两个盒子。左边展示连接情况。右边展示历史连接
+    GtkWidget* leftBox,* rightGrid;
+
+    // 使用函数创建并添加网格
+    CreateHome(contentStack, "主页",&leftBox,&rightGrid);
+    GtkWidget *contentGrid2 = CreateAndAddGrid(contentStack, "主机信息");
+    GtkWidget *contentGrid3 = CreateAndAddGridWithScrollFuc(contentStack, "局域网连接");
+    GtkWidget *contentGrid4 = CreateAndAddGridWithScrollFuc(contentStack, "应用程序");
+    GtkWidget *contentGrid5 = CreateAndAddGridWithScrollFuc(contentStack, "发布程序");
+
+    // 记录现在的行数
+    int row1 = 0, row2 = 0, row3 = 0, row4 = 0,row5 = 0;
+
+    // 添加内容到主页的历史连接
+    for(row1;row1<10;row1++) {
+        AddHistoryBox(rightGrid, "192.168.0.1", "用户名: admin", "密码: ******", row1, 0);
+    }
+
+    // 添加内容到主机信息
+    AddContent(contentGrid2, "主机名：", row2, 0, 0);
+    AddContent(contentGrid2, "hostName", row2, 1, -1);
+    row2++;
+    AddContent(contentGrid2, "端口：", row2, 0, 0);
+    AddContent(contentGrid2, "PORT", row2, 1, -1);
+    // add_content(content_grid1, "开机启动：", row2, 0, 0);
+    // add_switch(content_grid1, row2, 1); // 添加 switch
+    // row2++;
+
+    // 添加内容到局域网连接
+    AddLanBox(contentGrid3,"IP：192.168.0.5",row3,0);
+    AddLanBox(contentGrid3,"IP：192.168.0.5",row3,1);
+
+    // 添加内容到应用程序
+    AddSoftware(contentGrid4,"../assets/software/clion.svg","Clion",row4,0);
+
+    // 添加内容到发布程序
+    AddPublishedSoftware(contentGrid5,"../assets/software/clion.svg","Clion 2024 2.4","别名：Clion",row5,0);
+}
+
+
 // 创建网格并将其添加到内容堆栈的函数
 GtkWidget* CreateAndAddGrid(GtkWidget *contentStack, char *title) {
     GtkWidget *grid = gtk_grid_new();
@@ -66,7 +108,7 @@ void AddSwitchInGrid(GtkWidget *grid, int row, int col) {
 }
 
 // 添加历史连接
-void AddHistoryBox(GtkWidget *grid, char *ip, char *username, char *password, int row, int col) {
+void AddHistoryBox(GtkWidget *rightGrid, char *ip, char *username, char *password, int row, int col) {
     GtkWidget *button = gtk_button_new(); // 创建按钮
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
 
@@ -94,7 +136,7 @@ void AddHistoryBox(GtkWidget *grid, char *ip, char *username, char *password, in
 
     gtk_widget_set_name(button,"inactive-clickbox");
 
-    gtk_grid_attach(GTK_GRID(grid), button, col, row, 1, 1);
+    gtk_grid_attach(GTK_GRID(rightGrid), button, col, row, 1, 1);
 }
 
 // 添加局域网连接
@@ -127,10 +169,12 @@ void AddLanBox(GtkWidget *grid, char *ip, int row, int col) {
 // 创建并添加网络到内容栈（保证有滚动窗口的功能）
 GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label) {
 
+    // 创建滚动窗口
     GtkWidget *scrolled_window = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
     gtk_stack_add_titled(GTK_STACK(content_stack), scrolled_window, label, label);
 
+    // 创建网格
     GtkWidget *grid = gtk_grid_new();
     gtk_grid_set_row_spacing(GTK_GRID(grid), 10);
     gtk_grid_set_column_spacing(GTK_GRID(grid), 10);
@@ -141,6 +185,7 @@ GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label)
 
     gtk_widget_set_name(scrolled_window,"scrollbar");
 
+    // 将网格放入滚动窗口
     gtk_container_add(GTK_CONTAINER(scrolled_window), grid);
     return grid;
 }
@@ -263,44 +308,46 @@ void AddPublishedSoftware(GtkWidget *grid,char * imgpath, char *name,char *alias
 }
 
 // 创建主页
-GtkWidget* CreateHome(GtkWidget *content_stack, const char *title) {
-    GtkWidget *grid = gtk_grid_new();
-    gtk_grid_set_row_spacing(GTK_GRID(grid), 10);
-    gtk_grid_set_column_spacing(GTK_GRID(grid), 10);
-    gtk_widget_set_margin_top(grid, 50);
-    gtk_widget_set_margin_bottom(grid, 50);
-    gtk_widget_set_margin_start(grid, 50);
-    gtk_widget_set_margin_end(grid, 50);
+void CreateHome(GtkWidget *contentStack, const char *title,GtkWidget **leftBox,GtkWidget **rightGrid) {
+    // 主页盒子
+    GtkWidget *homeBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 
     // 创建左侧内容
-    GtkWidget *left_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-    gtk_widget_set_size_request(left_box, 400, -1); // 设置左侧宽度
+    *leftBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+    gtk_widget_set_size_request(*leftBox, 680, -1); // 设置左侧宽度
 
     // 添加左侧内容到左侧 box
     GtkWidget *label = gtk_label_new("左侧内容");
-    gtk_box_pack_start(GTK_BOX(left_box), label, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(*leftBox), label, FALSE, FALSE, 0);
 
     // 创建右侧滚动窗口
-    GtkWidget *right_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(right_scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_widget_set_size_request(right_scrolled_window, 600, -1); // 设置右侧宽度
+    GtkWidget *rightScrolledWindow = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(rightScrolledWindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 
-    // 创建右侧内容区域
-    GtkWidget *right_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+    // 创建右侧盒子
+    GtkWidget *rightBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+    gtk_widget_set_size_request(rightBox, 200, -1); // 设置左侧宽度
 
-    // 添加右侧内容到右侧 box
-    label = gtk_label_new("右侧内容");
-    gtk_box_pack_start(GTK_BOX(right_box), label, FALSE, FALSE, 0);
+    // 创建右侧网格
+    *rightGrid = gtk_grid_new();
+    gtk_grid_set_row_spacing(GTK_GRID(*rightGrid), 10);
+    gtk_grid_set_column_spacing(GTK_GRID(*rightGrid), 10);
+    gtk_widget_set_margin_top(*rightGrid, 50);
+    gtk_widget_set_margin_bottom(*rightGrid, 50);
+    gtk_widget_set_margin_start(*rightGrid, 50);
+    gtk_widget_set_margin_end(*rightGrid, 50);
+
+    // 将网格添加到右侧盒子
+    gtk_box_pack_start(GTK_BOX(rightBox),*rightGrid,FALSE, FALSE, 0);
 
     // 将右侧内容区域添加到滚动窗口
-    gtk_container_add(GTK_CONTAINER(right_scrolled_window), right_box);
+    gtk_container_add(GTK_CONTAINER(rightScrolledWindow), rightBox);
 
     // 将左侧和右侧内容添加到主 grid
-    gtk_grid_attach(GTK_GRID(grid), left_box, 0, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), right_scrolled_window, 1, 0, 1, 1);
+    gtk_box_pack_start(GTK_BOX(homeBox), *leftBox, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(homeBox), rightScrolledWindow, FALSE, FALSE, 0);
 
     // 添加 grid 到内容堆栈
-    gtk_stack_add_titled(GTK_STACK(content_stack), grid, title, title);
+    gtk_stack_add_titled(GTK_STACK(contentStack), homeBox, title, title);
 
-    return grid;
 }
