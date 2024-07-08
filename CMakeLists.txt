@@ -14,10 +14,19 @@ link_directories(${GTK3_LIBRARY_DIRS} ${FREERDP_LIBRARY_DIRS} ${FREERDP_CLIENT_L
 list(APPEND FC_DEP_LIBS ${GTK3_LIBRARIES})
 #
 
-add_executable(cnsoftbei_2024_A8 main.c
+
+add_executable(cnsoftbei_2024_A8
+        main.c
+        include/ui.h
+        include/err.h
+        include/info.h
         include/rdp.h
-        src/rdp.c
         include/xrdp.h
+        src/UI/frame.c
+        src/UI/bar.c
+        src/UI/content.c
+        src/info/basic.c
+        src/rdp.c
         src/xrdp.c
 )
 
