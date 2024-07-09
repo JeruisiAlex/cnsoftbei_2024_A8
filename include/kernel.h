@@ -6,8 +6,6 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
-#define PORT 6789
-
 extern char hostName[256];
 
 struct App {

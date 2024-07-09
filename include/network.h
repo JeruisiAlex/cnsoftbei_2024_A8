@@ -6,6 +6,8 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
+#define PORT 6789
+
 struct NWInfo {
     char address[20];
     char username[30];
