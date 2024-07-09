@@ -36,7 +36,7 @@ int ConnectToServer() {
     serv_addr.sin_port = htons(PORT);
 
     // 将服务器地址转换为二进制形式
-    if(inet_pton(AF_INET, "192.168.134.129", &serv_addr.sin_addr) <= 0) {
+    if(inet_pton(AF_INET, "192.168.112.130", &serv_addr.sin_addr) <= 0) {
         printf("\nInvalid address/ Address not supported \n");
         return -1;
     }
