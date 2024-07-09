@@ -1,4 +1,6 @@
-﻿namespace cnsoftbei_A8
+﻿using System.Windows.Forms;
+
+namespace cnsoftbei_A8
 {
     partial class Form1
     {

@@ -11,17 +11,25 @@ using System.Windows.Forms;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using MyClass;
+using MouseActionFactory;
+
 
 namespace cnsoftbei_A8
 {
     public partial class Form1 : Form
     {
-        private Button lastClickedButton; // 用于跟踪最后点击的按钮
-        private Panel ipPortPanel;
-        private Panel connectionPanel;
-        private Panel contentPanel;
-        private Panel broadPanel;
-        private Panel startupPanel;
+        public static Panel sidePanel;
+        public static Button lastClickedButton; // 用于跟踪最后点击的按钮
+        public static Panel ipPortPanel;
+        public static Panel connectionPanel;
+        public static Panel contentPanel;
+        public static Panel appInfoPanel;
+        public static Panel broadPanel;
+        public static Panel startupPanel;
+        // 命名空間.类名 变量名
+        private MouseActionFactory.MouseActionFactory mouseAction;
+        private List<AppInfo> appListInfo; //应用程序列表
         public Form1()
         {
             InitializeComponent();
@@ -31,34 +39,49 @@ namespace cnsoftbei_A8
 
         private void initializeCustomComponents()
         {
-            // 设置Form属性
-            this.Text = "Remote-operation";
-            this.Size = new Size(800, 600);
-            this.BackColor = Color.White;
+            // 获取 MouseActionFactory 的唯一实例
+            mouseAction = MouseActionFactory.MouseActionFactory.Instance;
 
             // 左侧面板
-            Panel sidePanel = new Panel();
-            sidePanel.BackColor = Color.LightGray;
-            sidePanel.Size = new Size(150, this.ClientSize.Height);
-            sidePanel.Dock = DockStyle.Left;
+            sidePanel = createSidePanel();
             this.Controls.Add(sidePanel);
 
-            // 添加侧边栏按钮
-            // 创建 FlowLayoutPanel
-            FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel();
-            flowLayoutPanel.Dock = DockStyle.Fill;
-            flowLayoutPanel.FlowDirection = FlowDirection.TopDown;
-            flowLayoutPanel.Padding = new Padding(0, 10, 0, 0); // 设置顶部内边距
-            flowLayoutPanel.AutoScroll = true; // 启用滚动条
-            flowLayoutPanel.WrapContents = false; // 防止自动换行
-            flowLayoutPanel.Margin = new Padding(0); // FlowLayoutPanel 外边距
-            flowLayoutPanel.FlowDirection = FlowDirection.TopDown;
+            // 内容面板
+            contentPanel = createContentPanel();
+            this.Controls.Add(contentPanel);
+
+            //createAllAppInfo();
+            //appInfoPanel.Visible = false;
+        }
+
+        public Panel createSidePanel()
+        {
+            Panel sidePanel = new Panel
+            {
+                BackColor = Color.LightGray,
+                Size = new Size(150, this.ClientSize.Height),
+                Dock = DockStyle.Left
+            };
+
+            FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.TopDown,
+                Padding = new Padding(0, 10, 0, 0),
+                AutoScroll = true,
+                WrapContents = false,
+                Margin = new Padding(0),
+            };
+
             flowLayoutPanel.Controls.Add(CreateButton("主机信息"));
             flowLayoutPanel.Controls.Add(CreateButton("应用程序"));
             flowLayoutPanel.Controls.Add(CreateButton("发布程序"));
             sidePanel.Controls.Add(flowLayoutPanel);
 
-            // 内容面板
+            return sidePanel;
+        }
+        public Panel createContentPanel()
+        {
             contentPanel = new Panel();
             contentPanel.Dock = DockStyle.Fill;
             this.Controls.Add(contentPanel);
@@ -67,8 +90,8 @@ namespace cnsoftbei_A8
             // IP 和 Port 面板
             ipPortPanel = new Panel();
             addPanel(ipPortPanel, new Point(180, 100));
-            ipPortPanel.MouseEnter += IpPortPanel_MouseEnter;
-            ipPortPanel.MouseLeave += IpPortPanel_MouseLeave;
+            ipPortPanel.MouseEnter += mouseAction.IpPortPanel_MouseEnter;
+            ipPortPanel.MouseLeave += mouseAction.IpPortPanel_MouseLeave;
 
 
             // 添加内容控件
@@ -95,8 +118,8 @@ namespace cnsoftbei_A8
             // 开关控件
             connectionPanel = new Panel();
             addPanel(connectionPanel, new Point(180, 170));
-            connectionPanel.MouseEnter += connectionPanel_MouseEnter;
-            connectionPanel.MouseLeave += connectionPanel_MouseLeave;
+            connectionPanel.MouseEnter += mouseAction.connectionPanel_MouseEnter;
+            connectionPanel.MouseLeave += mouseAction.connectionPanel_MouseLeave;
             addInfoLabel(connectionPanel, "允许局域网连接", new Point(20, 15), "华文中宋");
 
             ToggleButton chkAllowNetwork = new ToggleButton();
@@ -106,8 +129,8 @@ namespace cnsoftbei_A8
 
             broadPanel = new Panel();
             addPanel(broadPanel, new Point(180, 240));
-            broadPanel.MouseEnter += broadPanel_MouseEnter;
-            broadPanel.MouseLeave += broadPanel_MouseLeave;
+            broadPanel.MouseEnter += mouseAction.broadPanel_MouseEnter;
+            broadPanel.MouseLeave += mouseAction.broadPanel_MouseLeave;
             addInfoLabel(broadPanel, "是否发送广播", new Point(20, 15), "华文中宋");
 
             ToggleButton chkBroadcast = new ToggleButton();
@@ -116,8 +139,8 @@ namespace cnsoftbei_A8
 
             startupPanel = new Panel();
             addPanel(startupPanel, new Point(180, 310));
-            startupPanel.MouseEnter += startupPanel_MouseEnter;
-            startupPanel.MouseLeave += startupPanel_MouseLeave;
+            startupPanel.MouseEnter += mouseAction.startupPanel_MouseEnter;
+            startupPanel.MouseLeave += mouseAction.startupPanel_MouseLeave;
             addInfoLabel(startupPanel, "开机启动", new Point(20, 15), "华文中宋");
 
             ToggleButton chkStartup = new ToggleButton();
@@ -142,89 +165,14 @@ namespace cnsoftbei_A8
             contentPanel.Controls.Add(lblStatus);
 
             // 增加paint事件
-            contentPanel.Paint += ContentPanel_Paint;
+            contentPanel.Paint += mouseAction.ContentPanel_Paint;
 
+            return contentPanel;
         }
+
         private string getHostName()
         {
             return System.Net.Dns.GetHostName();
-        }
-
-
-        private void IpPortPanel_MouseEnter(object sender, EventArgs e)
-        {
-            ipPortPanel.BackColor = Color.LightGray;
-        }
-
-        private void IpPortPanel_MouseLeave(object sender, EventArgs e)
-        {
-            ipPortPanel.BackColor = Color.Transparent;
-        }
-
-        private void connectionPanel_MouseEnter(object sender, EventArgs e)
-        {
-            connectionPanel.BackColor = Color.LightGray;
-        }
-
-        private void connectionPanel_MouseLeave(object sender, EventArgs e)
-        {
-            connectionPanel.BackColor = Color.Transparent;
-        }
-
-        private void BtnSidePanel_Click(object sender, EventArgs e)
-        {
-            // 获取按钮控件
-            Button btn = sender as Button;
-
-            if (btn != null)
-            {
-                // 恢复上一个按钮的背景颜色
-                if (lastClickedButton != null)
-                {
-                    lastClickedButton.BackColor = Color.LightGray;
-                }
-
-                // 设置点击的按钮背景颜色为白色
-                btn.BackColor = Color.White;
-                lastClickedButton = btn; // 更新最后点击的按钮
-            }
-        }
-
-        private void broadPanel_MouseEnter(object sender, EventArgs e)
-        {
-            broadPanel.BackColor = Color.LightGray;
-        }
-        private void broadPanel_MouseLeave(object sender, EventArgs e)
-        {
-            broadPanel.BackColor = Color.Transparent;
-        }
-
-        private void startupPanel_MouseEnter(object sender, EventArgs e)
-        {
-            startupPanel.BackColor = Color.LightGray;
-        }
-
-        private void startupPanel_MouseLeave(object sender, EventArgs e)
-        {
-            startupPanel.BackColor = Color.Transparent;
-        }
-
-        // 绘制虚线
-        private void ContentPanel_Paint(object sender, PaintEventArgs e)
-        {
-            // 获取Graphics对象
-            Graphics g = e.Graphics;
-
-            // 创建虚线画笔
-            using (Pen pen = new Pen(Color.LightGray, 1))
-            {
-                pen.DashStyle = DashStyle.Custom;
-                pen.DashPattern = new float[] { 5, 5 };
-
-                // 绘制虚线
-                g.DrawLine(pen, 270, 137, 430, 137); // IP下方虚线
-                g.DrawLine(pen, 550, 137, 600, 137); // Port下方虚线
-            }
         }
 
         // 增加左侧按钮
@@ -241,11 +189,11 @@ namespace cnsoftbei_A8
 
             button.Font = new Font("等线", 13);
 
-            button.Click += BtnSidePanel_Click;
+            button.Click += mouseAction.BtnSidePanel_Click;
             return button;
         }
 
-        private void addPanel(Panel panel,Point location)
+        private void addPanel(Panel panel, Point location)
         {
             panel.Location = location;
             panel.Size = new Size(540, 50);
@@ -254,7 +202,7 @@ namespace cnsoftbei_A8
         }
 
         // 增加信息标签
-        private void addInfoLabel(Panel panel, string text, Point location ,String font)
+        private void addInfoLabel(Panel panel, string text, Point location, String font)
         {
             Label label = new Label();
             label.Text = text;
@@ -264,52 +212,9 @@ namespace cnsoftbei_A8
             panel.Controls.Add(label);
 
         }
-    }
-
-    // 定义一个选择器
-    public class ToggleButton : CheckBox
-    {
-        public ToggleButton()
-        {
-            this.Appearance = Appearance.Button;
-            this.AutoSize = false;
-            this.Size = new Size(40, 20);
-            this.FlatStyle = FlatStyle.Flat;
-            this.FlatAppearance.BorderSize = 0;
-            this.BackColor = Color.Transparent;
-        }
-        protected override void OnPaint(PaintEventArgs pevent)
-        {
-            base.OnPaint(pevent);
-            Graphics g = pevent.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.Clear(this.Parent.BackColor);
-
-            // 圆角矩形
-            int radius = 10;
-            GraphicsPath path = new GraphicsPath();
-            path.AddArc(0, 0, radius, radius, 180, 90);
-            path.AddArc(this.Width - radius, 0, radius, radius, 270, 90);
-            path.AddArc(this.Width - radius, this.Height - radius, radius, radius, 0, 90);
-            path.AddArc(0, this.Height - radius, radius, radius, 90, 90);
-            path.CloseAllFigures();
-
-            Brush toggleBrush = Checked ? Brushes.LightGreen : Brushes.LightGray;
-            g.FillPath(toggleBrush, path);
-
-            // 增加选择器（圆形）的大小
-            int circleDiameter = this.Height - 5;
-            int circleX = Checked ? this.Width - circleDiameter - 3 : 3;
-            Rectangle circleRect = new Rectangle(circleX, 3, circleDiameter, circleDiameter);
-            Brush circleBrush = Checked ? Brushes.Green : Brushes.Gray;
-            g.FillEllipse(circleBrush, circleRect);
-
-            using (Pen pen = new Pen(Color.DarkGray, 2))
-            {
-                g.DrawPath(pen, path);
-                g.DrawEllipse(pen, circleRect);
-            }
-        }
 
     }
+
+
+
 }
