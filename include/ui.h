@@ -18,12 +18,12 @@ static char * css =
     "#inactive-button {"
     "  background-color: #F5F5F5;"
     "  color: #515A5A;" // 灰黑色
-    "  font-size: 25px;"
+    "  font-size: 22px;"
     "}"
     "#active-button {"
     "  background-color: white;"
     "  color: black;"  // 黑色
-    "  font-size: 25px;"
+    "  font-size: 22px;"
     "}"
     "#inactive-clickbox {"
     "  background-color: #F2F3F4;"
@@ -33,7 +33,7 @@ static char * css =
     "  background-color: #D3D3D3;"  // 灰色
     "}"
     "#inline-label {"
-    "  font-size: 23px;"
+    "  font-size: 22px;"
     "  text-decoration: none;"
     "  border-bottom: 2px dashed #85C1E9;"
     "  padding-bottom: 2px;"
@@ -42,7 +42,7 @@ static char * css =
     "  font-size: 20px;"
     "}"
     "#head-label {"
-    "  font-size: 23px;"
+    "  font-size: 22px;"
     "}"
     "#custom-switch {"
     "  min-width: 60px;" /* 调整宽度 */
@@ -71,10 +71,10 @@ static char * css =
     "  background-color: #85C1E9;"
     "}";
 
-extern double wdPercen; // 窗口宽度比例
-extern double htPercen; // 窗口高度比例
-extern  gint screenWidth;
-extern gint screenHeight;
+extern double windowWidth;
+extern double windowHeight;
+extern gint minWidth;
+extern gint minHeight;
 
 int CreateUI(int argc,char *argv[]);
 
@@ -83,7 +83,7 @@ int CreateUI(int argc,char *argv[]);
 void OnWindowDestroy(GtkWidget *widget, gpointer data);
 void LoadCss();
 void CreateTitle(GtkWidget* window);
-GtkWidget * CreateWindow();
+GtkWidget * CreateWindow(int width,int height);
 GtkWidget * CreateBoxFrame(GtkWidget *window);
 
 
@@ -101,11 +101,11 @@ GtkWidget* CreateAndAddGrid(GtkWidget *contentStack, char *title);
 void AddContent(GtkWidget *grid, char *content, int row, int col, int type);
 void AddSwitchInBox(GtkWidget *box);
 void AddSwitchInGrid(GtkWidget *grid, int row, int col);
-void AddHistoryBox(GtkWidget *rightBox, char *ip, char *username, char *password, int row, int col);
-void AddLanBox(GtkWidget *grid, char *ip, int row, int col);
+void AddHistoryBox(char *ip, char *username, char *password, int row, int col);
+void AddLanBox(char *ip, int row, int col);
 GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label);
-void AddSoftware(GtkWidget *grid,char * imgpath ,char *name, int row, int col);
-void AddPublishedSoftware(GtkWidget *grid,char * imgpath, char *name,char *alias,int row, int col);
+void AddSoftware(char * imgpath ,char *name, int row, int col);
+void AddPublishedSoftware(char * imgpath, char *name,char *alias,int row, int col);
 GtkWidget * CreateHome(GtkWidget* contentStack,char * label);
 
 #endif //UI_H

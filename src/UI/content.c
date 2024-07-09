@@ -1,43 +1,46 @@
 #include "../../include/ui.h"
 #include "../../include/kernel.h"
 
-gint screenWidth;
-gint screenHeight;
+double windowWidth;
+double windowHeight;
+
+GtkWidget *contentGrid1,*contentGrid2,*contentGrid3,*contentGrid4,*contentGrid5,*contentGrid6;
 
 /* 实现右侧内容栈的功能 */
 
 void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
 
     // 使用函数创建并添加网格
-    GtkWidget *contentGrid1 = CreateHome(contentStack, "主页");
-    GtkWidget *contentGrid2 = CreateAndAddGridWithScrollFuc(contentStack, "历史连接");
-    GtkWidget *contentGrid3 = CreateAndAddGridWithScrollFuc(contentStack, "局域网连接");
-    GtkWidget *contentGrid4 = CreateAndAddGridWithScrollFuc(contentStack, "应用列表");
-    GtkWidget *contentGrid5 = CreateAndAddGridWithScrollFuc(contentStack, "已发布应用");
-    GtkWidget *contentGrid6 = CreateAndAddGrid(contentStack, "主机信息");
+    contentGrid1 = CreateHome(contentStack, "主页");
+    contentGrid2 = CreateAndAddGridWithScrollFuc(contentStack, "历史连接");
+    contentGrid3 = CreateAndAddGridWithScrollFuc(contentStack, "局域网连接");
+    contentGrid4 = CreateAndAddGridWithScrollFuc(contentStack, "应用列表");
+    contentGrid5 = CreateAndAddGridWithScrollFuc(contentStack, "已发布应用");
+    contentGrid6 = CreateAndAddGrid(contentStack, "主机信息");
 
     // 记录现在的行数
     int row1 = 0, row2 = 0, row3 = 0, row4 = 0,row5 = 0,row6 = 0;
 
     // 添加内容到主页
-    AddContent(contentGrid1,"正在连接...",0,0,0);
+    // AddHome("正在连接...",0,0,0);
 
     // 添加内容到历史连接
     for(row1;row1<10;row1++) {
-        AddHistoryBox(contentGrid2, "192.168.0.1", "用户名: admin", "密码: ******", row1, 0);
-        AddHistoryBox(contentGrid2, "192.168.0.1", "用户名: xiaochen", "密码: ******", row1, 1);
-        AddHistoryBox(contentGrid2, "192.168.0.1", "用户名: pk", "密码: ******", row1, 2);
+        AddHistoryBox("192.168.0.1", "用户名: admin", "密码: ******", row1, 0);
+        AddHistoryBox("192.168.0.1", "用户名: xiaochen", "密码: ******", row1, 1);
+        AddHistoryBox("192.168.0.1", "用户名: pk", "密码: ******", row1, 2);
     }
 
     // 添加内容到局域网连接
-    AddLanBox(contentGrid3,"IP：192.168.0.5",row3,0);
-    AddLanBox(contentGrid3,"IP：192.168.0.5",row3,1);
+    AddLanBox("IP：192.168.0.5",row3,0);
+    AddLanBox("IP：192.168.0.5",row3,1);
+
 
     // 添加内容到应用列表
-    AddSoftware(contentGrid4,"../assets/software/clion.svg","Clion",row4,0);
+    AddSoftware("../assets/software/clion.svg","Clion",row4,0);
 
     // 添加内容到已发布应用
-    AddPublishedSoftware(contentGrid5,"../assets/software/clion.svg","Clion (gint)(screenHeight * 0.02)24 2.4","别名：Clion",row5,0);
+    AddPublishedSoftware("../assets/software/clion.svg","Clion 2024 2.4","别名：Clion",row5,0);
 
     // 添加内容到主机信息
     AddContent(contentGrid6, "主机名：", row6, 0, 0);
@@ -54,12 +57,12 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
 // 创建网格并将其添加到内容堆栈的函数
 GtkWidget* CreateAndAddGrid(GtkWidget *contentStack, char *title) {
     GtkWidget *grid = gtk_grid_new();
-    gtk_grid_set_row_spacing(GTK_GRID(grid), (gint)(screenHeight * 0.01));
-    gtk_grid_set_column_spacing(GTK_GRID(grid), (gint)(screenHeight * 0.01));
-    gtk_widget_set_margin_top(grid, (gint)(screenHeight * 0.05));
-    gtk_widget_set_margin_bottom(grid, (gint)(screenHeight * 0.05));
-    gtk_widget_set_margin_start(grid, (gint)(screenHeight * 0.05));
-    gtk_widget_set_margin_end(grid, (gint)(screenHeight * 0.05));
+    gtk_grid_set_row_spacing(GTK_GRID(grid), (gint)(windowWidth / 30.0));
+    gtk_grid_set_column_spacing(GTK_GRID(grid), 10);
+    gtk_widget_set_margin_top(grid, 10);
+    gtk_widget_set_margin_bottom(grid, 10);
+    gtk_widget_set_margin_start(grid, (gint)(windowWidth / 30.0));
+    gtk_widget_set_margin_end(grid, (gint)(windowWidth / 30.0));
 
     // 添加网格到内容堆栈
     gtk_stack_add_titled(GTK_STACK(contentStack), grid, title, title);
@@ -95,9 +98,9 @@ void AddSwitchInBox(GtkWidget *box) {
     GtkWidget *fixed = gtk_fixed_new(); // 创建一个固定大小的容器
     GtkWidget *switchButton = gtk_switch_new();
     gtk_widget_set_name(switchButton, "custom-switch"); // 设置 switch 的样式类
-    gtk_widget_set_size_request(switchButton, 40, (gint)(screenHeight * 0.02)); // 设置 switch 的大小
+    gtk_widget_set_size_request(switchButton, (gint)(windowWidth / 24.0), 10); // 设置 switch 的大小
     gtk_fixed_put(GTK_FIXED(fixed), switchButton, 0, 0); // 将 switch 放入 fixed 容器
-    gtk_widget_set_margin_top(switchButton, (gint)(screenHeight * 0.02)); // 设置 switch 的上边距
+    gtk_widget_set_margin_top(switchButton, 10); // 设置 switch 的上边距
 
     gtk_box_pack_start(GTK_BOX(box), fixed, FALSE, FALSE, 0); // 将 fixed 容器添加到 box 中
 }
@@ -107,15 +110,15 @@ void AddSwitchInGrid(GtkWidget *grid, int row, int col) {
     GtkWidget *fixed = gtk_fixed_new(); // 创建一个固定大小的容器
     GtkWidget *switchButton = gtk_switch_new();
     gtk_widget_set_name(switchButton, "custom-switch"); // 设置 switch 的样式类
-    gtk_widget_set_size_request(switchButton, 40, (gint)(screenHeight * 0.02)); // 设置 switch 的大小
+    gtk_widget_set_size_request(switchButton, (gint)(windowWidth / 24.0), 10); // 设置 switch 的大小
     gtk_fixed_put(GTK_FIXED(fixed), switchButton, 0, 0); // 将 switch 放入 fixed 容器
-    gtk_widget_set_margin_top(switchButton, (gint)(screenHeight * 0.01)); // 设置 switch 的上边距
+    gtk_widget_set_margin_top(switchButton, 10); // 设置 switch 的上边距
 
     gtk_grid_attach(GTK_GRID(grid), fixed, col, row, 1, 1);
 }
 
 // 添加历史连接
-void AddHistoryBox(GtkWidget *rightGrid, char *ip, char *username, char *password, int row, int col) {
+void AddHistoryBox(char *ip, char *username, char *password, int row, int col) {
     GtkWidget *button = gtk_button_new(); // 创建按钮
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
 
@@ -139,16 +142,15 @@ void AddHistoryBox(GtkWidget *rightGrid, char *ip, char *username, char *passwor
     gtk_widget_set_margin_end(button, 5); // 设置按钮的右边距
 
     // 设置按钮的大小
-    gtk_widget_set_size_request(button, 200, 200); // 调整宽度和高度
+    gtk_widget_set_size_request(button, (gint)(windowWidth / 5.0), 200); // 调整宽度和高度
 
     gtk_widget_set_name(button,"inactive-clickbox");
 
-    gtk_grid_attach(GTK_GRID(rightGrid), button, col, row, 1, 1);
-    printf("++++++%d\n",screenWidth);
+    gtk_grid_attach(GTK_GRID(contentGrid2), button, col, row, 1, 1);
 }
 
 // 添加局域网连接
-void AddLanBox(GtkWidget *grid, char *ip, int row, int col) {
+void AddLanBox(char *ip, int row, int col) {
     GtkWidget *button = gtk_button_new();
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
 
@@ -167,11 +169,11 @@ void AddLanBox(GtkWidget *grid, char *ip, int row, int col) {
     gtk_widget_set_margin_end(button, 5); // 设置按钮的右边距
 
     // 设置按钮的大小
-    gtk_widget_set_size_request(button, 200, 200); // 调整宽度和高度
+    gtk_widget_set_size_request(button, windowWidth / 5.0, 200); // 调整宽度和高度
 
     gtk_widget_set_name(button,"inactive-clickbox");
 
-    gtk_grid_attach(GTK_GRID(grid), button, col, row, 1, 1);
+    gtk_grid_attach(GTK_GRID(contentGrid3), button, col, row, 1, 1);
 }
 
 // 创建并添加网络到内容栈（保证有滚动窗口的功能）
@@ -187,12 +189,12 @@ GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label)
 
     // 创建网格
     GtkWidget *grid = gtk_grid_new();
-    gtk_grid_set_row_spacing(GTK_GRID(grid), (gint)(screenHeight * 0.01));
-    gtk_grid_set_column_spacing(GTK_GRID(grid), (gint)(screenHeight * 0.01));
-    gtk_widget_set_margin_top(grid, (gint)(screenHeight * 0.05));
-    gtk_widget_set_margin_bottom(grid, (gint)(screenHeight * 0.05));
-    gtk_widget_set_margin_start(grid, (gint)(screenHeight * 0.05));
-    gtk_widget_set_margin_end(grid, (gint)(screenHeight * 0.05));
+    gtk_grid_set_row_spacing(GTK_GRID(grid), (gint)(windowWidth / 30.0));
+    gtk_grid_set_column_spacing(GTK_GRID(grid), 10);
+    gtk_widget_set_margin_top(grid, 10);
+    gtk_widget_set_margin_bottom(grid, 10);
+    gtk_widget_set_margin_start(grid, (gint)(windowWidth / 30.0));
+    gtk_widget_set_margin_end(grid, (gint)(windowWidth / 30.0));
 
     // 将网格添加到水平盒子中
     gtk_box_pack_start(GTK_BOX(hbox), grid, FALSE, FALSE, 0);
@@ -206,7 +208,7 @@ GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label)
 }
 
 // 添加应用列表框
-void AddSoftware(GtkWidget *grid,char * imgpath ,char *name, int row, int col) {
+void AddSoftware(char * imgpath ,char *name, int row, int col) {
     // 创建一个新的 GtkEventBox 以便能够实现悬停效果
     GtkWidget *event_box = gtk_event_box_new();
     gtk_widget_set_name(event_box, "inactive-clickbox");
@@ -216,17 +218,17 @@ void AddSoftware(GtkWidget *grid,char * imgpath ,char *name, int row, int col) {
     gtk_container_add(GTK_CONTAINER(event_box), box);
 
     // 为 event_box 设置边距
-    gtk_container_set_border_width(GTK_CONTAINER(event_box), (gint)(screenHeight * 0.01));
+    gtk_container_set_border_width(GTK_CONTAINER(event_box), 10);
 
     // 创建图标
     GtkWidget *image = gtk_image_new_from_file(imgpath);
     gtk_box_pack_start(GTK_BOX(box), image, FALSE, FALSE, 0);
 
     // 为图标设置边距
-    gtk_widget_set_margin_start(image, 40);
-    gtk_widget_set_margin_end(image, 70);
-    gtk_widget_set_margin_top(image, (gint)(screenHeight * 0.01));
-    gtk_widget_set_margin_bottom(image, (gint)(screenHeight * 0.01));
+    gtk_widget_set_margin_start(image, (gint)(windowWidth / 30.0));
+    gtk_widget_set_margin_end(image, (gint)(windowWidth / 30.0));
+    gtk_widget_set_margin_top(image, 10);
+    gtk_widget_set_margin_bottom(image, 10);
 
     // 创建垂直的 GtkBox 用于应用名称和开关按钮
     GtkWidget *inbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
@@ -237,8 +239,8 @@ void AddSoftware(GtkWidget *grid,char * imgpath ,char *name, int row, int col) {
     gtk_box_pack_start(GTK_BOX(inbox), name_label, FALSE, FALSE, 0);
 
     // 为应用名称标签设置边距
-    gtk_widget_set_margin_top(name_label, (gint)(screenHeight * 0.01));
-    gtk_widget_set_margin_bottom(name_label, (gint)(screenHeight * 0.01));
+    gtk_widget_set_margin_top(name_label, 10);
+    gtk_widget_set_margin_bottom(name_label, 10);
 
     // 创建一个水平的 GtkBox 用于“是否连接”标签和开关按钮
     GtkWidget *ininbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
@@ -249,8 +251,8 @@ void AddSoftware(GtkWidget *grid,char * imgpath ,char *name, int row, int col) {
     gtk_box_pack_start(GTK_BOX(ininbox), connect_label, FALSE, FALSE, 0);
 
     // 为“是否连接”标签设置边距
-    gtk_widget_set_margin_top(connect_label, (gint)(screenHeight * 0.01));
-    gtk_widget_set_margin_bottom(connect_label, (gint)(screenHeight * 0.01));
+    gtk_widget_set_margin_top(connect_label, 10);
+    gtk_widget_set_margin_bottom(connect_label, 10);
 
     // 添加开关按钮到 ininbox
     AddSwitchInBox(ininbox);
@@ -262,14 +264,14 @@ void AddSoftware(GtkWidget *grid,char * imgpath ,char *name, int row, int col) {
     gtk_box_pack_start(GTK_BOX(box), inbox, FALSE, FALSE, 0);
 
     // 设置 event_box 大小
-    gtk_widget_set_size_request(event_box, 430, 180); // 调整宽度和高度
+    gtk_widget_set_size_request(event_box, (gint)(windowWidth * 3 / 8.0), 150); // 调整宽度和高度
 
     // 将 event_box 添加到主 grid 中
-    gtk_grid_attach(GTK_GRID(grid), event_box, col, row, 1, 1);
+    gtk_grid_attach(GTK_GRID(contentGrid4), event_box, col, row, 1, 1);
 }
 
 // 添加已发布应用框
-void AddPublishedSoftware(GtkWidget *grid,char * imgpath, char *name,char *alias,int row, int col) {
+void AddPublishedSoftware(char * imgpath, char *name,char *alias,int row, int col) {
     // 创建一个新的 GtkEventBox 以便能够实现悬停效果
     GtkWidget *event_box = gtk_event_box_new();
     gtk_widget_set_name(event_box, "inactive-clickbox");
@@ -279,17 +281,17 @@ void AddPublishedSoftware(GtkWidget *grid,char * imgpath, char *name,char *alias
     gtk_container_add(GTK_CONTAINER(event_box), box);
 
     // 为 event_box 设置边距
-    gtk_container_set_border_width(GTK_CONTAINER(event_box), (gint)(screenHeight * 0.01));
+    gtk_container_set_border_width(GTK_CONTAINER(event_box), 10);
 
     // 创建图标
     GtkWidget *image = gtk_image_new_from_file(imgpath);
     gtk_box_pack_start(GTK_BOX(box), image, FALSE, FALSE, 0);
 
     // 为图标设置边距
-    gtk_widget_set_margin_start(image, 40);
-    gtk_widget_set_margin_end(image, 70);
-    gtk_widget_set_margin_top(image, (gint)(screenHeight * 0.01));
-    gtk_widget_set_margin_bottom(image, (gint)(screenHeight * 0.01));
+    gtk_widget_set_margin_start(image, (gint)(windowWidth / 30.0));
+    gtk_widget_set_margin_end(image, (gint)(windowWidth / 30.0));
+    gtk_widget_set_margin_top(image, 10);
+    gtk_widget_set_margin_bottom(image, 10);
 
     // 创建垂直的 GtkBox 用于应用名称和别名
     GtkWidget *inbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
@@ -300,8 +302,8 @@ void AddPublishedSoftware(GtkWidget *grid,char * imgpath, char *name,char *alias
     gtk_box_pack_start(GTK_BOX(inbox), label, FALSE, FALSE, 0);
 
     // 为应用名称标签设置边距
-    gtk_widget_set_margin_top(label, (gint)(screenHeight * 0.01));
-    gtk_widget_set_margin_bottom(label, (gint)(screenHeight * 0.01));
+    gtk_widget_set_margin_top(label, 10);
+    gtk_widget_set_margin_bottom(label, 10);
 
     // 创建别名标签
     label = gtk_label_new(alias);
@@ -309,17 +311,17 @@ void AddPublishedSoftware(GtkWidget *grid,char * imgpath, char *name,char *alias
     gtk_box_pack_start(GTK_BOX(inbox), label, FALSE, FALSE, 0);
 
     // 为别名标签设置边距
-    gtk_widget_set_margin_top(label, (gint)(screenHeight * 0.01));
-    gtk_widget_set_margin_bottom(label, (gint)(screenHeight * 0.01));
+    gtk_widget_set_margin_top(label, 10);
+    gtk_widget_set_margin_bottom(label, 10);
 
     // 将 inbox 添加到主水平 box 中
     gtk_box_pack_start(GTK_BOX(box), inbox, FALSE, FALSE, 0);
 
     // 设置 event_box 大小
-    gtk_widget_set_size_request(event_box, 430, 180); // 调整宽度和高度
+    gtk_widget_set_size_request(event_box, (gint)(windowWidth * 3 / 8.0), 150); // 调整宽度和高度宽度和高度
 
     // 将 event_box 添加到主 grid 中
-    gtk_grid_attach(GTK_GRID(grid), event_box, col, row, 1, 1);
+    gtk_grid_attach(GTK_GRID(contentGrid5), event_box, col, row, 1, 1);
 }
 
 // 创建主页。因为主页没有滑动窗口，且主页需要居中对其。
@@ -331,12 +333,12 @@ GtkWidget * CreateHome(GtkWidget* contentStack,char * label) {
 
     // 创建网格
     GtkWidget *grid = gtk_grid_new();
-    gtk_grid_set_row_spacing(GTK_GRID(grid), (gint)(screenHeight * 0.01));
-    gtk_grid_set_column_spacing(GTK_GRID(grid), (gint)(screenHeight * 0.01));
-    gtk_widget_set_margin_top(grid, (gint)(screenHeight * 0.05));
-    gtk_widget_set_margin_bottom(grid, (gint)(screenHeight * 0.05));
-    gtk_widget_set_margin_start(grid, (gint)(screenHeight * 0.05));
-    gtk_widget_set_margin_end(grid, (gint)(screenHeight * 0.05));
+    gtk_grid_set_row_spacing(GTK_GRID(grid), (gint)(windowWidth / 30.0));
+    gtk_grid_set_column_spacing(GTK_GRID(grid), 10);
+    gtk_widget_set_margin_top(grid, 10);
+    gtk_widget_set_margin_bottom(grid, 10);
+    gtk_widget_set_margin_start(grid, (gint)(windowWidth / 30.0));
+    gtk_widget_set_margin_end(grid, (gint)(windowWidth / 30.0));
 
     // 将网格添加到水平盒子中
     gtk_box_pack_start(GTK_BOX(hbox), grid, FALSE, FALSE, 0);

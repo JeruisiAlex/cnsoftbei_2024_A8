@@ -1,14 +1,12 @@
 #include "../../include/ui.h"
 
-gint screenWidth;
-gint screenHeight;
-double wdPercen; // 窗口宽度比例
-double htPercen; // 窗口高度比例
+double windowWidth;
+double windowHeight;
+gint minWidth = 900;
+gint minHeight = 600;
 
+// 创建UI
 int CreateUI(int argc,char *argv[]) {
-
-    wdPercen = 0.5;
-    htPercen = 0.5;
 
     GtkWidget *window;
     GtkWidget *contentStack;
@@ -18,15 +16,15 @@ int CreateUI(int argc,char *argv[]) {
 
     // 获取屏幕大小
     GdkScreen *screen = gdk_screen_get_default();
-    screenWidth = gdk_screen_get_width(screen);
-    screenHeight = gdk_screen_get_height(screen);
-
-    printf("------%d\n",screenWidth);
+    int screenHeight = gdk_screen_get_height(screen);
 
     // 创建主窗口
-    window = CreateWindow();
-
-    printf("------%d\n",screenWidth);
+    windowHeight = screenHeight * 0.5;
+    if(windowHeight < minHeight) {
+        windowHeight = minHeight;
+    }
+    windowWidth = windowHeight * 1.5;
+    window = CreateWindow(windowWidth,windowHeight);
 
     // 创建自定义标题栏
     CreateTitle(window);
@@ -62,9 +60,9 @@ void LoadCss() {
 }
 
 // 创建主窗口
-GtkWidget * CreateWindow() {
+GtkWidget * CreateWindow(int width,int height) {
     GtkWidget * window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_default_size(GTK_WINDOW(window), (gint)((double)screenWidth * wdPercen), (gint)((double)screenHeight * htPercen));
+    gtk_window_set_default_size(GTK_WINDOW(window), width, height);
     g_signal_connect(window, "destroy", G_CALLBACK(OnWindowDestroy), NULL);
     return window;
 }
