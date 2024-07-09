@@ -12,7 +12,14 @@ struct NWInfo {
     char password[256];
 };
 
-struct NWInfo nwInfo;
+extern struct NWInfo nwInfo;
 
+int SetNWInfo(const char *address, const char *username, const char *password);
+
+int ConnectToServer();
+
+void Heartbeat();
+
+int DisconnectToServer();
 
 #endif //NETWORK_H
