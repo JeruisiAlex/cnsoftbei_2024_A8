@@ -26,6 +26,8 @@ namespace cnsoftbei_A8
         {
             InitializeComponent();
             initializeCustomComponents();
+            Network.getNetwork().connect();
+            Kernel.getKernel().init();
         }
 
 
