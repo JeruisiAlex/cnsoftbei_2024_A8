@@ -26,6 +26,9 @@ int CreateUI(int argc,char *argv[]) {
     windowWidth = windowHeight * 1.5;
     window = CreateWindow(windowWidth,windowHeight);
 
+    // 禁止窗口拉伸
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+
     // 创建自定义标题栏
     CreateTitle(window);
 

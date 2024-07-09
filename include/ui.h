@@ -44,6 +44,10 @@ static char * css =
     "#head-label {"
     "  font-size: 22px;"
     "}"
+    "#warning-label {"
+    "  font-size: 22px;"
+    "  color : red;"
+    "}"
     "#custom-switch {"
     "  min-width: 60px;" /* 调整宽度 */
     "  min-height: 30px;" /* 调整高度 */
@@ -69,6 +73,16 @@ static char * css =
     "  min-width: 15px;" /* 滑块的宽度 */
     "  min-height: 10px;" /* 滑块的高度 */
     "  background-color: #85C1E9;"
+    "}"
+    "#spinner {"
+    "-gtk-icon-shadow: 0 0;"
+    "icon-size: 48px;"
+    "background-image: -gtk-icontheme('process-working-symbolic');"
+    "-gtk-icon-transform: rotate(0deg);"
+    "transition: -gtk-icon-transform 1s linear;"
+    "}"
+    "#spinner:hover {"
+    "-gtk-icon-transform: rotate(360deg);"
     "}";
 
 extern double windowWidth;
@@ -101,11 +115,21 @@ GtkWidget* CreateAndAddGrid(GtkWidget *contentStack, char *title);
 void AddContent(GtkWidget *grid, char *content, int row, int col, int type);
 void AddSwitchInBox(GtkWidget *box);
 void AddSwitchInGrid(GtkWidget *grid, int row, int col);
+GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label);
+GtkWidget * CreateHome(GtkWidget* contentStack,char * label);
+void AddIPBox(GtkWidget * window);
+// 下面的函数供 Jeruisi 调用
 void AddHistoryBox(char *ip, char *username, char *password, int row, int col);
 void AddLanBox(char *ip, int row, int col);
-GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label);
 void AddSoftware(char * imgpath ,char *name, int row, int col);
 void AddPublishedSoftware(char * imgpath, char *name,char *alias,int row, int col);
-GtkWidget * CreateHome(GtkWidget* contentStack,char * label);
+
+
+/* 按钮的回调函数 */
+void ClickAddIP(GtkWidget *widget, gpointer user_data);
+void ClickConfirm(GtkWidget *widget, gpointer dialog);
+
+/* 工具函数 */
+int IsValidIpv(const char *ip);
 
 #endif //UI_H

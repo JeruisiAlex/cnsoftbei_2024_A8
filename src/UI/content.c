@@ -4,6 +4,9 @@
 double windowWidth;
 double windowHeight;
 
+GtkWidget * connectState;
+GtkWidget * spinner;
+
 GtkWidget *contentGrid1,*contentGrid2,*contentGrid3,*contentGrid4,*contentGrid5,*contentGrid6;
 
 /* 实现右侧内容栈的功能 */
@@ -32,8 +35,9 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     }
 
     // 添加内容到局域网连接
-    AddLanBox("IP：192.168.0.5",row3,0);
-    AddLanBox("IP：192.168.0.5",row3,1);
+    AddIPBox(window);
+    AddLanBox("IP：192.168.0.5",row3,2);
+    AddLanBox("IP：192.168.0.5",row3,3);
 
 
     // 添加内容到应用列表
@@ -48,9 +52,9 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     row6++;
     AddContent(contentGrid6, "端口：", row6, 0, 0);
     AddContent(contentGrid6, PORT, row6, 1, -1);
-    // add_content(content_grid1, "开机启动：", row2, 0, 0);
-    // add_switch(content_grid1, row2, 1); // 添加 switch
-    // row2++;
+    // add_content(content_grid1, "开机启动：", row6, 0, 0);
+    // add_switch(content_grid1, row6, 1); // 添加 switch
+    // row6++;
 }
 
 
@@ -345,4 +349,43 @@ GtkWidget * CreateHome(GtkWidget* contentStack,char * label) {
     gtk_stack_add_titled(GTK_STACK(contentStack), hbox, label, label);
 
     return grid;
+}
+
+void AddIPBox(GtkWidget * window) {
+    // 创建按钮
+    GtkWidget *button = gtk_button_new();
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
+
+    // 加载图片并调整大小
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("../assets/add.png", NULL); // 加载原始图片
+    GdkPixbuf *scaled_pixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint)(windowWidth / 10.0), (gint)(windowWidth / 10.0), GDK_INTERP_BILINEAR); // 调整大小
+    GtkWidget *image = gtk_image_new_from_pixbuf(scaled_pixbuf); // 使用调整后的图片创建图像控件
+
+    // 添加图片到盒子，并设置水平和垂直居中
+    gtk_box_pack_start(GTK_BOX(box), image, TRUE, TRUE, 0);
+
+    // 将盒子添加到按钮中
+    gtk_container_add(GTK_CONTAINER(button), box);
+
+    // 设置按钮的外边距
+    gtk_widget_set_margin_top(button, 5);
+    gtk_widget_set_margin_bottom(button, 5);
+    gtk_widget_set_margin_start(button, 5);
+    gtk_widget_set_margin_end(button, 5);
+
+    // 设置按钮的大小
+    gtk_widget_set_size_request(button, windowWidth / 5.0, 200);
+
+    // 设置按钮的名字，以便样式化
+    gtk_widget_set_name(button,"inactive-clickbox");
+
+    // 连接点击事件到按钮
+    g_signal_connect(button, "clicked", G_CALLBACK(ClickAddIP), window);
+
+    // 将按钮添加到网格中
+    gtk_grid_attach(GTK_GRID(contentGrid3), button, 0, 0, 1, 1);
+
+    // 清理
+    g_object_unref(pixbuf);
+    g_object_unref(scaled_pixbuf);
 }

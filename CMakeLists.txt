@@ -26,6 +26,7 @@ add_executable(cnsoftbei_2024_A8
         include/kernel.h
         src/kernel.c
         src/network.c
+        src/UI/func.c
 )
 
 #
