@@ -6,8 +6,26 @@ double windowHeight;
 
 GtkWidget * connectState;
 GtkWidget * spinner;
-
+/*
+ *1：主页
+ *2：历史连接
+ *3：局域网连接
+ *4：应用列表
+ *5：已发布应用
+ *6：主机信息
+ */
 GtkWidget *contentGrid1,*contentGrid2,*contentGrid3,*contentGrid4,*contentGrid5,*contentGrid6;
+
+/*
+ *1：历史连接
+ *2：局域网连接
+ *3：应用列表
+ *4：已发布应用
+ */
+// 记录现在的行数
+int row1 = 0, row2 = 0, row3 = 0, row4 = 0;
+// 记录一行最多多少个盒子
+int col1 = 3, col2 = 3, col3 = 2, col4 = 2;
 
 /* 实现右侧内容栈的功能 */
 
@@ -21,9 +39,6 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     contentGrid5 = CreateAndAddGridWithScrollFuc(contentStack, "已发布应用");
     contentGrid6 = CreateAndAddGrid(contentStack, "主机信息");
 
-    // 记录现在的行数
-    int row1 = 0, row2 = 0, row3 = 0, row4 = 0,row5 = 0,row6 = 0;
-
     // 添加内容到主页
     // AddHome("正在连接...",0,0,0);
 
@@ -36,24 +51,22 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
 
     // 添加内容到局域网连接
     AddIPBox(window);
-    AddLanBox("IP：192.168.0.5",row3,2);
-    AddLanBox("IP：192.168.0.5",row3,3);
-
+    AddLanBox("IP：192.168.0.5",row2,1);
+    AddLanBox("IP：192.168.0.5",row2,2);
 
     // 添加内容到应用列表
-    AddSoftware("../assets/software/clion.svg","Clion",row4,0);
+    AddSoftware("../assets/software/clion.svg","Clion",row3,0);
 
     // 添加内容到已发布应用
-    AddPublishedSoftware("../assets/software/clion.svg","Clion 2024 2.4","别名：Clion",row5,0);
+    AddPublishedSoftware("../assets/software/clion.svg","Clion 2024 2.4","别名：Clion",row4,0);
 
     // 添加内容到主机信息
-    AddContent(contentGrid6, "主机名：", row6, 0, 0);
-    AddContent(contentGrid6, hostName, row6, 1, -1);
-    row6++;
-    AddContent(contentGrid6, "端口：", row6, 0, 0);
-    AddContent(contentGrid6, PORT, row6, 1, -1);
-    // add_content(content_grid1, "开机启动：", row6, 0, 0);
-    // add_switch(content_grid1, row6, 1); // 添加 switch
+    AddContent(contentGrid6, "主机名：", 0, 0, 0);
+    AddContent(contentGrid6, hostName, 0, 1, -1);
+    AddContent(contentGrid6, "端口：", 1, 0, 0);
+    AddContent(contentGrid6, PORT, 1, 1, -1);
+    // add_content(content_grid1, "开机启动：", 2, 0, 0);
+    // add_switch(content_grid1, 2, 1); // 添加 switch
     // row6++;
 }
 
@@ -324,6 +337,22 @@ void AddPublishedSoftware(char * imgpath, char *name,char *alias,int row, int co
     // 设置 event_box 大小
     gtk_widget_set_size_request(event_box, (gint)(windowWidth * 3 / 8.0), 150); // 调整宽度和高度宽度和高度
 
+    // 创建右键菜单
+    GtkWidget *menu = gtk_menu_new();
+
+    GtkWidget *menuItemOpen = gtk_menu_item_new_with_label("打开");
+    // g_signal_connect(menuItemOpen, "activate", G_CALLBACK(onMenuItemActivate), "打开");
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuItemOpen);
+
+    GtkWidget *menuItemUninstall = gtk_menu_item_new_with_label("卸载");
+    // g_signal_connect(menuItemUninstall, "activate", G_CALLBACK(onMenuItemActivate), "卸载");
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuItemUninstall);
+
+    gtk_widget_show_all(menu);
+
+    // 连接鼠标右键事件到 event_box
+    g_signal_connect(event_box, "button-press-event", G_CALLBACK(RightClickToolBar), menu);
+
     // 将 event_box 添加到主 grid 中
     gtk_grid_attach(GTK_GRID(contentGrid5), event_box, col, row, 1, 1);
 }
@@ -351,6 +380,7 @@ GtkWidget * CreateHome(GtkWidget* contentStack,char * label) {
     return grid;
 }
 
+// 手动添加IP的盒子
 void AddIPBox(GtkWidget * window) {
     // 创建按钮
     GtkWidget *button = gtk_button_new();
@@ -388,4 +418,43 @@ void AddIPBox(GtkWidget * window) {
     // 清理
     g_object_unref(pixbuf);
     g_object_unref(scaled_pixbuf);
+}
+
+/*
+ * 移除当前页面的所有box
+ * flag:若为1，则表示0行第0列的盒子不用删除（比如局域网连接页面）；若为0，则表示全删。
+ * row：总行数。
+ * col：一行有多少个box。
+*/
+void RemoveAllBox(GtkWidget *grid,int row,int col,int flag) {
+    int i = 0;
+
+    for(;i<=row;i++) {
+        for(int j=0;j<col;j++) {
+            if(i == 0 && flag == 1 && j == 0) {
+                continue;
+            }
+            GtkWidget *child = gtk_grid_get_child_at(GTK_GRID(grid), j, i);// 获取第i+1行第j+1列的子部件
+            if (child != NULL) {
+                printf("252525");
+                gtk_container_remove(GTK_CONTAINER(grid), child);
+            }
+        }
+    }
+
+}
+
+// 移除所有局域网盒子。用于Jeruisi外部调用
+void RemoveAllLanBox() {
+    RemoveAllBox(contentGrid3,row2,col2,1);
+}
+
+// 移除所有应用程序
+void RemoveAllSoftware() {
+    RemoveAllBox(contentGrid4,row3,col3,0);
+}
+
+// 移除所有已发布程序
+void RemoveAllPublishedSoftware() {
+    RemoveAllBox(contentGrid5,row4,col4,0);
 }

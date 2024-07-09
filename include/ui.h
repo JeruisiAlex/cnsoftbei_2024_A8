@@ -123,11 +123,14 @@ void AddHistoryBox(char *ip, char *username, char *password, int row, int col);
 void AddLanBox(char *ip, int row, int col);
 void AddSoftware(char * imgpath ,char *name, int row, int col);
 void AddPublishedSoftware(char * imgpath, char *name,char *alias,int row, int col);
-
+void RemoveAllLanBox();
+void RemoveAllSoftware();
+void RemoveAllPublishedSoftware();
 
 /* 按钮的回调函数 */
 void ClickAddIP(GtkWidget *widget, gpointer user_data);
 void ClickConfirm(GtkWidget *widget, gpointer dialog);
+gboolean RightClickToolBar(GtkWidget *widget, GdkEventButton *event, gpointer data);
 
 /* 工具函数 */
 int IsValidIpv(const char *ip);

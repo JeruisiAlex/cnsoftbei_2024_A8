@@ -87,7 +87,6 @@ void ClickAddIP(GtkWidget *widget, gpointer data) {
 
     // 创建用于显示错误信息的标签
     errorLabel = gtk_label_new("");
-    gtk_widget_set_name(errorLabel, "error-label");
     gtk_box_pack_start(GTK_BOX(mainBox), errorLabel, FALSE, FALSE, 0);
     gtk_widget_set_name(errorLabel,"warning-label");
 
@@ -113,6 +112,7 @@ void ClickAddIP(GtkWidget *widget, gpointer data) {
     
 }
 
+// 点击确认按钮后，检查IP、用户名、密码格式，并调用连接函数
 void ClickConfirm(GtkWidget *widget, gpointer data) {
     GtkWidget *dialog = GTK_WIDGET(data);
 
@@ -130,7 +130,7 @@ void ClickConfirm(GtkWidget *widget, gpointer data) {
     }
 }
 
-
+// 检查IP是否合法
 int IsValidIpv(const char *ip) {
 
     // 检验是否是合法的ipv4
@@ -145,4 +145,15 @@ int IsValidIpv(const char *ip) {
     struct sockaddr_in6 sa2;
     result = inet_pton(AF_INET6, ip, &(sa2.sin6_addr));
     return result != 0;
+}
+
+// 右键点击发布应用，会出现“打开”、“卸载”的选择
+gboolean RightClickToolBar(GtkWidget *widget, GdkEventButton *event, gpointer data) {
+    // 判断是否为鼠标右键点击
+    if (event->button == GDK_BUTTON_SECONDARY) {
+        GtkWidget *menu = GTK_WIDGET(data);
+        gtk_menu_popup_at_pointer(GTK_MENU(menu), (GdkEvent *)event);
+        return TRUE; // 阻止事件继续传播
+    }
+    return FALSE;
 }
