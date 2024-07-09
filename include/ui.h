@@ -71,10 +71,10 @@ static char * css =
     "  background-color: #85C1E9;"
     "}";
 
-static double wdPercen = 0.5; // 窗口宽度比例
-static double htPercen = 0.5; // 窗口高度比例
-static gint screenWidth;
-static gint screenHeight;
+extern double wdPercen; // 窗口宽度比例
+extern double htPercen; // 窗口高度比例
+extern  gint screenWidth;
+extern gint screenHeight;
 
 int CreateUI(int argc,char *argv[]);
 

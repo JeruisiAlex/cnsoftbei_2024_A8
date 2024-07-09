@@ -1,6 +1,14 @@
 #include "../../include/ui.h"
 
+gint screenWidth;
+gint screenHeight;
+double wdPercen; // 窗口宽度比例
+double htPercen; // 窗口高度比例
+
 int CreateUI(int argc,char *argv[]) {
+
+    wdPercen = 0.5;
+    htPercen = 0.5;
 
     GtkWidget *window;
     GtkWidget *contentStack;
@@ -13,8 +21,12 @@ int CreateUI(int argc,char *argv[]) {
     screenWidth = gdk_screen_get_width(screen);
     screenHeight = gdk_screen_get_height(screen);
 
+    printf("------%d\n",screenWidth);
+
     // 创建主窗口
     window = CreateWindow();
+
+    printf("------%d\n",screenWidth);
 
     // 创建自定义标题栏
     CreateTitle(window);
