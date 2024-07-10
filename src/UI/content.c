@@ -157,7 +157,7 @@ void AddHistoryBox(char *ip, char *username, char *password) {
     char name[25] = "用户名：";
     char pw[135] = "密码：";
 
-    strcat(name,ip);
+    strcat(name,username);
     strcat(pw,password);
 
     GtkWidget *ipLabel = gtk_label_new(ip);
@@ -180,7 +180,7 @@ void AddHistoryBox(char *ip, char *username, char *password) {
     gtk_widget_set_margin_end(button, 5); // 设置按钮的右边距
 
     // 设置按钮的大小
-    gtk_widget_set_size_request(button, (gint)(windowWidth / 5.0), 200); // 调整宽度和高度
+    gtk_widget_set_size_request(button, (gint)(windowWidth / 3.0), 200); // 调整宽度和高度
 
     gtk_widget_set_name(button,"inactive-clickbox");
 
