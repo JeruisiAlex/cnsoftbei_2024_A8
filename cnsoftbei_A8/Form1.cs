@@ -28,11 +28,10 @@ namespace cnsoftbei_A8
         public static Panel broadPanel;
         public static Panel startupPanel;
         public static Button buttonInfo;
-        public static Button buttonAllApp;
-        public static Button buttonApp;
+        public static Button buttonAddApp;
         // 命名空間.类名 变量名
         private MouseActionFactory.MouseActionFactory mouseAction;
-        private List<AppInfo> appListInfo; //应用程序列表
+        public static List<AppInfo> appListInfo; //应用程序列表
         public Form1()
         {
             InitializeComponent();
@@ -53,16 +52,10 @@ namespace cnsoftbei_A8
             this.Controls.Add(contentPanel);
 
             //应用程序面板
-            appInfoPanel = createAllAppInfoPanel();
+            appInfoPanel = createAddAppInfoPanel();
             this.Controls.Add(appInfoPanel);
 
-            Bitmap bit = new Bitmap("C:\\Users\\99286\\Desktop\\cat.jpeg");
-            
-            for(int i = 0; i < 5; i++)
-            {
-                Panel app = createAppPanel("小喵喵", bit);
-                appInfoPanel.Controls.Add(app);
-            }
+
             
             //appInfoPanel.Visible = false;
         }
@@ -88,10 +81,8 @@ namespace cnsoftbei_A8
 
             buttonInfo = CreateButton("主机信息");
             flowLayoutPanel.Controls.Add(buttonInfo);
-            buttonAllApp = CreateButton("应用程序");
-            flowLayoutPanel.Controls.Add(buttonAllApp);
-            buttonApp = CreateButton("发布程序");
-            flowLayoutPanel.Controls.Add(buttonApp);
+            buttonAddApp = CreateButton("发布程序");
+            flowLayoutPanel.Controls.Add(buttonAddApp);
             sidePanel.Controls.Add(flowLayoutPanel);
 
             return sidePanel;
@@ -175,7 +166,7 @@ namespace cnsoftbei_A8
             lblStatus.Location = new Point(600, 47);
             lblStatus.AutoSize = true;
             lblStatus.Font = new Font("Times New Roman", 14);
-            lblStatus.ForeColor = Color.LightBlack;
+            lblStatus.ForeColor = Color.Black;
             contentPanel.Controls.Add(lblStatus);
 
             // 增加paint事件
@@ -228,58 +219,79 @@ namespace cnsoftbei_A8
 
         }
 
-        public FlowLayoutPanel createAllAppInfoPanel()
+        public FlowLayoutPanel createAddAppInfoPanel()
         {
             FlowLayoutPanel allAppInfoPanel = new FlowLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 AutoScroll = true,
-                FlowDirection = FlowDirection.LeftToRight, // 从左到右布局
-                WrapContents = true, // 当内容超出边界时换行
-                AutoSize = true,
+                FlowDirection = FlowDirection.TopDown, // 从左到右布局
+                WrapContents = false, 
             };
+
+            //title
+            Label titleLabel = new Label
+            {
+                Text = "已发布程序",
+                Font = new Font("华文中宋", 20, FontStyle.Bold),
+                Margin = new Padding(180, 15, 0, 10),
+                AutoSize = true
+            };
+            allAppInfoPanel.Controls.Add(titleLabel);
+
+            // 添加按钮
+            Button addButton = new Button
+            {
+                Text = "+",
+                Font = new Font("Arial", 16, FontStyle.Bold),
+                Size = new Size(50, 50),
+                Location = new Point(this.ClientSize.Width - 70, this.ClientSize.Height - 70),
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Right
+            };
+            this.Controls.Add(addButton);
+
+            addButton.MouseClick += mouseAction.SelectExeButton_Click;
 
             return allAppInfoPanel;
         }
 
-        public Panel createAppPanel(String name, Bitmap bitmap)
+        private Panel createAppPanel(String name,Bitmap bitmap)
         {
             // 创建应用程序面板
             Panel appPanel = new Panel
             {
-                Size = new Size(200, 100),  // 设置面板的大小
-                BackColor = Color.LightGray, // 设置背景颜色
-                BorderStyle = BorderStyle.FixedSingle, // 设置边框样式
-                Margin = new Padding(200,15,0,20) // 设置面板之间的间距
-                //AutoSize = true,
+                Size = new Size(500, 200),
+                BackColor = Color.LightGray,
+                BorderStyle = BorderStyle.FixedSingle,
+                Margin = new Padding(200,10,0,10)
             };
 
             // 创建显示图标的 PictureBox
             PictureBox pictureBox = new PictureBox
             {
-                Size = new Size(100, 80), // 设置图标的大小
-                Location = new Point(15, 10), // 设置位置
-                Image = bitmap, // 设置图标图像
-                SizeMode = PictureBoxSizeMode.StretchImage, // 设置图标显示模式
-                //AutoSize=true,
+                Size = new Size(100, 100),
+                Location = new Point(15, 10),
+                Image = bitmap,
+                SizeMode = PictureBoxSizeMode.StretchImage,
             };
-            appPanel.Controls.Add(pictureBox); // 将 PictureBox 添加到面板
+            appPanel.Controls.Add(pictureBox); 
 
             // 创建显示名称的 Label
             Label nameLabel = new Label
             {
                 Text = name, // 设置名称文本
-                Location = new Point(180, 10), // 设置位置
+                Location = new Point(15, 120), // 设置位置
                 AutoSize = true, // 自动调整大小以适应内容
                 Font = new Font("Arial", 12, FontStyle.Bold), // 设置字体
             };
             appPanel.Controls.Add(nameLabel); // 将 Label 添加到面板
-
             return appPanel;
-
         }
 
-
+        /*private Panel flushAppPanel()
+        {
+            //foreach 
+        }*/
     }
 
 
