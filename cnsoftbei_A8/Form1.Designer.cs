@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace cnsoftbei_A8
 {
@@ -8,7 +9,10 @@ namespace cnsoftbei_A8
         /// 必需的设计器变量。
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-
+        public static int screenWidth;
+        public static int screenHeight;
+        public static Version version;
+        public static String status;
         /// <summary>
         /// 清理所有正在使用的资源。
         /// </summary>
@@ -34,16 +38,24 @@ namespace cnsoftbei_A8
             // 
             // Form1
             // 
+            getResolution();
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 554);
-            this.MaximumSize = new System.Drawing.Size(1024, 768);
+            this.ClientSize = new System.Drawing.Size(850, 550);
+            this.MaximumSize = new System.Drawing.Size(screenWidth, screenHeight);
+            this.StartPosition = FormStartPosition.CenterScreen;
             this.Name = "Form1";
-            this.Text = "Remote-operation";
+            //this.Text = "SKRO";
             this.ResumeLayout(false);
 
         }
 
+
+        private void getResolution()
+        {
+            screenWidth = Screen.PrimaryScreen.Bounds.Width;
+            screenHeight = Screen.PrimaryScreen.Bounds.Height;
+        }
         #endregion
     }
 }
