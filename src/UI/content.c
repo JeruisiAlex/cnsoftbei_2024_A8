@@ -65,7 +65,7 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
         struct NWInfo *temp = historyRecords;
 
         for(int i=0;i<cnt;i++) {
-            AddHistoryBox((temp + i)->address,(temp + i)->username,(temp + i)->password);
+            AddHistoryBox((temp + i)->address,(temp + i)->username);
         }
 
         if(cnt != 0) {
@@ -159,19 +159,17 @@ void AddSwitchInGrid(GtkWidget *grid, int row, int col) {
 }
 
 // 添加历史连接
-void AddHistoryBox(char *ip, char *username, char *password) {
+void AddHistoryBox(char *ip, char *username) {
     GtkWidget *button = gtk_button_new(); // 创建按钮
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
 
     char name[25] = "用户名：";
-    char pw[135] = "密码：";
 
     strcat(name,username);
-    strcat(pw,password);
 
     GtkWidget *ipLabel = gtk_label_new(ip);
     GtkWidget *usernameLabel = gtk_label_new(name);
-    GtkWidget *password_label = gtk_label_new(pw);
+    GtkWidget *password_label = gtk_label_new("密码：*********");
 
     gtk_widget_set_name(ipLabel,"inline-label");
     gtk_widget_set_name(usernameLabel,"head-label");

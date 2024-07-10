@@ -138,7 +138,7 @@ void ClickConfirm(GtkWidget *widget, gpointer data) {
     else {
         // 输入合法，执行相关操作
         AddOneHistoryRecord(ip,username,password);
-        AddHistoryBox(ip,username,password);
+        AddHistoryBox(ip,username);
         gtk_widget_destroy(dialog); // 销毁对话框
     }
 }

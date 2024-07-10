@@ -127,7 +127,7 @@ GtkWidget * CreateHome(GtkWidget* contentStack,char * label);
 void AddIPBox(GtkWidget * window);
 void RemoveAllChild(GtkWidget *grid,int row,int col,int flag);
 // 下面的函数供 Jeruisi 调用
-void AddHistoryBox(char *ip, char *username, char *password);
+void AddHistoryBox(char *ip, char *username);
 void AddLanBox(char *ip);
 void AddSoftware(char * imgpath ,char *name);
 void AddPublishedSoftware(char * imgpath, char *name,char *alias);
