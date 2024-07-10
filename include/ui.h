@@ -80,6 +80,9 @@ static char * css =
     "  color: #85C1E9;"
     "}";
 
+// 主窗口。创建错误提示框需要。
+extern GtkWidget *window;
+
 // 记录窗口宽度
 extern double windowWidth;
 // 记录窗口高度
@@ -135,5 +138,6 @@ void RemoveAllPublishedSoftware();
 void ConnectingHome(char * ip);
 void UnconnectHome();
 void ConnectedHome(char *ip);
+void ErrDialog(char *content);
 
 #endif //UI_H

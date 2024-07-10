@@ -10,5 +10,6 @@
 #define CONNECT_COUNT_OUT 5 // 服务器连接数量到达上限
 #define HISTORY_NF 6 // 没有找到存放历史连接的文件
 #define MALLOC_ERR 7 // malloc失败
+#define IMAGE_NF 8 // 没有找到对应图片
 
 #endif //ERR_H

@@ -11,6 +11,8 @@ double windowHeight;
 struct NWInfo *historyRecords = NULL;
 int cnt = 0;
 
+GtkWidget *window;
+
 GtkWidget *ipEntry;
 GtkWidget *usernameEntry;
 GtkWidget *passwordEntry;
@@ -279,5 +281,70 @@ void OmitUsername(char *username,char *processedName) {
     } else {
         strcpy(processedName,username);
     }
+
+}
+
+// 弹出错误框
+void ErrDialog(char *content) {
+
+    GtkWidget *dialog = gtk_dialog_new_with_buttons(NULL,
+                                                    GTK_WINDOW(window),
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    NULL);
+
+    // 创建并设置自定义标题栏
+    GtkWidget *headerBar = gtk_header_bar_new();
+    gtk_header_bar_set_show_close_button(GTK_HEADER_BAR(headerBar), TRUE);
+    gtk_header_bar_set_title(GTK_HEADER_BAR(headerBar), "SKRO");
+    gtk_widget_set_name(headerBar, "headbar");
+    gtk_window_set_titlebar(GTK_WINDOW(dialog), headerBar);
+
+    // 设置对话框的大小
+    gtk_window_set_default_size(GTK_WINDOW(dialog), (gint)(windowWidth / 2.0), (gint) (windowHeight / 3.0));
+
+    GtkWidget *contentArea = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+
+    // 创建主盒子
+    GtkWidget *mainBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    gtk_container_add(GTK_CONTAINER(contentArea), mainBox);
+
+    // 加载并缩放图像
+    GError *error = NULL;
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("../assets/err.png", &error);
+    if (!error) {
+        GdkPixbuf *scaled_pixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint) (windowHeight / 6.0), (gint) (windowHeight / 6.0), GDK_INTERP_BILINEAR);
+        GtkWidget *image = gtk_image_new_from_pixbuf(scaled_pixbuf);
+        gtk_box_pack_start(GTK_BOX(mainBox), image, FALSE, FALSE, 0);
+        g_object_unref(scaled_pixbuf); // 释放缩放后的 Pixbuf
+
+        // 为图标设置边距
+        gtk_widget_set_margin_start(image, (gint)(windowWidth / 30.0));
+        gtk_widget_set_margin_end(image, (gint)(windowWidth / 30.0));
+        gtk_widget_set_margin_top(image, 10);
+        gtk_widget_set_margin_bottom(image, 10);
+
+    } else {
+        printf("IMAGE NOT FOUND FROM ERR DIALOG!");
+        return;
+    }
+    g_object_unref(pixbuf); // 释放原始 Pixbuf
+
+    // 创建提示信息
+    GtkWidget *label = gtk_label_new(content);
+    gtk_widget_set_margin_top(label, 5); // 设置顶部边距
+    gtk_widget_set_margin_bottom(label, 5); // 设置底部边距
+    gtk_widget_set_margin_start(label, 5); // 设置顶部边距
+    gtk_widget_set_margin_end(label, 5); // 设置底部边距
+    gtk_widget_set_name(label,"warning-label");
+    gtk_box_pack_start(GTK_BOX(mainBox),label,FALSE,FALSE,0);
+
+    // 显示所有控件
+    gtk_widget_show_all(dialog);
+
+    // 运行对话框
+    gtk_dialog_run(GTK_DIALOG(dialog));
+
+    // 用户响应后销毁对话框
+    gtk_widget_destroy(dialog);
 
 }

@@ -4,11 +4,11 @@ double windowWidth;
 double windowHeight;
 gint minWidth = 900;
 gint minHeight = 600;
+GtkWidget *window; // 主窗口
 
 // 创建UI
 void CreateUI(int argc,char *argv[]) {
 
-    GtkWidget *window;
     GtkWidget *contentStack;
 
     // 初始化GTK
