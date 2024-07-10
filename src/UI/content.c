@@ -189,6 +189,9 @@ void AddHistoryBox(char *ip, char *username, char *password) {
 
     gtk_grid_attach(GTK_GRID(contentGrid2), button, col1, row1, 1, 1);
 
+    // 显示新按钮及其所有子控件
+    gtk_widget_show_all(button);
+
     col1++;
 
 }
@@ -221,6 +224,9 @@ void AddLanBox(char *ip) {
     col2 %= maxCol2;
 
     gtk_grid_attach(GTK_GRID(contentGrid3), button, col2, row2, 1, 1);
+
+    // 显示新按钮及其所有子控件
+    gtk_widget_show_all(button);
 
     col2++;
 }
@@ -322,6 +328,9 @@ void AddSoftware(char * imgpath ,char *name) {
     // 将 event_box 添加到主 grid 中
     gtk_grid_attach(GTK_GRID(contentGrid4), event_box, col3, row3, 1, 1);
 
+    // 显示盒子
+    gtk_widget_show_all(event_box);
+
     col3++;
 }
 
@@ -399,6 +408,9 @@ void AddPublishedSoftware(char * imgpath, char *name,char *alias) {
 
     // 将 event_box 添加到主 grid 中
     gtk_grid_attach(GTK_GRID(contentGrid5), event_box, col4, row4, 1, 1);
+
+    // 显示盒子
+    gtk_widget_show_all(event_box);
 
     col4++;
 }
