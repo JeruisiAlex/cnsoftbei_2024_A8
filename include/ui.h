@@ -77,15 +77,9 @@ static char * css =
     "  background-color: #85C1E9;"
     "}"
     "#spinner {"
-    "-gtk-icon-shadow: 0 0;"
-    "icon-size: 48px;"
-    "background-image: -gtk-icontheme('process-working-symbolic');"
-    "-gtk-icon-transform: rotate(0deg);"
-    "transition: -gtk-icon-transform 1s linear;"
-    "}"
-    "#spinner:hover {"
-    "-gtk-icon-transform: rotate(360deg);"
+    "  color: #85C1E9;"
     "}";
+
 // 记录窗口宽度
 extern double windowWidth;
 // 记录窗口高度
@@ -131,6 +125,7 @@ void AddSwitchInGrid(GtkWidget *grid, int row, int col);
 GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label);
 GtkWidget * CreateHome(GtkWidget* contentStack,char * label);
 void AddIPBox(GtkWidget * window);
+void RemoveAllChild(GtkWidget *grid,int row,int col,int flag);
 // 下面的函数供 Jeruisi 调用
 void AddHistoryBox(char *ip, char *username, char *password);
 void AddLanBox(char *ip);
@@ -139,11 +134,15 @@ void AddPublishedSoftware(char * imgpath, char *name,char *alias);
 void RemoveAllLanBox();
 void RemoveAllSoftware();
 void RemoveAllPublishedSoftware();
+void ConnectingHome(char * ip);
+void UnconnectHome();
+void ConnectedHome(char *ip);
 
 /* 按钮的回调函数 */
 void ClickAddIP(GtkWidget *widget, gpointer user_data);
 void ClickConfirm(GtkWidget *widget, gpointer dialog);
 gboolean RightClickToolBar(GtkWidget *widget, GdkEventButton *event, gpointer data);
+void ClickUnconnect(GtkWidget *widget, gpointer data);
 
 /* 工具函数 */
 int IsValidIp(char *ip);

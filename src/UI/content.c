@@ -46,12 +46,21 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     contentGrid5 = CreateAndAddGridWithScrollFuc(contentStack, "已发布应用");
     contentGrid6 = CreateAndAddGrid(contentStack, "主机信息");
 
+    int res = ReadAllHistoryRecords(); // 找到历史记录
+
     // 添加内容到主页
-    // AddHome("正在连接...",0,0,0);
+    if(res == 0) {
+        if(cnt == 0) {
+            // 暂未连接
+            UnconnectHome();
+        }
+        else {
+            // 正在连接最近连接的历史连接
+            ConnectingHome(historyRecords[cnt-1].address);
+        }
+    }
 
     // 添加内容到历史连接
-    int res = ReadAllHistoryRecords();
-
     if(res == 0) {
         struct NWInfo *temp = historyRecords;
 
@@ -190,7 +199,7 @@ void AddHistoryBox(char *ip, char *username, char *password) {
     gtk_grid_attach(GTK_GRID(contentGrid2), button, col1, row1, 1, 1);
 
     // 显示新按钮及其所有子控件
-    gtk_widget_show_all(button);
+    gtk_widget_show_all(contentGrid2);
 
     col1++;
 
@@ -226,7 +235,7 @@ void AddLanBox(char *ip) {
     gtk_grid_attach(GTK_GRID(contentGrid3), button, col2, row2, 1, 1);
 
     // 显示新按钮及其所有子控件
-    gtk_widget_show_all(button);
+    gtk_widget_show_all(contentGrid3);
 
     col2++;
 }
@@ -418,9 +427,10 @@ void AddPublishedSoftware(char * imgpath, char *name,char *alias) {
 // 创建主页。因为主页没有滑动窗口，且主页需要居中对其。
 GtkWidget * CreateHome(GtkWidget* contentStack,char * label) {
 
-    // 创建水平盒子，用于居中对齐
+    // 创建垂直盒子，用于居中对齐
     GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_halign(hbox, GTK_ALIGN_CENTER); // 设置水平居中对齐
+    gtk_widget_set_valign(hbox, GTK_ALIGN_CENTER); // 设置垂直居中对齐
 
     // 创建网格
     GtkWidget *grid = gtk_grid_new();
@@ -482,9 +492,9 @@ void AddIPBox(GtkWidget * window) {
  * 移除当前页面的所有box
  * flag:若为1，则表示0行第0列的盒子不用删除（比如局域网连接页面）；若为0，则表示全删。
  * row：总行数。
- * col：一行有多少个box。
+ * col：一行有多少个子组件。
 */
-void RemoveAllBox(GtkWidget *grid,int row,int col,int flag) {
+void RemoveAllChild(GtkWidget *grid,int row,int col,int flag) {
     int i = 0;
 
     for(;i<=row;i++) {
@@ -503,15 +513,110 @@ void RemoveAllBox(GtkWidget *grid,int row,int col,int flag) {
 
 // 移除所有局域网盒子。用于Jeruisi外部调用
 void RemoveAllLanBox() {
-    RemoveAllBox(contentGrid3,row2,maxCol2,1);
+    RemoveAllChild(contentGrid3,row2,maxCol2,1);
 }
 
 // 移除所有应用程序
 void RemoveAllSoftware() {
-    RemoveAllBox(contentGrid4,row3,maxCol3,0);
+    RemoveAllChild(contentGrid4,row3,maxCol3,0);
 }
 
 // 移除所有已发布程序
 void RemoveAllPublishedSoftware() {
-    RemoveAllBox(contentGrid5,row4,maxCol4,0);
+    RemoveAllChild(contentGrid5,row4,maxCol4,0);
+}
+
+// 功能：设置主页为“正在连接”状态
+void ConnectingHome(char * ip) {
+
+    RemoveAllChild(contentGrid1,3,1,0);
+
+    // 创建一个水平的盒子
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+
+    // 显示"正在连接"
+    GtkWidget *label = gtk_label_new("正在连接：");
+    gtk_widget_set_name(label, "head-label");
+    gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
+
+    // 显示正在连接的IP
+    label = gtk_label_new(ip);
+    gtk_widget_set_name(label,"inline-label");
+    gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
+
+    // 将盒子放入网格
+    gtk_grid_attach(GTK_GRID(contentGrid1), box, 0, 0, 1, 1);
+
+    // 加载动画
+    GtkWidget *spinner = gtk_spinner_new();
+    gtk_widget_set_name(spinner,"spinner");
+    gtk_widget_set_size_request(spinner, 100, 100);  // 设置spinner的宽度和高度
+    gtk_spinner_start(GTK_SPINNER(spinner)); // 启动加载动画
+    gtk_grid_attach(GTK_GRID(contentGrid1), spinner, 0, 1, 1, 1);
+
+    // 创建“断开连接”按钮
+    GtkWidget *button;
+    button = gtk_button_new_with_label("断开连接");
+    gtk_widget_set_margin_top(button, 0);
+    gtk_widget_set_margin_bottom(button, 0);
+    gtk_widget_set_margin_start(button, 0);
+    gtk_widget_set_margin_end(button, 0);
+    gtk_widget_set_size_request(button, (gint)(windowWidth/6.0), 25); // 设置按钮大小
+    g_signal_connect(button,"clicked",G_CALLBACK(ClickUnconnect),NULL);
+
+    // 将按钮放入网格
+    gtk_grid_attach(GTK_GRID(contentGrid1), button, 0, 2, 1, 1);
+
+    // 显示
+    gtk_widget_show_all(contentGrid1);
+}
+
+// 设置主页为未连接状态
+void UnconnectHome() {
+
+    RemoveAllChild(contentGrid1,3,1,0);
+
+    // 显示"未连接"
+    GtkWidget *label = gtk_label_new("未连接服务端");
+    gtk_widget_set_name(label, "head-label");
+    gtk_grid_attach(GTK_GRID(contentGrid1), label, 0, 0, 1, 1);
+
+    // 显示
+    gtk_widget_show_all(contentGrid1);
+
+}
+
+// 设置主页为已经连接状态
+void ConnectedHome(char *ip) {
+
+    RemoveAllChild(contentGrid1,3,1,0);
+
+    // 显示"连接成功"
+    GtkWidget *label = gtk_label_new("连接成功");
+    gtk_widget_set_name(label, "head-label");
+    gtk_grid_attach(GTK_GRID(contentGrid1), label, 0, 0, 1, 1);
+
+    // 显示正在连接的IP
+    char temp[100] = "IP：";
+    strcat(temp,ip);
+    label = gtk_label_new(temp);
+    gtk_widget_set_name(label,"inline-label");
+    gtk_grid_attach(GTK_GRID(contentGrid1), label, 0, 1, 1, 1);
+
+    // 创建“断开连接”按钮
+    GtkWidget *button;
+    button = gtk_button_new_with_label("断开连接");
+    gtk_widget_set_margin_top(button, 0);
+    gtk_widget_set_margin_bottom(button, 0);
+    gtk_widget_set_margin_start(button, 0);
+    gtk_widget_set_margin_end(button, 0);
+    gtk_widget_set_size_request(button, (gint)(windowWidth/6.0), 25); // 设置按钮大小
+    g_signal_connect(button,"clicked",G_CALLBACK(ClickUnconnect),NULL);
+
+    // 将按钮放入网格
+    gtk_grid_attach(GTK_GRID(contentGrid1), button, 0, 2, 1, 1);
+
+    // 显示
+    gtk_widget_show_all(contentGrid1);
+
 }

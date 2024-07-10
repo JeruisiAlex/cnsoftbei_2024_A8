@@ -38,12 +38,6 @@ void ClickAddIP(GtkWidget *widget, gpointer data) {
     GtkWidget *mainBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_add(GTK_CONTAINER(contentArea), mainBox);
 
-    // // 创建标签并添加到主盒子中
-    // GtkWidget *label = gtk_label_new("请输入信息");
-    // gtk_widget_set_halign(label, GTK_ALIGN_START); // 设置标签居左
-    // gtk_box_pack_start(GTK_BOX(main_box), label, FALSE, FALSE, 0);
-    // gtk_widget_set_name(label,"head-label");
-
     // 创建IP输入框及其标签
     GtkWidget *ipBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10); // 水平布局，间距10
     GtkWidget *ipLabel = gtk_label_new("IP：");
@@ -262,4 +256,9 @@ int ReadAllHistoryRecords() {
 
     fclose(file);
     return 0;
+}
+
+// 点击“断开连接”按钮的回调函数
+void ClickUnconnect(GtkWidget *widget, gpointer data) {
+    UnconnectHome();
 }
