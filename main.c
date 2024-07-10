@@ -10,8 +10,6 @@ int main(int argc, char *argv[]) {
 
     GetHostName();
 
-    ConnectToServer();
-
     CreateUI(argc,argv);
 
     // 进入GTK主循环
