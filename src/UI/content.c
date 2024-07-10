@@ -30,7 +30,7 @@ GtkWidget *contentGrid1,*contentGrid2,*contentGrid3,*contentGrid4,*contentGrid5,
 // 记录现在的行数
 int row1 = 0, row2 = 0, row3 = 0, row4 = 0;
 // 记录一行最多多少个盒子
-int maxCol1 = 3, maxCol2 = 3, maxCol3 = 2, maxCol4 = 2;
+int maxCol1 = 2, maxCol2 = 3, maxCol3 = 2, maxCol4 = 2;
 // 记录现在的列数
 int col1 = 0,col2 = 1,col3 = 0,col4 = 0;
 
