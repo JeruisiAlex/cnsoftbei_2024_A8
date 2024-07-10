@@ -12,7 +12,7 @@ struct NWInfo {
     char password[256];
 };
 
-struct NWInfo nwInfo;
+extern struct NWInfo nwInfo;
 
 
 #endif //NETWORK_H

@@ -1,9 +1,14 @@
 #include "../../include/ui.h"
+#include "../../include/err.h"
+#include "../../include/network.h"
 
-#include <arpa/inet.h>
+#include <regex.h>
 
 double windowWidth;
 double windowHeight;
+
+struct NWInfo *historyRecords = NULL;
+int cnt = 0;
 
 GtkWidget *ipEntry;
 GtkWidget *usernameEntry;
@@ -117,34 +122,59 @@ void ClickConfirm(GtkWidget *widget, gpointer data) {
     GtkWidget *dialog = GTK_WIDGET(data);
 
     // 获取输入框的内容
-    const char *ip = gtk_entry_get_text(GTK_ENTRY(ipEntry));
-    const char *username = gtk_entry_get_text(GTK_ENTRY(usernameEntry));
-    const char *password = gtk_entry_get_text(GTK_ENTRY(passwordEntry));
+    char ip[100];
+    strcpy(ip,gtk_entry_get_text(GTK_ENTRY(ipEntry)));
+    char username[100];
+    strcpy(username, gtk_entry_get_text(GTK_ENTRY(usernameEntry)));
+    char password[200];
+    strcpy(password,gtk_entry_get_text(GTK_ENTRY(passwordEntry)));
 
-    if (strlen(ip) > 0 && IsValidIpv(ip) && strlen(username) > 0 && strlen(username) <= 20 && strlen(password) > 0 && strlen(password) <= 127) {
-        // 输入合法，执行相关操作
-        gtk_widget_destroy(dialog); // 销毁对话框
-    } else {
-        gtk_label_set_text(GTK_LABEL(errorLabel), "输入不合法");
+    if(!IsValidIp(ip)) {
+        gtk_label_set_text(GTK_LABEL(errorLabel), "IP不合法");
         gtk_widget_show(errorLabel); // 确保显示标签
+    }
+    else if(strlen(username) == 0 || strlen(username) > 20) {
+        gtk_label_set_text(GTK_LABEL(errorLabel), "用户名长度不合法");
+        gtk_widget_show(errorLabel); // 确保显示标签
+    }
+    else if(strlen(password) == 0 || strlen(password) > 127) {
+        gtk_label_set_text(GTK_LABEL(errorLabel), "密码长度不合法");
+        gtk_widget_show(errorLabel); // 确保显示标签
+    }
+    else {
+        // 输入合法，执行相关操作
+        printf("%s\n",username);
+        AddOneHistoryRecord(ip,username,password);
+        AddHistoryBox(ip,username,password);
+        gtk_widget_destroy(dialog); // 销毁对话框
     }
 }
 
 // 检查IP是否合法
-int IsValidIpv(const char *ip) {
+int IsValidIp(char *ip) {
+    char *ip_regex = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."
+                       "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."
+                       "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."
+                       "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+    regex_t regex;
+    int ret;
 
-    // 检验是否是合法的ipv4
-    struct sockaddr_in sa1;
-    int result = inet_pton(AF_INET, ip, &(sa1.sin_addr));
-    // inet_pton（地址到文本表示的转换）函数将点分十进制的IPv4地址转换为二进制形式，如果转换成功，返回值将为正数。
-    if(result == 0) {
+    // 编译正则表达式
+    ret = regcomp(&regex, ip_regex, REG_EXTENDED);
+    if (ret) {
         return 0;
     }
 
-    // 检验是否是合法的ipv6
-    struct sockaddr_in6 sa2;
-    result = inet_pton(AF_INET6, ip, &(sa2.sin6_addr));
-    return result != 0;
+    // 执行正则表达式匹配
+    ret = regexec(&regex, ip, 0, NULL, 0);
+    regfree(&regex);
+
+    if (!ret) {
+        return 1; // 匹配成功
+    }
+
+    return 0; // 不匹配
+
 }
 
 // 右键点击发布应用，会出现“打开”、“卸载”的选择
@@ -156,4 +186,81 @@ gboolean RightClickToolBar(GtkWidget *widget, GdkEventButton *event, gpointer da
         return TRUE; // 阻止事件继续传播
     }
     return FALSE;
+}
+
+// 在记录中追加一个历史连接记录
+int AddOneHistoryRecord(char *ip,char *username,char *password) {
+
+    FILE *file = fopen(HISTORY_PATH,"ab");
+    if(file == NULL) {
+        printf("RECORDS ERR:HISTORY NOT FOUND!\n");
+        return HISTORY_NF;
+    }
+
+    // 写入IP
+    fwrite(ip, strlen(ip) + 1, 1, file);
+
+    // 写入username
+    fwrite(username, strlen(username) + 1, 1, file);
+
+    // 写入password
+    fwrite(password, strlen(password) + 1, 1, file);
+
+    fclose(file);
+    return 0;
+}
+
+// 从数据中，读出所有的历史连接记录
+int ReadAllHistoryRecords() {
+
+    FILE* file = fopen(HISTORY_PATH, "rb");
+    if (file == NULL) {
+        printf("RECORDS ERR:HISTORY NOT FOUND!\n");
+        return HISTORY_NF;
+    }
+
+    struct NWInfo info[200];
+    int i = 0; // 0:正在读IP 1:正在读用户名 2:正在读密码
+    int j = 0; // 正在读第几个字符
+    char ch = '\0';
+
+    while(fread(&ch,1,1,file) == 1) {
+
+        while (ch != '\0') {
+            if(i == 0) {
+                info[cnt].address[j] = ch;
+            }
+            else if(i == 1) {
+                info[cnt].username[j] = ch;
+            }
+            else {
+                info[cnt].password[j] = ch;
+            }
+            j++;
+            fread(&ch,1,1,file);
+        }
+
+        if(i == 0) {
+            info[cnt].address[j] = ch;
+        }
+        else if(i == 1) {
+            info[cnt].username[j] = ch;
+        }
+        else {
+            info[cnt].password[j] = ch;
+        }
+        i++;
+        j = 0;
+        if(i == 3) {
+            i = 0;
+            cnt++;
+        }
+
+    }
+
+    historyRecords = (struct NWInfo *)malloc(cnt * sizeof(struct NWInfo));
+    memcpy(historyRecords,info,cnt * sizeof(struct NWInfo));
+
+    fclose(file);
+    return 0;
 }

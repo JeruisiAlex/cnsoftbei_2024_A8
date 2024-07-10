@@ -1,8 +1,13 @@
 #include "../../include/ui.h"
 #include "../../include/kernel.h"
 
+#include <string.h>
+
 double windowWidth;
 double windowHeight;
+
+struct NWInfo *historyRecords;
+int cnt;
 
 GtkWidget * connectState;
 GtkWidget * spinner;
@@ -25,7 +30,9 @@ GtkWidget *contentGrid1,*contentGrid2,*contentGrid3,*contentGrid4,*contentGrid5,
 // 记录现在的行数
 int row1 = 0, row2 = 0, row3 = 0, row4 = 0;
 // 记录一行最多多少个盒子
-int col1 = 3, col2 = 3, col3 = 2, col4 = 2;
+int maxCol1 = 3, maxCol2 = 3, maxCol3 = 2, maxCol4 = 2;
+// 记录现在的列数
+int col1 = 0,col2 = 1,col3 = 0,col4 = 0;
 
 /* 实现右侧内容栈的功能 */
 
@@ -43,22 +50,30 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     // AddHome("正在连接...",0,0,0);
 
     // 添加内容到历史连接
-    for(row1;row1<10;row1++) {
-        AddHistoryBox("192.168.0.1", "用户名: admin", "密码: ******", row1, 0);
-        AddHistoryBox("192.168.0.1", "用户名: xiaochen", "密码: ******", row1, 1);
-        AddHistoryBox("192.168.0.1", "用户名: pk", "密码: ******", row1, 2);
+    int res = ReadAllHistoryRecords();
+
+    if(res == 0) {
+        struct NWInfo *temp = historyRecords;
+
+        for(int i=0;i<cnt;i++) {
+            AddHistoryBox((temp + i)->address,(temp + i)->username,(temp + i)->password);
+        }
+
+        if(cnt != 0) {
+            row1 = (cnt - 1) / 3;
+        }
     }
 
     // 添加内容到局域网连接
     AddIPBox(window);
-    AddLanBox("IP：192.168.0.5",row2,1);
-    AddLanBox("IP：192.168.0.5",row2,2);
+    AddLanBox("IP：192.168.0.5");
+    AddLanBox("IP：192.168.0.5");
 
     // 添加内容到应用列表
-    AddSoftware("../assets/software/clion.svg","Clion",row3,0);
+    AddSoftware("../assets/software/clion.svg","Clion");
 
     // 添加内容到已发布应用
-    AddPublishedSoftware("../assets/software/clion.svg","Clion 2024 2.4","别名：Clion",row4,0);
+    AddPublishedSoftware("../assets/software/clion.svg","Clion 2024 2.4","Clion");
 
     // 添加内容到主机信息
     AddContent(contentGrid6, "主机名：", 0, 0, 0);
@@ -135,13 +150,19 @@ void AddSwitchInGrid(GtkWidget *grid, int row, int col) {
 }
 
 // 添加历史连接
-void AddHistoryBox(char *ip, char *username, char *password, int row, int col) {
+void AddHistoryBox(char *ip, char *username, char *password) {
     GtkWidget *button = gtk_button_new(); // 创建按钮
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
 
+    char name[25] = "用户名：";
+    char pw[135] = "密码：";
+
+    strcat(name,ip);
+    strcat(pw,password);
+
     GtkWidget *ipLabel = gtk_label_new(ip);
-    GtkWidget *usernameLabel = gtk_label_new(username);
-    GtkWidget *password_label = gtk_label_new(password);
+    GtkWidget *usernameLabel = gtk_label_new(name);
+    GtkWidget *password_label = gtk_label_new(pw);
 
     gtk_widget_set_name(ipLabel,"inline-label");
     gtk_widget_set_name(usernameLabel,"head-label");
@@ -163,11 +184,17 @@ void AddHistoryBox(char *ip, char *username, char *password, int row, int col) {
 
     gtk_widget_set_name(button,"inactive-clickbox");
 
-    gtk_grid_attach(GTK_GRID(contentGrid2), button, col, row, 1, 1);
+    row1 += col1 / maxCol1;
+    col1 %= maxCol1;
+
+    gtk_grid_attach(GTK_GRID(contentGrid2), button, col1, row1, 1, 1);
+
+    col1++;
+
 }
 
 // 添加局域网连接
-void AddLanBox(char *ip, int row, int col) {
+void AddLanBox(char *ip) {
     GtkWidget *button = gtk_button_new();
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
 
@@ -190,7 +217,12 @@ void AddLanBox(char *ip, int row, int col) {
 
     gtk_widget_set_name(button,"inactive-clickbox");
 
-    gtk_grid_attach(GTK_GRID(contentGrid3), button, col, row, 1, 1);
+    row2 += col2 / maxCol2;
+    col2 %= maxCol2;
+
+    gtk_grid_attach(GTK_GRID(contentGrid3), button, col2, row2, 1, 1);
+
+    col2++;
 }
 
 // 创建并添加网络到内容栈（保证有滚动窗口的功能）
@@ -225,7 +257,7 @@ GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label)
 }
 
 // 添加应用列表框
-void AddSoftware(char * imgpath ,char *name, int row, int col) {
+void AddSoftware(char * imgpath ,char *name) {
     // 创建一个新的 GtkEventBox 以便能够实现悬停效果
     GtkWidget *event_box = gtk_event_box_new();
     gtk_widget_set_name(event_box, "inactive-clickbox");
@@ -283,12 +315,18 @@ void AddSoftware(char * imgpath ,char *name, int row, int col) {
     // 设置 event_box 大小
     gtk_widget_set_size_request(event_box, (gint)(windowWidth * 3 / 8.0), 150); // 调整宽度和高度
 
+    // 确定box的行列
+    row3 += col3 / maxCol3;
+    col3 %= maxCol3;
+
     // 将 event_box 添加到主 grid 中
-    gtk_grid_attach(GTK_GRID(contentGrid4), event_box, col, row, 1, 1);
+    gtk_grid_attach(GTK_GRID(contentGrid4), event_box, col3, row3, 1, 1);
+
+    col3++;
 }
 
 // 添加已发布应用框
-void AddPublishedSoftware(char * imgpath, char *name,char *alias,int row, int col) {
+void AddPublishedSoftware(char * imgpath, char *name,char *alias) {
     // 创建一个新的 GtkEventBox 以便能够实现悬停效果
     GtkWidget *event_box = gtk_event_box_new();
     gtk_widget_set_name(event_box, "inactive-clickbox");
@@ -323,7 +361,9 @@ void AddPublishedSoftware(char * imgpath, char *name,char *alias,int row, int co
     gtk_widget_set_margin_bottom(label, 10);
 
     // 创建别名标签
-    label = gtk_label_new(alias);
+    char t[100] = "别名";
+    strcat(t,alias);
+    label = gtk_label_new(t);
     gtk_widget_set_name(label, "head-label");
     gtk_box_pack_start(GTK_BOX(inbox), label, FALSE, FALSE, 0);
 
@@ -353,8 +393,14 @@ void AddPublishedSoftware(char * imgpath, char *name,char *alias,int row, int co
     // 连接鼠标右键事件到 event_box
     g_signal_connect(event_box, "button-press-event", G_CALLBACK(RightClickToolBar), menu);
 
+    // 确定行列
+    row4 += col4 / maxCol4;
+    col4 %= maxCol4;
+
     // 将 event_box 添加到主 grid 中
-    gtk_grid_attach(GTK_GRID(contentGrid5), event_box, col, row, 1, 1);
+    gtk_grid_attach(GTK_GRID(contentGrid5), event_box, col4, row4, 1, 1);
+
+    col4++;
 }
 
 // 创建主页。因为主页没有滑动窗口，且主页需要居中对其。
@@ -436,7 +482,6 @@ void RemoveAllBox(GtkWidget *grid,int row,int col,int flag) {
             }
             GtkWidget *child = gtk_grid_get_child_at(GTK_GRID(grid), j, i);// 获取第i+1行第j+1列的子部件
             if (child != NULL) {
-                printf("252525");
                 gtk_container_remove(GTK_CONTAINER(grid), child);
             }
         }
@@ -446,15 +491,15 @@ void RemoveAllBox(GtkWidget *grid,int row,int col,int flag) {
 
 // 移除所有局域网盒子。用于Jeruisi外部调用
 void RemoveAllLanBox() {
-    RemoveAllBox(contentGrid3,row2,col2,1);
+    RemoveAllBox(contentGrid3,row2,maxCol2,1);
 }
 
 // 移除所有应用程序
 void RemoveAllSoftware() {
-    RemoveAllBox(contentGrid4,row3,col3,0);
+    RemoveAllBox(contentGrid4,row3,maxCol3,0);
 }
 
 // 移除所有已发布程序
 void RemoveAllPublishedSoftware() {
-    RemoveAllBox(contentGrid5,row4,col4,0);
+    RemoveAllBox(contentGrid5,row4,maxCol4,0);
 }

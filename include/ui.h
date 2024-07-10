@@ -3,6 +3,8 @@
 #ifndef UI_H
 #define UI_H
 
+#include "network.h"
+
 #include <gtk/gtk.h>
 
 // 记录css样式
@@ -84,11 +86,22 @@ static char * css =
     "#spinner:hover {"
     "-gtk-icon-transform: rotate(360deg);"
     "}";
-
+// 记录窗口宽度
 extern double windowWidth;
+// 记录窗口高度
 extern double windowHeight;
+// 设置窗口最小宽度
 extern gint minWidth;
+// 设置窗口最小高度
 extern gint minHeight;
+
+// 记录所有历史记录的结构体数组
+extern struct NWInfo *historyRecords;
+// 记录共有多少个历史连接记录
+extern int cnt;
+
+// 记录历史连接数据路径（相对于UI实现的.c文件的路径）
+#define HISTORY_PATH "../data/history"
 
 int CreateUI(int argc,char *argv[]);
 
@@ -119,10 +132,10 @@ GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label)
 GtkWidget * CreateHome(GtkWidget* contentStack,char * label);
 void AddIPBox(GtkWidget * window);
 // 下面的函数供 Jeruisi 调用
-void AddHistoryBox(char *ip, char *username, char *password, int row, int col);
-void AddLanBox(char *ip, int row, int col);
-void AddSoftware(char * imgpath ,char *name, int row, int col);
-void AddPublishedSoftware(char * imgpath, char *name,char *alias,int row, int col);
+void AddHistoryBox(char *ip, char *username, char *password);
+void AddLanBox(char *ip);
+void AddSoftware(char * imgpath ,char *name);
+void AddPublishedSoftware(char * imgpath, char *name,char *alias);
 void RemoveAllLanBox();
 void RemoveAllSoftware();
 void RemoveAllPublishedSoftware();
@@ -133,6 +146,8 @@ void ClickConfirm(GtkWidget *widget, gpointer dialog);
 gboolean RightClickToolBar(GtkWidget *widget, GdkEventButton *event, gpointer data);
 
 /* 工具函数 */
-int IsValidIpv(const char *ip);
+int IsValidIp(char *ip);
+int AddOneHistoryRecord(char *ip,char *username,char *password);
+int ReadAllHistoryRecords();
 
 #endif //UI_H
