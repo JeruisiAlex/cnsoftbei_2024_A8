@@ -8,5 +8,7 @@
 #define USER_INFO_ERR 3 // 用户名或密码不正确
 #define GET_API_ERR 4 // 获取应用列表或已发布应用列表失败
 #define CONNECT_COUNT_OUT 5 // 服务器连接数量到达上限
+#define HISTORY_NF 6 // 没有找到存放历史连接的文件
+#define MALLOC_ERR 7 // malloc失败
 
 #endif //ERR_H
