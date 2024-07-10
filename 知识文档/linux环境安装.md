@@ -12,12 +12,6 @@
 
 ​	版本查看指令：gcc --version
 
-#### g++（用于编译运行 c++）
-
-​	安装指令：sudo apt install g++
-
-​	版本查看指令：g++ --version
-
 ### 软件安装
 
 #### git
@@ -28,16 +22,13 @@
 
 #### freerdp
 
-​	sudo apt install freerdp2-dev
-
-​	sudo apt install libx11-dev libssl-dev
+​	sudo apt-get install freerdp2-x11
 
 #### gtk
 
 ​	sudo apt install build-essential			// debian包构建工具。
 ​	sudo apt install cmake						// cmake编译工具
 ​	sudo apt install libgtk-3-dev				// gtk开发依赖工具
-​	sudo apt install libgtkmm-3.0-dev 
 
 #### clion
 
