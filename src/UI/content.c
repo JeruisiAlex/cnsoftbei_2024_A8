@@ -1,5 +1,6 @@
 #include "../../include/ui.h"
 #include "../../include/kernel.h"
+#include "../../include/uifunc.h"
 
 #include <string.h>
 
@@ -15,24 +16,22 @@ GtkWidget * spinner;
  *1：主页
  *2：历史连接
  *3：局域网连接
- *4：应用列表
- *5：已发布应用
- *6：主机信息
+ *4：已发布应用
+ *5：主机信息
  */
-GtkWidget *contentGrid1,*contentGrid2,*contentGrid3,*contentGrid4,*contentGrid5,*contentGrid6;
+GtkWidget *contentGrid1,*contentGrid2,*contentGrid3,*contentGrid4,*contentGrid5;
 
 /*
  *1：历史连接
  *2：局域网连接
- *3：应用列表
- *4：已发布应用
+ *3：已发布应用
  */
 // 记录现在的行数
-int row1 = 0, row2 = 0, row3 = 0, row4 = 0;
+int row1 = 0, row2 = 0, row3 = 0;
 // 记录一行最多多少个盒子
-int maxCol1 = 2, maxCol2 = 3, maxCol3 = 2, maxCol4 = 2;
+int maxCol1 = 2, maxCol2 = 3, maxCol3 = 2;
 // 记录现在的列数
-int col1 = 0,col2 = 1,col3 = 0,col4 = 0;
+int col1 = 0,col2 = 1,col3 = 0;
 
 /* 实现右侧内容栈的功能 */
 
@@ -42,9 +41,8 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     contentGrid1 = CreateHome(contentStack, "主页");
     contentGrid2 = CreateAndAddGridWithScrollFuc(contentStack, "历史连接");
     contentGrid3 = CreateAndAddGridWithScrollFuc(contentStack, "局域网连接");
-    contentGrid4 = CreateAndAddGridWithScrollFuc(contentStack, "应用列表");
-    contentGrid5 = CreateAndAddGridWithScrollFuc(contentStack, "已发布应用");
-    contentGrid6 = CreateAndAddGrid(contentStack, "主机信息");
+    contentGrid4 = CreateAndAddGridWithScrollFuc(contentStack, "已发布应用");
+    contentGrid5 = CreateAndAddGrid(contentStack, "主机信息");
 
     int res = ReadAllHistoryRecords(); // 找到历史记录
 
@@ -78,17 +76,14 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     AddLanBox("IP：192.168.0.5");
     AddLanBox("IP：192.168.0.5");
 
-    // 添加内容到应用列表
-    AddSoftware("../assets/software/clion.svg","Clion");
-
     // 添加内容到已发布应用
     AddPublishedSoftware("../assets/software/clion.svg","Clion 2024 2.4","Clion");
 
     // 添加内容到主机信息
-    AddContent(contentGrid6, "主机名：", 0, 0, 0);
-    AddContent(contentGrid6, hostName, 0, 1, -1);
-    AddContent(contentGrid6, "端口：", 1, 0, 0);
-    AddContent(contentGrid6, PORT, 1, 1, -1);
+    AddContent(contentGrid5, "主机名：", 0, 0, 0);
+    AddContent(contentGrid5, hostName, 0, 1, -1);
+    AddContent(contentGrid5, "端口：", 1, 0, 0);
+    AddContent(contentGrid5, PORT, 1, 1, -1);
     // add_content(content_grid1, "开机启动：", 2, 0, 0);
     // add_switch(content_grid1, 2, 1); // 添加 switch
     // row6++;
@@ -163,9 +158,10 @@ void AddHistoryBox(char *ip, char *username) {
     GtkWidget *button = gtk_button_new(); // 创建按钮
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
 
-    char name[25] = "用户名：";
-
-    strcat(name,username);
+    char name[35] = "用户名：";
+    char processedName[10] = "\0";
+    OmitUsername(username,processedName); // 处理用户名，防止用户名过长，导致UI不符合设计
+    strcat(name,processedName);
 
     GtkWidget *ipLabel = gtk_label_new(ip);
     GtkWidget *usernameLabel = gtk_label_new(name);
@@ -269,78 +265,6 @@ GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label)
     return grid;
 }
 
-// 添加应用列表框
-void AddSoftware(char * imgpath ,char *name) {
-    // 创建一个新的 GtkEventBox 以便能够实现悬停效果
-    GtkWidget *event_box = gtk_event_box_new();
-    gtk_widget_set_name(event_box, "inactive-clickbox");
-
-    // 创建一个水平的 GtkBox 并将其添加到 GtkEventBox 中
-    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-    gtk_container_add(GTK_CONTAINER(event_box), box);
-
-    // 为 event_box 设置边距
-    gtk_container_set_border_width(GTK_CONTAINER(event_box), 10);
-
-    // 创建图标
-    GtkWidget *image = gtk_image_new_from_file(imgpath);
-    gtk_box_pack_start(GTK_BOX(box), image, FALSE, FALSE, 0);
-
-    // 为图标设置边距
-    gtk_widget_set_margin_start(image, (gint)(windowWidth / 30.0));
-    gtk_widget_set_margin_end(image, (gint)(windowWidth / 30.0));
-    gtk_widget_set_margin_top(image, 10);
-    gtk_widget_set_margin_bottom(image, 10);
-
-    // 创建垂直的 GtkBox 用于应用名称和开关按钮
-    GtkWidget *inbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-
-    // 创建应用名称标签
-    GtkWidget *name_label = gtk_label_new(name);
-    gtk_widget_set_name(name_label, "inline-label");
-    gtk_box_pack_start(GTK_BOX(inbox), name_label, FALSE, FALSE, 0);
-
-    // 为应用名称标签设置边距
-    gtk_widget_set_margin_top(name_label, 10);
-    gtk_widget_set_margin_bottom(name_label, 10);
-
-    // 创建一个水平的 GtkBox 用于“是否连接”标签和开关按钮
-    GtkWidget *ininbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-
-    // 创建“是否连接”标签
-    GtkWidget *connect_label = gtk_label_new("是否连接：");
-    gtk_widget_set_name(connect_label, "head-label");
-    gtk_box_pack_start(GTK_BOX(ininbox), connect_label, FALSE, FALSE, 0);
-
-    // 为“是否连接”标签设置边距
-    gtk_widget_set_margin_top(connect_label, 10);
-    gtk_widget_set_margin_bottom(connect_label, 10);
-
-    // 添加开关按钮到 ininbox
-    AddSwitchInBox(ininbox);
-
-    // 将 ininbox 添加到 inbox 中
-    gtk_box_pack_start(GTK_BOX(inbox), ininbox, FALSE, FALSE, 0);
-
-    // 将 inbox 添加到主水平 box 中
-    gtk_box_pack_start(GTK_BOX(box), inbox, FALSE, FALSE, 0);
-
-    // 设置 event_box 大小
-    gtk_widget_set_size_request(event_box, (gint)(windowWidth * 3 / 8.0), 150); // 调整宽度和高度
-
-    // 确定box的行列
-    row3 += col3 / maxCol3;
-    col3 %= maxCol3;
-
-    // 将 event_box 添加到主 grid 中
-    gtk_grid_attach(GTK_GRID(contentGrid4), event_box, col3, row3, 1, 1);
-
-    // 显示盒子
-    gtk_widget_show_all(event_box);
-
-    col3++;
-}
-
 // 添加已发布应用框
 void AddPublishedSoftware(char * imgpath, char *name,char *alias) {
     // 创建一个新的 GtkEventBox 以便能够实现悬停效果
@@ -410,16 +334,16 @@ void AddPublishedSoftware(char * imgpath, char *name,char *alias) {
     g_signal_connect(event_box, "button-press-event", G_CALLBACK(RightClickToolBar), menu);
 
     // 确定行列
-    row4 += col4 / maxCol4;
-    col4 %= maxCol4;
+    row3 += col3 / maxCol3;
+    col3 %= maxCol3;
 
     // 将 event_box 添加到主 grid 中
-    gtk_grid_attach(GTK_GRID(contentGrid5), event_box, col4, row4, 1, 1);
+    gtk_grid_attach(GTK_GRID(contentGrid4), event_box, col3, row3, 1, 1);
 
     // 显示盒子
     gtk_widget_show_all(event_box);
 
-    col4++;
+    col3++;
 }
 
 // 创建主页。因为主页没有滑动窗口，且主页需要居中对其。
@@ -514,14 +438,10 @@ void RemoveAllLanBox() {
     RemoveAllChild(contentGrid3,row2,maxCol2,1);
 }
 
-// 移除所有应用程序
-void RemoveAllSoftware() {
-    RemoveAllChild(contentGrid4,row3,maxCol3,0);
-}
 
 // 移除所有已发布程序
 void RemoveAllPublishedSoftware() {
-    RemoveAllChild(contentGrid5,row4,maxCol4,0);
+    RemoveAllChild(contentGrid4,row3,maxCol3,0);
 }
 
 // 功能：设置主页为“正在连接”状态

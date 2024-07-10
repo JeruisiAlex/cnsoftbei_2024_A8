@@ -75,8 +75,6 @@ GtkWidget * CreateBar(GtkWidget *mainBox) {
     AddSeparator(sidebarBox);
     AddBarButton(contentStack, sidebarBox, "局域网连接");
     AddSeparator(sidebarBox);
-    AddBarButton(contentStack, sidebarBox, "应用列表");
-    AddSeparator(sidebarBox);
     AddBarButton(contentStack, sidebarBox, "已发布应用");
     AddSeparator(sidebarBox);
     AddBarButton(contentStack, sidebarBox, "主机信息");

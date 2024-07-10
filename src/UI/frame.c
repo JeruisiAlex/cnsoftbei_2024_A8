@@ -6,7 +6,7 @@ gint minWidth = 900;
 gint minHeight = 600;
 
 // 创建UI
-int CreateUI(int argc,char *argv[]) {
+void CreateUI(int argc,char *argv[]) {
 
     GtkWidget *window;
     GtkWidget *contentStack;

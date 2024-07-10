@@ -1,6 +1,7 @@
 #include "../../include/ui.h"
 #include "../../include/err.h"
 #include "../../include/network.h"
+#include "../../include/uifunc.h"
 
 #include <regex.h>
 
@@ -261,4 +262,22 @@ int ReadAllHistoryRecords() {
 // 点击“断开连接”按钮的回调函数
 void ClickUnconnect(GtkWidget *widget, gpointer data) {
     UnconnectHome();
+}
+
+/*
+ * 功能：省略部分用户名。
+ *
+ * 逻辑：如果用户名长度小于等于5，则不处理。其他情况下，只显示前5个字母，之后跟省略号
+ */
+void OmitUsername(char *username,char *processedName) {
+
+    int len = strlen(username);
+
+    if (len > 5) {
+        memcpy(processedName, username, 5);
+        strcpy(processedName + 5, "...");
+    } else {
+        strcpy(processedName,username);
+    }
+
 }

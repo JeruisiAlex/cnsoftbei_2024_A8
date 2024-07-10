@@ -97,7 +97,7 @@ extern int cnt;
 // 记录历史连接数据路径（相对于UI实现的.c文件的路径）
 #define HISTORY_PATH "../data/history"
 
-int CreateUI(int argc,char *argv[]);
+void CreateUI(int argc,char *argv[]);
 
 /* 基本的函数 */
 
@@ -129,24 +129,11 @@ void RemoveAllChild(GtkWidget *grid,int row,int col,int flag);
 // 下面的函数供 Jeruisi 调用
 void AddHistoryBox(char *ip, char *username);
 void AddLanBox(char *ip);
-void AddSoftware(char * imgpath ,char *name);
 void AddPublishedSoftware(char * imgpath, char *name,char *alias);
 void RemoveAllLanBox();
-void RemoveAllSoftware();
 void RemoveAllPublishedSoftware();
 void ConnectingHome(char * ip);
 void UnconnectHome();
 void ConnectedHome(char *ip);
-
-/* 按钮的回调函数 */
-void ClickAddIP(GtkWidget *widget, gpointer user_data);
-void ClickConfirm(GtkWidget *widget, gpointer dialog);
-gboolean RightClickToolBar(GtkWidget *widget, GdkEventButton *event, gpointer data);
-void ClickUnconnect(GtkWidget *widget, gpointer data);
-
-/* 工具函数 */
-int IsValidIp(char *ip);
-int AddOneHistoryRecord(char *ip,char *username,char *password);
-int ReadAllHistoryRecords();
 
 #endif //UI_H
