@@ -1,6 +1,7 @@
 #include "./include/ui.h"
 #include "include/err.h"
 #include "include/kernel.h"
+#include "include/network.h"
 
 #include <stdio.h>
 #include <stdlib.h>

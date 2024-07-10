@@ -3,6 +3,8 @@
 //
 #include "../include/kernel.h"
 #include "../include/err.h"
+#include <unistd.h>
+
 char hostName[256];
 
 int GetHostName() {

@@ -6,6 +6,8 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
+#define PORT "6789"
+
 struct NWInfo {
     char address[20];
     char username[30];
@@ -14,5 +16,12 @@ struct NWInfo {
 
 extern struct NWInfo nwInfo;
 
+int SetNWInfo(const char *address, const char *username, const char *password);
+
+int ConnectToServer();
+
+void Heartbeat();
+
+int DisconnectToServer();
 
 #endif //NETWORK_H
