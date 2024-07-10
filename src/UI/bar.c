@@ -1,4 +1,8 @@
 #include "../../include/ui.h"
+
+double windowWidth;
+double windowHeight;
+
 /* 实现左侧导航栏功能 */
 
 // 切换堆栈页面的回调函数
@@ -26,7 +30,7 @@ void AddBarButton(GtkWidget *contentStack, GtkWidget *sidebarBox, char *content)
     gtk_widget_set_margin_bottom(button, 0);
     gtk_widget_set_margin_start(button, 0);
     gtk_widget_set_margin_end(button, 0);
-    gtk_widget_set_size_request(button, 200, 50); // 设置按钮大小
+    gtk_widget_set_size_request(button, (gint)(windowWidth/6.0), 25); // 设置按钮大小
     gtk_widget_set_name(button, "inactive-button"); // 设置初始样式
     gtk_box_pack_start(GTK_BOX(sidebarBox), button, FALSE, FALSE, 0);
 
@@ -67,14 +71,15 @@ GtkWidget * CreateBar(GtkWidget *mainBox) {
     AddSeparator(sidebarBox);
     AddBarButton(contentStack, sidebarBox, "主页");
     AddSeparator(sidebarBox);
-    AddBarButton(contentStack, sidebarBox, "主机信息");
+    AddBarButton(contentStack, sidebarBox, "历史连接");
     AddSeparator(sidebarBox);
     AddBarButton(contentStack, sidebarBox, "局域网连接");
     AddSeparator(sidebarBox);
-    AddBarButton(contentStack, sidebarBox, "应用程序");
+    AddBarButton(contentStack, sidebarBox, "应用列表");
     AddSeparator(sidebarBox);
-    AddBarButton(contentStack, sidebarBox, "发布程序");
+    AddBarButton(contentStack, sidebarBox, "已发布应用");
     AddSeparator(sidebarBox);
+    AddBarButton(contentStack, sidebarBox, "主机信息");
 
     // 加载CSS
     LoadCss();

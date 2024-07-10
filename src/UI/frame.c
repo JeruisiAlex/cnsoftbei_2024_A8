@@ -1,5 +1,11 @@
 #include "../../include/ui.h"
 
+double windowWidth;
+double windowHeight;
+gint minWidth = 900;
+gint minHeight = 600;
+
+// 创建UI
 int CreateUI(int argc,char *argv[]) {
 
     GtkWidget *window;
@@ -8,8 +14,20 @@ int CreateUI(int argc,char *argv[]) {
     // 初始化GTK
     gtk_init(&argc, &argv);
 
+    // 获取屏幕大小
+    GdkScreen *screen = gdk_screen_get_default();
+    int screenHeight = gdk_screen_get_height(screen);
+
     // 创建主窗口
-    window = CreateWindow();
+    windowHeight = screenHeight * 0.5;
+    if(windowHeight < minHeight) {
+        windowHeight = minHeight;
+    }
+    windowWidth = windowHeight * 1.5;
+    window = CreateWindow(windowWidth,windowHeight);
+
+    // 禁止窗口拉伸
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
 
     // 创建自定义标题栏
     CreateTitle(window);
@@ -45,7 +63,7 @@ void LoadCss() {
 }
 
 // 创建主窗口
-GtkWidget * CreateWindow() {
+GtkWidget * CreateWindow(int width,int height) {
     GtkWidget * window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_default_size(GTK_WINDOW(window), width, height);
     g_signal_connect(window, "destroy", G_CALLBACK(OnWindowDestroy), NULL);
