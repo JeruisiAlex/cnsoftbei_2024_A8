@@ -1,16 +1,22 @@
-﻿namespace cnsoftbei_A8
+﻿using System;
+using System.Windows.Forms;
+
+namespace cnsoftbei_A8
 {
     partial class Form1
     {
         /// <summary>
-        ///  Required designer variable.
+        /// 必需的设计器变量。
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-
+        public static int screenWidth;
+        public static int screenHeight;
+        public static Version version;
+        public static String status;
         /// <summary>
-        ///  Clean up any resources being used.
+        /// 清理所有正在使用的资源。
         /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        /// <param name="disposing">如果应释放托管资源，为 true；否则为 false。</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -20,20 +26,36 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        #region Windows 窗体设计器生成的代码
 
         /// <summary>
-        ///  Required method for Designer support - do not modify
-        ///  the contents of this method with the code editor.
+        /// 设计器支持所需的方法 - 不要
+        /// 使用代码编辑器修改此方法的内容。
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // Form1
+            // 
+            getResolution();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(850, 550);
+            this.MaximumSize = new System.Drawing.Size(screenWidth, screenHeight);
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.Name = "Form1";
+            //this.Text = "SKRO";
+            this.ResumeLayout(false);
+
         }
 
+
+        private void getResolution()
+        {
+            screenWidth = Screen.PrimaryScreen.Bounds.Width;
+            screenHeight = Screen.PrimaryScreen.Bounds.Height;
+        }
         #endregion
     }
 }
