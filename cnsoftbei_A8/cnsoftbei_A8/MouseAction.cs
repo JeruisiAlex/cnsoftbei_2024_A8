@@ -130,6 +130,7 @@ namespace MouseActionFactory
 
         public void SelectExeButton_Click(object sender, EventArgs e)
         {
+            Kernel kernel = Kernel.getKernel();
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.Filter = "Executable files (*.exe)|*.exe|All files (*.*)|*.*";
@@ -138,8 +139,6 @@ namespace MouseActionFactory
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string selectedFilePath = openFileDialog.FileName;
-                    Icon icon = Icon.ExtractAssociatedIcon(selectedFilePath);
-                    Bitmap bitmap = icon.ToBitmap();
                     // 获取文件信息
                     FileInfo fileInfo = new FileInfo(selectedFilePath);
                     string fileName = fileInfo.Name;
@@ -149,9 +148,9 @@ namespace MouseActionFactory
                     DateTime lastWriteTime = fileInfo.LastWriteTime; // 上次写入时间
 
                     // 添加到应用程序信息列表
-                    Form1.appListInfo.Add(new MyClass.AppInfo(fileName, bitmap));
+                    kernel.addRemoteApp(fileName,selectedFilePath);
 
-                    flushAppPanel(Form1.appListInfo);
+                    flushAppPanel(kernel.getRemoteAppList());
                     // 显示文件信息
                     /*string message = $"文件路径: {selectedFilePath}\n" +
                                      $"文件名: {fileName}\n" +
@@ -164,28 +163,30 @@ namespace MouseActionFactory
                 }
             }
         }
-        private void flushAppPanel(List<AppInfo> appList)
+        public void flushAppPanel(List<RemoteApp> appList)
         {
             Form1.appInfoPanel.Controls.Clear();
-            foreach (AppInfo app in appList)
+            foreach (RemoteApp app in appList)
             {
-                Bitmap bit = new Bitmap("C:\\Users\\99286\\Desktop\\cat.jpeg");
-                Panel appPanel = createAppPanel(app.Name, app.Logo,app);
+                Panel appPanel = createAppPanel(app);
                 Form1.appInfoPanel.Controls.Add(appPanel);
                 //MessageBox.Show($"{app.Name}\n");
             }
         }
-        public Panel createAppPanel(String name, Bitmap bitmap,AppInfo app)
+        public Panel createAppPanel(RemoteApp app)
         {
+            Kernel kernel = Kernel.getKernel();
             // 创建应用程序面板
             Panel appPanel = new Panel
             {
                 Size = new Size(560, 100),
                 BackColor = Color.LightGray,
                 BorderStyle = BorderStyle.FixedSingle,
-                Margin = new Padding(200, 10, 0, 10)
+                Margin = new Padding(200, 100, 0, 0)
             };
 
+            Icon icon = Icon.ExtractAssociatedIcon(app.getIconPath());
+            Bitmap bitmap = icon.ToBitmap();
             // 创建显示图标的 PictureBox
             PictureBox pictureBox = new PictureBox
             {
@@ -199,7 +200,7 @@ namespace MouseActionFactory
             // 创建显示名称的 Label
             Label nameLabel = new Label
             {
-                Text = "程序名：" + name, // 设置名称文本
+                Text = "程序名：" + app.getFullName, // 设置名称文本
                 Location = new Point(100, 20), // 设置位置
                 AutoSize = true, // 自动调整大小以适应内容
                 Font = new Font("Arial", 12, FontStyle.Bold), // 设置字体
@@ -207,7 +208,7 @@ namespace MouseActionFactory
             appPanel.Controls.Add(nameLabel); // 将 Label 添加到面板
             Label otherNameLabel = new Label
             {
-                Text = "别名：" + name, // 设置名称文本
+                Text = "别名：" + app.getName, // 设置名称文本
                 Location = new Point(100, 60), // 设置位置
                 AutoSize = true, // 自动调整大小以适应内容
                 Font = new Font("Arial", 12, FontStyle.Bold), // 设置字体
@@ -236,13 +237,13 @@ namespace MouseActionFactory
                 if (result == DialogResult.Yes)
                 {
                     // 从 appListInfo 中删除相应的项
-                    Form1.appListInfo.Remove(app);
+                    kernel.removeApp(app.getFullName());
 
                     // 从面板中移除当前的 appPanel
                     appPanel.Parent.Controls.Remove(appPanel);
 
                     // 重新渲染面板
-                    flushAppPanel(Form1.appListInfo);
+                    flushAppPanel(kernel.getRemoveList());
                 }
             };
             appPanel.Controls.Add(deleteButton);

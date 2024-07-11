@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,10 +15,7 @@ using MyClass;
 using MouseActionFactory;
 using Microsoft.Win32;
 using System.Diagnostics;
-=======
-﻿using MyClass;
 
->>>>>>> w_dev
 
 
 namespace cnsoftbei_A8
@@ -36,72 +32,21 @@ namespace cnsoftbei_A8
         public static Panel startupPanel;
         public static Button buttonInfo;
         public static Button buttonAddApp;
+        public static Kernel kernel;
         // 命名空間.类名 变量名
         private MouseActionFactory.MouseActionFactory mouseAction;
-        public static List<AppInfo> appListInfo= new List<AppInfo>(); //应用程序列表
         public Form1()
         {
-            TZ();
-            TZ2();
-            InitializeComponent();
-            initializeCustomComponents();
             Network.getNetwork().init();
             Kernel.getKernel().init();
+            kernel = Kernel.getKernel();
+
+            InitializeComponent();
+            initializeCustomComponents();
+            MessageBox.Show($"{kernel.getRemoteAppList().Count()}");
+
         }
 
-        public void TZ()
-        {
-            try
-            {
-                // 定义注册表键的路径
-                string keyPath = @"SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters";
-                // 打开注册表键，如果不存在则创建
-                using (RegistryKey key = Registry.LocalMachine.CreateSubKey(keyPath))
-                {
-                    if (key == null)
-                    {
-                        Debug.WriteLine("Failed to open registry key.");
-                        return;
-                    }
-
-                    // 设置 AllowInsecureGuestAuth 的值为 1
-                    key.SetValue("AllowInsecureGuestAuth", 1, RegistryValueKind.DWord);
-                    Debug.WriteLine("Successfully enabled insecure guest logins.");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error: {ex.Message}");
-            }
-        }
-
-        public void TZ2()
-        {
-            try
-            {
-                // 定义注册表键的路径
-                string keyPath = @"SOFTWARE\Policies\Microsoft\Windows\LanmanWorkstation";
-                // 打开注册表键，如果不存在则创建
-                using (RegistryKey key = Registry.LocalMachine.CreateSubKey(keyPath))
-                {
-                    if (key == null)
-                    {
-                        Debug.WriteLine("Failed to open registry key.");
-                        return;
-                    }
-
-                    // 设置 AllowInsecureGuestAuth 的值为 1
-                    key.SetValue("AllowInsecureGuestAuth", 1, RegistryValueKind.DWord);
-                    Debug.WriteLine("Successfully enabled insecure guest logins.");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error: {ex.Message}");
-            }
-        }
         private void initializeCustomComponents()
         {
             // 获取 MouseActionFactory 的唯一实例
@@ -118,6 +63,7 @@ namespace cnsoftbei_A8
             appInfoPanel = createAddAppInfoPanel();
             this.Controls.Add(appInfoPanel);
 
+            mouseAction.flushAppPanel(kernel.getRemoteAppList());
             /*Bitmap bit = new Bitmap("C:\\Users\\99286\\Desktop\\cat.jpeg");
             for (int i = 0; i < 5; i++)
             {
