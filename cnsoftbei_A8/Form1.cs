@@ -31,7 +31,7 @@ namespace cnsoftbei_A8
         public static Button buttonAddApp;
         // 命名空間.类名 变量名
         private MouseActionFactory.MouseActionFactory mouseAction;
-        public static List<AppInfo> appListInfo; //应用程序列表
+        public static List<AppInfo> appListInfo= new List<AppInfo>(); //应用程序列表
         public Form1()
         {
             InitializeComponent();
@@ -55,8 +55,8 @@ namespace cnsoftbei_A8
             appInfoPanel = createAddAppInfoPanel();
             this.Controls.Add(appInfoPanel);
 
+            flushAppPanel();
 
-            
             //appInfoPanel.Visible = false;
         }
 
@@ -263,7 +263,7 @@ namespace cnsoftbei_A8
                 Size = new Size(500, 200),
                 BackColor = Color.LightGray,
                 BorderStyle = BorderStyle.FixedSingle,
-                Margin = new Padding(200,10,0,10)
+                Margin = new Padding(200,100,0,10)
             };
 
             // 创建显示图标的 PictureBox
@@ -288,10 +288,15 @@ namespace cnsoftbei_A8
             return appPanel;
         }
 
-        /*private Panel flushAppPanel()
+        private void flushAppPanel()
         {
-            //foreach 
-        }*/
+            foreach(AppInfo app in appListInfo)
+            {
+                Panel appPanel = createAppPanel(app.Name, app.Logo);
+                appInfoPanel.Controls.Add(appPanel);
+                MessageBox.Show($"{app.Name}\n");
+            }
+        }
     }
 
 

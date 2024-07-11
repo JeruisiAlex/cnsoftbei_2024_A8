@@ -139,7 +139,6 @@ namespace MouseActionFactory
                     string selectedFilePath = openFileDialog.FileName;
                     Icon icon = Icon.ExtractAssociatedIcon(selectedFilePath);
                     Bitmap bitmap = icon.ToBitmap();
-                    //Form1.appListInfo.Add(new MyClass.AppInfo(selectedFilePath,bitmap));
                     // 获取文件信息
                     FileInfo fileInfo = new FileInfo(selectedFilePath);
                     string fileName = fileInfo.Name;
@@ -149,17 +148,16 @@ namespace MouseActionFactory
                     DateTime lastWriteTime = fileInfo.LastWriteTime; // 上次写入时间
 
                     // 添加到应用程序信息列表
-                    //Form1.appListInfo.Add(new MyClass.AppInfo(fileName, bitmap));
+                    Form1.appListInfo.Add(new MyClass.AppInfo(fileName, bitmap));
 
                     // 显示文件信息
-                    string message = $"文件路径: {selectedFilePath}\n" +
+                    /*string message = $"文件路径: {selectedFilePath}\n" +
                                      $"文件名: {fileName}\n" +
                                      $"文件大小: {fileSize} 字节\n" +
                                      $"创建时间: {creationTime}\n" +
                                      $"上次访问时间: {lastAccessTime}\n" +
-                                     $"上次写入时间: {lastWriteTime}";
-
-                    MessageBox.Show(message, "选择的exe程序");
+                                     $"上次写入时间: {lastWriteTime}";*/
+                    //MessageBox.Show(message, "选择的exe程序");
                     //MessageBox.Show("你选择的文件路径: " + selectedFilePath, "选择的exe程序");
                 }
             }
