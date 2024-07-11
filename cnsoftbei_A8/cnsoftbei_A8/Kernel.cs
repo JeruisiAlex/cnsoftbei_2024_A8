@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
 
 namespace cnsoftbei_A8
 {
-    internal class Kernel
+    public partial class Kernel
     {
         private static Kernel instance = new Kernel();
 
@@ -16,8 +14,9 @@ namespace cnsoftbei_A8
         }
         private Err err;
         private List<RemoteApp> remoteAppList;
+        private List<RemoteApp> updateList;
+        private List<RemoteApp> removeList;
         private string hostName;
-        public bool isUpdate;
         private string rdpRegistryKeyPath = @"SYSTEM\CurrentControlSet\Control\Terminal Server";
         private string remoteAppRegistryKeyPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications";
 
@@ -25,8 +24,8 @@ namespace cnsoftbei_A8
         {
             err = Err.getErr();
             remoteAppList = new List<RemoteApp>();
+            updateList = new List<RemoteApp>();
             hostName = "";
-            isUpdate = true;
         }
 
         public void init()
@@ -71,7 +70,7 @@ namespace cnsoftbei_A8
                 foreach (String fullName in key.GetSubKeyNames())
                 {
                     remoteAppKey = key.OpenSubKey(fullName, false);
-                    remoteAppList.Add(new RemoteApp(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string));
+                    updateList.Add(new RemoteApp(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string));
                 }
                 key.Close();
             }
@@ -88,11 +87,20 @@ namespace cnsoftbei_A8
         {
             addRemoteAppToRegistry(fullName, path, iconPath);
         }
+        public RemoteApp isAppExist(string fullName)
+        {
+            for (int i = 0; i < remoteAppList.Count; i++)
+            {
+                if (String.Compare(remoteAppList[i].getFullName(), fullName) == 0) return remoteAppList[i];
+            }
+            return null;
+        }
         private void addRemoteAppToRegistry(string fullName, string path, string iconPath)
         {
-            for(int i = 0; i < remoteAppList.Count; i++)
+            if (isAppExist(fullName) != null)
             {
-
+                err.setErrType(ErrType.RAPP_EXIST);
+                return;
             }
             string name = getName(fullName);
             RegistryKey key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(remoteAppRegistryKeyPath, true);
@@ -110,7 +118,9 @@ namespace cnsoftbei_A8
                     newKey.SetValue("FullName", fullName, RegistryValueKind.String);
                     newKey.SetValue("Path", path, RegistryValueKind.String);
                     newKey.SetValue("IconPath", iconPath, RegistryValueKind.String);
-                    remoteAppList.Add(new RemoteApp(name, fullName, path, iconPath));
+                    RemoteApp remoteApp = new RemoteApp(name, fullName, path, iconPath);
+                    updateList.Add(remoteApp);
+                    remoteAppList.Add(remoteApp);
                     err.setErrType(ErrType.SUCCESS);
                 }
                 else
@@ -133,28 +143,43 @@ namespace cnsoftbei_A8
                 if(key.OpenSubKey(fullName) != null) key.DeleteSubKeyTree(fullName);
                 key.Close();
             }
-            foreach (RemoteApp remoteApp in remoteAppList)
+            RemoteApp remoteApp = isAppExist(fullName);
+            if (remoteApp != null)
             {
-                if(String.Compare(remoteApp.getFullName(), fullName) == 0)
-                {
-                    remoteAppList.Remove(remoteApp);
-                    break;
-                }
+                remoteAppList.Remove(remoteApp);
+                removeList.Add(remoteApp);
             }
         }
-        public void openAutoStart()
-        {
-
-        }
-        public void closeAutoStart()
-        {
-
-        }
+        private static extern void WTSFreeMemory(IntPtr pointer);
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool LockWorkStation();
         public void lockCurrentUser()
         {
-            
+            bool result = LockWorkStation();
+            if (!result)
+            {
+                err.setErrType(ErrType.LOCK_USER_FAILED);
+            }
         }
-        
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern bool LogonUser(string lpszUsername, string lpszDomain, string lpszPassword, int dwLogonType, int dwLogonProvider, out IntPtr phToken);
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        private extern static bool CloseHandle(IntPtr handle);
+        public void checkUserInfo(string username, string password)
+        {
+            IntPtr tokenHandle = IntPtr.Zero;
+            // 调用 LogonUser 函数来验证用户名和密码
+            bool isSuccess = LogonUser(username, "", password, 2, 0, out tokenHandle);
+            if (isSuccess)
+            {
+                err.setErrType(ErrType.SUCCESS);
+                CloseHandle(tokenHandle);
+            }
+            else
+            {
+                err.setErrType(ErrType.USER_INFO_ERR);
+            }
+        }
         private string getName(string fullName)
         {
             Regex rx = new Regex(@"[^\p{L}0-9\-_"" ]");
@@ -166,13 +191,9 @@ namespace cnsoftbei_A8
             name = name.Trim();
             return name;
         } 
-        public string getHostName()
-        {
-            return hostName;
-        }
-        public List<RemoteApp> getRemoteAppList()
-        {
-            return remoteAppList;
-        }
+        public string getHostName() { return hostName; }
+        public List<RemoteApp> getRemoteAppList() { return remoteAppList; }
+        public List<RemoteApp> getUpdateList() { return updateList; }
+        public List<RemoteApp> getRemoveList() { return removeList; }
     }
 }

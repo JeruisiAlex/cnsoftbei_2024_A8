@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 
 namespace cnsoftbei_A8
 {
-    internal class Network
+    public class Network
     {
-        private static Network instance = new Network();
+        private static Network network = new Network();
         public static Network getNetwork()
         {
-            return instance;
+            return network;
         }
         private int port;
         private int maxConnect;
         private int connectCount;
         private string clientName;
+        private int code;
 
         private Network()
         {
@@ -33,14 +34,7 @@ namespace cnsoftbei_A8
         }
         public void startServer()
         {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-
-            }
+            
         }
         public void stopServer()
         {
@@ -62,6 +56,10 @@ namespace cnsoftbei_A8
         public int getConnectCount()
         {
             return connectCount;
+        }
+        public string getClientName()
+        {
+            return clientName;
         }
     }
 }

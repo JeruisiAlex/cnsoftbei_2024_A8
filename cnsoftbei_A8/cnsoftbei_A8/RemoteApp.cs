@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace cnsoftbei_A8
 {
-    internal class RemoteApp
+    public class RemoteApp
     {
         private string name;
         private string fullName;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace cnsoftbei_A8
 {
-    internal class Err
+    public class Err
     {
         private static Err err = new Err();
         public static Err getErr() { return err; }
