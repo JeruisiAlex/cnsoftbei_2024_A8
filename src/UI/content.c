@@ -29,7 +29,7 @@ GtkWidget *contentGrid1,*contentGrid2,*contentGrid3,*contentGrid4,*contentGrid5;
 // 记录现在的行数
 int row1 = 0, row2 = 0, row3 = 0;
 // 记录一行最多多少个盒子
-int maxCol1 = 2, maxCol2 = 3, maxCol3 = 2;
+int maxCol1 = 2, maxCol2 = 3, maxCol3 = 5;
 // 记录现在的列数
 int col1 = 1,col2 = 0,col3 = 0;
 
@@ -79,6 +79,7 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
 
     // 添加内容到已发布应用
     AddFolder("opt");
+    AddSoftware("clion",NULL,1);
 
     // 添加内容到已发布应用
     AddPublishedSoftware("../assets/software/clion.svg","Clion 2024 2.4","Clion");
@@ -643,6 +644,7 @@ void AddFolder(char * folderName) {
     // 设置按钮相关数据
     g_object_set_data(G_OBJECT(button), "folderName", folderName);
     gtk_widget_set_name(button,"software");
+    gtk_widget_set_size_request(button, (gint)(windowWidth/7.0), 100); // 设置按钮大小
 
     // 清理
     g_object_unref(pixbuf);
@@ -673,6 +675,71 @@ void AddFolder(char * folderName) {
  *   name：应用名称
  *   iconData：应用图标二进制流
  */
-void AddSoftware(char * name,char * iconData) {
-    
+void AddSoftware(char * name,char * iconData,int iconLength) {
+
+    GtkWidget *button = gtk_button_new();
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+
+    // // 创建GdkPixbufLoader
+    // GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
+    // gdk_pixbuf_loader_write(loader, (const guchar *)iconData, iconLength, NULL); // 加载数据
+    // gdk_pixbuf_loader_close(loader, NULL);
+    //
+    // // 从loader获取GdkPixbuf
+    // GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
+    //
+    // // 调整图片大小
+    // GdkPixbuf *scaledPixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint)(windowWidth / 10.0), (gint)(windowWidth / 10.0), GDK_INTERP_BILINEAR);
+    // GtkWidget *image = gtk_image_new_from_pixbuf(scaledPixbuf);
+    //
+    // // 添加图片到盒子
+    // gtk_box_pack_start(GTK_BOX(box), image, TRUE, TRUE, 0);
+
+    // 加载图片并调整大小
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("../assets/software/clion.svg", NULL);
+    GdkPixbuf *scaledPixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint)(windowWidth / 13.0), (gint)(windowWidth / 13.0), GDK_INTERP_BILINEAR);
+    GtkWidget *image = gtk_image_new_from_pixbuf(scaledPixbuf);
+
+    // 添加图片到盒子
+    gtk_box_pack_start(GTK_BOX(box), image, TRUE, TRUE, 0);
+
+    // 添加文字到盒子
+    GtkWidget *label = gtk_label_new(name);
+    gtk_box_pack_start(GTK_BOX(box), label, TRUE, TRUE, 0);
+
+    // 将盒子添加到按钮中
+    gtk_container_add(GTK_CONTAINER(button), box);
+
+    // 设置按钮相关数据
+    g_object_set_data(G_OBJECT(button), "folderName", name);
+    gtk_widget_set_name(button,"software");
+    gtk_widget_set_size_request(button, (gint)(windowWidth/7.0), 100); // 设置按钮大小
+
+    // 创建右键菜单
+    GtkWidget *menu = gtk_menu_new();
+
+    GtkWidget *menuItemPublish = gtk_menu_item_new_with_label("发布");
+    // g_signal_connect(menuItemOpen, "activate", G_CALLBACK(onMenuItemActivate), "发布");
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuItemPublish);
+
+    gtk_widget_show_all(menu);
+
+    // 右键出现菜单
+    g_signal_connect(button, "button-press-event", G_CALLBACK(RightClickToolBar), menu);
+
+    // 清理
+    g_object_unref(pixbuf);
+    g_object_unref(scaledPixbuf);
+
+    // 确定行列
+    row2 +=  col2 / maxCol2;
+    col2 %= maxCol2;
+
+    // 将按钮添加到网格中
+    gtk_grid_attach(GTK_GRID(contentGrid3), button, col2, row2, 1, 1);
+
+    // 显示网格
+    gtk_widget_show_all(contentGrid3);
+
+    col2++;
 }
