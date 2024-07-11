@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Windows.Forms;
 using cnsoftbei_A8;
+using MyClass;
 namespace MouseActionFactory
 {
     public class MouseActionFactory: IMouseActionFactory
@@ -150,7 +151,7 @@ namespace MouseActionFactory
                     // 添加到应用程序信息列表
                     Form1.appListInfo.Add(new MyClass.AppInfo(fileName, bitmap));
 
-
+                    flushAppPanel(Form1.appListInfo);
                     // 显示文件信息
                     /*string message = $"文件路径: {selectedFilePath}\n" +
                                      $"文件名: {fileName}\n" +
@@ -163,15 +164,89 @@ namespace MouseActionFactory
                 }
             }
         }
-        private void flushAppPanel()
+        private void flushAppPanel(List<AppInfo> appList)
         {
-            foreach (AppInfo app in appListInfo)
+            Form1.appInfoPanel.Controls.Clear();
+            foreach (AppInfo app in appList)
             {
-                Panel appPanel = createAppPanel(app.Name, app.Logo);
+                Bitmap bit = new Bitmap("C:\\Users\\99286\\Desktop\\cat.jpeg");
+                Panel appPanel = createAppPanel(app.Name, app.Logo,app);
                 Form1.appInfoPanel.Controls.Add(appPanel);
-                MessageBox.Show($"{app.Name}\n");
+                //MessageBox.Show($"{app.Name}\n");
             }
         }
+        public Panel createAppPanel(String name, Bitmap bitmap,AppInfo app)
+        {
+            // 创建应用程序面板
+            Panel appPanel = new Panel
+            {
+                Size = new Size(560, 100),
+                BackColor = Color.LightGray,
+                BorderStyle = BorderStyle.FixedSingle,
+                Margin = new Padding(200, 10, 0, 10)
+            };
 
+            // 创建显示图标的 PictureBox
+            PictureBox pictureBox = new PictureBox
+            {
+                Size = new Size(50, 50),
+                Location = new Point(15, 25),
+                Image = bitmap,
+                SizeMode = PictureBoxSizeMode.StretchImage,
+            };
+            appPanel.Controls.Add(pictureBox);
+
+            // 创建显示名称的 Label
+            Label nameLabel = new Label
+            {
+                Text = "程序名：" + name, // 设置名称文本
+                Location = new Point(100, 20), // 设置位置
+                AutoSize = true, // 自动调整大小以适应内容
+                Font = new Font("Arial", 12, FontStyle.Bold), // 设置字体
+            };
+            appPanel.Controls.Add(nameLabel); // 将 Label 添加到面板
+            Label otherNameLabel = new Label
+            {
+                Text = "别名：" + name, // 设置名称文本
+                Location = new Point(100, 60), // 设置位置
+                AutoSize = true, // 自动调整大小以适应内容
+                Font = new Font("Arial", 12, FontStyle.Bold), // 设置字体
+            };
+            appPanel.Controls.Add(otherNameLabel); // 将 Label 添加到面板
+
+            Button deleteButton = new Button
+            {
+                Text = "删除",
+                Font = new Font("华文中宋", 16, FontStyle.Bold),
+                BackColor = Color.White,
+                Size = new Size(80, 40),
+                Location = new Point(400, 20),
+            };
+            deleteButton.FlatAppearance.BorderSize = 0;
+            deleteButton.Click += (s, e) =>
+            {
+                // 显示确认对话框
+                DialogResult result = MessageBox.Show(
+                    "确认要删除此应用程序吗？",
+                    "确认删除",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+                );
+
+                if (result == DialogResult.Yes)
+                {
+                    // 从 appListInfo 中删除相应的项
+                    Form1.appListInfo.Remove(app);
+
+                    // 从面板中移除当前的 appPanel
+                    appPanel.Parent.Controls.Remove(appPanel);
+
+                    // 重新渲染面板
+                    flushAppPanel(Form1.appListInfo);
+                }
+            };
+            appPanel.Controls.Add(deleteButton);
+            return appPanel;
+        }
     }
 }

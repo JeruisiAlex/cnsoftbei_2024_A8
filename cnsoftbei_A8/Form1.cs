@@ -55,8 +55,12 @@ namespace cnsoftbei_A8
             appInfoPanel = createAddAppInfoPanel();
             this.Controls.Add(appInfoPanel);
 
-            flushAppPanel();
-
+            /*Bitmap bit = new Bitmap("C:\\Users\\99286\\Desktop\\cat.jpeg");
+            for (int i = 0; i < 5; i++)
+            {
+                Panel panel = createAppPanel("miao", bit);
+                appInfoPanel.Controls.Add(panel);
+            }*/
             //appInfoPanel.Visible = false;
         }
 
@@ -175,6 +179,20 @@ namespace cnsoftbei_A8
             return contentPanel;
         }
 
+        /*public static void addLinuxMessage()
+        {
+            String connectedHostName;
+            if (true)
+            {
+                connectedHostName = "localhost";
+            }
+            else
+            {
+                connectedHostName = "localhost";
+            }
+            addInfoLabel(contentPanel, connectedHostName, new Point(500, 400), "黑体");
+        }*/
+
         private string getHostName()
         {
             return System.Net.Dns.GetHostName();
@@ -255,38 +273,7 @@ namespace cnsoftbei_A8
             return allAppInfoPanel;
         }
 
-        private Panel createAppPanel(String name,Bitmap bitmap)
-        {
-            // 创建应用程序面板
-            Panel appPanel = new Panel
-            {
-                Size = new Size(500, 200),
-                BackColor = Color.LightGray,
-                BorderStyle = BorderStyle.FixedSingle,
-                Margin = new Padding(200,100,0,10)
-            };
 
-            // 创建显示图标的 PictureBox
-            PictureBox pictureBox = new PictureBox
-            {
-                Size = new Size(100, 100),
-                Location = new Point(15, 10),
-                Image = bitmap,
-                SizeMode = PictureBoxSizeMode.StretchImage,
-            };
-            appPanel.Controls.Add(pictureBox); 
-
-            // 创建显示名称的 Label
-            Label nameLabel = new Label
-            {
-                Text = name, // 设置名称文本
-                Location = new Point(15, 120), // 设置位置
-                AutoSize = true, // 自动调整大小以适应内容
-                Font = new Font("Arial", 12, FontStyle.Bold), // 设置字体
-            };
-            appPanel.Controls.Add(nameLabel); // 将 Label 添加到面板
-            return appPanel;
-        }
 
     }
 
