@@ -34,22 +34,19 @@ namespace cnsoftbei_A8
         /// </summary>
         private void InitializeComponent()
         {
-            this.SuspendLayout();
+            SuspendLayout();
             // 
             // Form1
             // 
-            getResolution();
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(850, 550);
-            this.MaximumSize = new System.Drawing.Size(screenWidth, screenHeight);
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.Name = "Form1";
-            //this.Text = "SKRO";
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new SizeF(7F, 17F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(992, 779);
+            Margin = new Padding(4, 4, 4, 4);
+            Name = "Form1";
+            StartPosition = FormStartPosition.CenterScreen;
+            FormClosed += Form1_FormClosed;
+            ResumeLayout(false);
         }
-
 
         private void getResolution()
         {

@@ -70,7 +70,9 @@ namespace cnsoftbei_A8
                 foreach (String fullName in key.GetSubKeyNames())
                 {
                     remoteAppKey = key.OpenSubKey(fullName, false);
-                    updateList.Add(new RemoteApp(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string));
+                    RemoteApp remoteApp = new RemoteApp(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string);
+                    updateList.Add(remoteApp);
+                    remoteAppList.Add(remoteApp);
                 }
                 key.Close();
             }

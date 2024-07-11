@@ -16,8 +16,6 @@ namespace cnsoftbei_A8
             return network;
         }
         private int port;
-        private int maxConnect;
-        private int connectCount;
         private string clientName;
         private int code;
 
@@ -45,21 +43,7 @@ namespace cnsoftbei_A8
             
         }
 
-        public int getPort()
-        {
-            return port;
-        }
-        public int getMaxConnect()
-        {
-            return maxConnect;
-        }
-        public int getConnectCount()
-        {
-            return connectCount;
-        }
-        public string getClientName()
-        {
-            return clientName;
-        }
+        public int getPort() { return port; }
+        public string getClientName() { return clientName; }
     }
 }
