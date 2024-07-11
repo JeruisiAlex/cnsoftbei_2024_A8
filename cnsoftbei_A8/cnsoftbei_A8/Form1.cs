@@ -18,7 +18,7 @@ namespace cnsoftbei_A8
         public static Button buttonAddApp;
         // 命名空間.类名 变量名
         private MouseActionFactory.MouseActionFactory mouseAction;
-        public static List<AppInfo> appListInfo= new List<AppInfo>(); //应用程序列表
+        public static List<AppInfo> appListInfo = new List<AppInfo>(); //应用程序列表
         public Form1()
         {
             InitializeComponent();
@@ -82,7 +82,7 @@ namespace cnsoftbei_A8
         }
         public Panel createContentPanel()
         {
-            version = new Version(1,0, 0);
+            version = new Version(1, 0, 0);
             contentPanel = new Panel();
             contentPanel.Dock = DockStyle.Fill;
             this.Controls.Add(contentPanel);
@@ -146,12 +146,12 @@ namespace cnsoftbei_A8
             lblLogo.Text = "SKRO";
             lblLogo.Location = new Point(200, 15);
             lblLogo.AutoSize = true;
-            lblLogo.Font = new Font("Times New Roman",42, FontStyle.Bold);
+            lblLogo.Font = new Font("Times New Roman", 42, FontStyle.Bold);
             lblLogo.ForeColor = Color.DarkBlue;
             contentPanel.Controls.Add(lblLogo);
 
             string ver = version.ToString();
-            addInfoLabel(contentPanel, "v"+ver, new Point(400, 47), "Times New Roman");
+            addInfoLabel(contentPanel, "v" + ver, new Point(400, 47), "Times New Roman");
 
             status = "Connected";
             Label lblStatus = new Label();
@@ -233,7 +233,7 @@ namespace cnsoftbei_A8
                 Dock = DockStyle.Fill,
                 AutoScroll = true,
                 FlowDirection = FlowDirection.TopDown, // 从左到右布局
-                WrapContents = false, 
+                WrapContents = false,
             };
 
             //title
@@ -262,8 +262,10 @@ namespace cnsoftbei_A8
             return allAppInfoPanel;
         }
 
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
 
-
+        }
     }
 
 
