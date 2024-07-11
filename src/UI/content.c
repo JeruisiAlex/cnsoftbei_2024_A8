@@ -15,7 +15,7 @@ GtkWidget * spinner;
 /*
  *1：主页
  *2：历史连接
- *3：局域网连接
+ *3：发布应用
  *4：已发布应用
  *5：主机信息
  */
@@ -23,7 +23,7 @@ GtkWidget *contentGrid1,*contentGrid2,*contentGrid3,*contentGrid4,*contentGrid5;
 
 /*
  *1：历史连接
- *2：局域网连接
+ *2：发布应用
  *3：已发布应用
  */
 // 记录现在的行数
@@ -31,7 +31,7 @@ int row1 = 0, row2 = 0, row3 = 0;
 // 记录一行最多多少个盒子
 int maxCol1 = 2, maxCol2 = 3, maxCol3 = 2;
 // 记录现在的列数
-int col1 = 0,col2 = 1,col3 = 0;
+int col1 = 1,col2 = 0,col3 = 0;
 
 /* 实现右侧内容栈的功能 */
 
@@ -40,7 +40,8 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     // 使用函数创建并添加网格
     contentGrid1 = CreateHome(contentStack, "主页");
     contentGrid2 = CreateAndAddGridWithScrollFuc(contentStack, "历史连接");
-    contentGrid3 = CreateAndAddGridWithScrollFuc(contentStack, "局域网连接");
+    // contentGrid3 = CreateAndAddGridWithScrollFuc(contentStack, "局域网连接");
+    contentGrid3 = CreatePublishSoftware(contentStack, "发布应用");
     contentGrid4 = CreateAndAddGridWithScrollFuc(contentStack, "已发布应用");
     contentGrid5 = CreateAndAddGrid(contentStack, "主机信息");
 
@@ -59,6 +60,7 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     }
 
     // 添加内容到历史连接
+    AddIPBox(window);
     if(res == 0) {
         struct NWInfo *temp = historyRecords;
 
@@ -72,9 +74,11 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     }
 
     // 添加内容到局域网连接
-    AddIPBox(window);
-    AddLanBox("IP：192.168.0.5");
-    AddLanBox("IP：192.168.0.5");
+    // AddLanBox("IP：192.168.0.5");
+    // AddLanBox("IP：192.168.0.5");
+
+    // 添加内容到已发布应用
+    AddFolder("opt");
 
     // 添加内容到已发布应用
     AddPublishedSoftware("../assets/software/clion.svg","Clion 2024 2.4","Clion");
@@ -265,6 +269,82 @@ GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label)
     return grid;
 }
 
+/*
+ * 功能：搭建“发布应用”页面的框架。包含构建“返回上级目录"按钮。
+ * 思路：因为“发布应用”的内容不能居中，需要滚动窗口，左上角的按钮，故单独分出一个函数。
+ */
+GtkWidget *CreatePublishSoftware(GtkWidget *contentStack,char *label) {
+
+    // 创建滚动窗口
+    GtkWidget *scrolledWindow = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolledWindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+    gtk_stack_add_titled(GTK_STACK(contentStack), scrolledWindow, label, label);
+
+    // 创建一个主盒子，垂直方向
+    GtkWidget *mainBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    gtk_container_add(GTK_CONTAINER(scrolledWindow), mainBox);
+
+    // 创建按钮
+    GtkWidget *button = gtk_button_new();
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5); // 创建水平盒子
+
+    // 加载图片并调整大小
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("../assets/return.png", NULL); // 加载原始图片
+    GdkPixbuf *scaledPixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint)(windowWidth / 30.0), (gint)(windowWidth / 30.0), GDK_INTERP_BILINEAR); // 调整大小
+    GtkWidget *image = gtk_image_new_from_pixbuf(scaledPixbuf); // 使用调整后的图片创建图像控件
+
+    // 添加图片到盒子，并设置水平和垂直居中
+    gtk_box_pack_start(GTK_BOX(box), image, TRUE, TRUE, 0);
+
+    // 添加文字到盒子
+    GtkWidget *lb = gtk_label_new("返回上级目录");
+    gtk_widget_set_name(lb, "head-label");
+    gtk_box_pack_start(GTK_BOX(box), lb, TRUE, TRUE, 0);
+
+    // 将盒子添加到按钮中
+    gtk_container_add(GTK_CONTAINER(button), box);
+
+    // 设置按钮的外边距
+    gtk_widget_set_margin_top(button, 5);
+    gtk_widget_set_margin_bottom(button, 5);
+    gtk_widget_set_margin_start(button, 5);
+    gtk_widget_set_margin_end(button, 5);
+
+    // 设置按钮的大小
+    gtk_widget_set_size_request(button, windowWidth * 2 / 30.0, 50);
+
+    // 创建一个水平盒子用于左上角布局
+    GtkWidget *buttonBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_box_pack_start(GTK_BOX(buttonBox), button, FALSE, FALSE, 0);
+
+    // 将按钮盒子添加到主盒子中
+    gtk_box_pack_start(GTK_BOX(mainBox), buttonBox, FALSE, FALSE, 0);
+
+    // 创建水平盒子，用于左对齐
+    GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_widget_set_halign(hbox, GTK_ALIGN_START); // 设置水平左对齐
+
+    // 创建网格
+    GtkWidget *grid = gtk_grid_new();
+    gtk_grid_set_row_spacing(GTK_GRID(grid), (gint)(windowWidth / 30.0));
+    gtk_grid_set_column_spacing(GTK_GRID(grid), 10);
+    gtk_widget_set_margin_top(grid, 10);
+    gtk_widget_set_margin_bottom(grid, 10);
+    gtk_widget_set_margin_start(grid, (gint)(windowWidth / 30.0));
+    gtk_widget_set_margin_end(grid, (gint)(windowWidth / 30.0));
+
+    // 将网格添加到水平盒子中
+    gtk_box_pack_start(GTK_BOX(hbox), grid, FALSE, FALSE, 0);
+
+    // 将水平盒子添加到主盒子中
+    gtk_box_pack_start(GTK_BOX(mainBox), hbox, TRUE, TRUE, 0);
+
+    gtk_widget_set_name(scrolledWindow, "scrollbar");
+
+    return grid;
+
+}
+
 // 添加已发布应用框
 void AddPublishedSoftware(char * imgpath, char *name,char *alias) {
     // 创建一个新的 GtkEventBox 以便能够实现悬停效果
@@ -403,7 +483,7 @@ void AddIPBox(GtkWidget * window) {
     g_signal_connect(button, "clicked", G_CALLBACK(ClickAddIP), window);
 
     // 将按钮添加到网格中
-    gtk_grid_attach(GTK_GRID(contentGrid3), button, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(contentGrid2), button, 0, 0, 1, 1);
 
     // 清理
     g_object_unref(pixbuf);
@@ -537,4 +617,62 @@ void ConnectedHome(char *ip) {
     // 显示
     gtk_widget_show_all(contentGrid1);
 
+}
+
+// 在“发布应用”界面添加一个文件夹按钮
+void AddFolder(char * folderName) {
+
+    GtkWidget *button = gtk_button_new();
+    GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+
+    // 加载图片并调整大小
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("../assets/folder.png", NULL);
+    GdkPixbuf *scaledPixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint)(windowWidth / 10.0), (gint)(windowWidth / 10.0), GDK_INTERP_BILINEAR);
+    GtkWidget *image = gtk_image_new_from_pixbuf(scaledPixbuf);
+
+    // 添加图片到盒子
+    gtk_box_pack_start(GTK_BOX(box), image, TRUE, TRUE, 0);
+
+    // 添加文字到盒子
+    GtkWidget *label = gtk_label_new(folderName);
+    gtk_box_pack_start(GTK_BOX(box), label, TRUE, TRUE, 0);
+
+    // 将盒子添加到按钮中
+    gtk_container_add(GTK_CONTAINER(button), box);
+
+    // 设置按钮相关数据
+    g_object_set_data(G_OBJECT(button), "folderName", folderName);
+    gtk_widget_set_name(button,"software");
+
+    // 清理
+    g_object_unref(pixbuf);
+    g_object_unref(scaledPixbuf);
+
+    // 连接按钮事件，用于处理双击
+    g_signal_connect(button, "button_press_event", G_CALLBACK(ClickFolder), NULL);
+
+    // 使按钮接收事件
+    gtk_widget_add_events(button, GDK_BUTTON_PRESS_MASK);
+
+    // 确定行列
+    row2 +=  col2 / maxCol2;
+    col2 %= maxCol2;
+
+    // 将按钮添加到网格中
+    gtk_grid_attach(GTK_GRID(contentGrid3), button, col2, row2, 1, 1);
+
+    // 显示网格
+    gtk_widget_show_all(contentGrid3);
+
+    col2++;
+}
+
+/*
+ * 功能：在发布应用界面添加一个按钮
+ * 参数：
+ *   name：应用名称
+ *   iconData：应用图标二进制流
+ */
+void AddSoftware(char * name,char * iconData) {
+    
 }

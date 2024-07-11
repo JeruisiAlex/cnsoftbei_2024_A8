@@ -4,6 +4,7 @@
 #include "../../include/uifunc.h"
 
 #include <regex.h>
+#include <gdk/gdk.h>
 
 double windowWidth;
 double windowHeight;
@@ -347,4 +348,22 @@ void ErrDialog(char *content) {
     // 用户响应后销毁对话框
     gtk_widget_destroy(dialog);
 
+}
+
+
+static guint last_click_time = 0;
+
+// 双击文件夹
+gboolean ClickFolder(GtkWidget *widget, GdkEventButton *event, gpointer userData) {
+    if (event->type == GDK_BUTTON_PRESS && event->button == 1) {
+        guint time = gtk_get_current_event_time();
+        if (time - last_click_time <= 250) {  // 检测双击
+            const gchar *folderName = (const gchar *)g_object_get_data(G_OBJECT(widget), "folderName");
+            g_print("双击事件：文件夹名称是 %s\n", folderName);
+            last_click_time = 0;  // 重置时间
+        } else {
+            last_click_time = time;  // 更新上次点击时间
+        }
+    }
+    return FALSE;  // 允许其他事件继续处理
 }

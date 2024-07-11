@@ -78,6 +78,13 @@ static char * css =
     "}"
     "#spinner {"
     "  color: #85C1E9;"
+    "}"
+    "#software {"
+    "  background-color: white;"
+    "  color: black;"  // 黑色
+    "}"
+    "#software:hover {"
+    "  background-color: #D3D3D3;"  // 灰色
     "}";
 
 // 主窗口。创建错误提示框需要。
@@ -126,6 +133,7 @@ void AddContent(GtkWidget *grid, char *content, int row, int col, int type);
 void AddSwitchInBox(GtkWidget *box);
 void AddSwitchInGrid(GtkWidget *grid, int row, int col);
 GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label);
+GtkWidget *CreatePublishSoftware(GtkWidget *contentStack,char *label);
 GtkWidget * CreateHome(GtkWidget* contentStack,char * label);
 void AddIPBox(GtkWidget * window);
 void RemoveAllChild(GtkWidget *grid,int row,int col,int flag);
@@ -139,5 +147,6 @@ void ConnectingHome(char * ip);
 void UnconnectHome();
 void ConnectedHome(char *ip);
 void ErrDialog(char *content);
+void AddFolder(char * folderName);
 
 #endif //UI_H

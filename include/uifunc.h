@@ -14,7 +14,7 @@ void ClickAddIP(GtkWidget *widget, gpointer user_data);
 void ClickConfirm(GtkWidget *widget, gpointer dialog);
 gboolean RightClickToolBar(GtkWidget *widget, GdkEventButton *event, gpointer data);
 void ClickUnconnect(GtkWidget *widget, gpointer data);
-
+gboolean ClickFolder(GtkWidget *widget, GdkEventButton *event, gpointer userData);
 /* 工具函数 */
 int IsValidIp(char *ip);
 int AddOneHistoryRecord(char *ip,char *username,char *password);
