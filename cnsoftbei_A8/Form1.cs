@@ -288,15 +288,6 @@ namespace cnsoftbei_A8
             return appPanel;
         }
 
-        private void flushAppPanel()
-        {
-            foreach(AppInfo app in appListInfo)
-            {
-                Panel appPanel = createAppPanel(app.Name, app.Logo);
-                appInfoPanel.Controls.Add(appPanel);
-                MessageBox.Show($"{app.Name}\n");
-            }
-        }
     }
 
 

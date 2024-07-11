@@ -150,6 +150,7 @@ namespace MouseActionFactory
                     // 添加到应用程序信息列表
                     Form1.appListInfo.Add(new MyClass.AppInfo(fileName, bitmap));
 
+
                     // 显示文件信息
                     /*string message = $"文件路径: {selectedFilePath}\n" +
                                      $"文件名: {fileName}\n" +
@@ -160,6 +161,15 @@ namespace MouseActionFactory
                     //MessageBox.Show(message, "选择的exe程序");
                     //MessageBox.Show("你选择的文件路径: " + selectedFilePath, "选择的exe程序");
                 }
+            }
+        }
+        private void flushAppPanel()
+        {
+            foreach (AppInfo app in appListInfo)
+            {
+                Panel appPanel = createAppPanel(app.Name, app.Logo);
+                Form1.appInfoPanel.Controls.Add(appPanel);
+                MessageBox.Show($"{app.Name}\n");
             }
         }
 
