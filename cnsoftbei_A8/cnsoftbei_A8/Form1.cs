@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +16,10 @@ using MyClass;
 using MouseActionFactory;
 using Microsoft.Win32;
 using System.Diagnostics;
+=======
+﻿using MyClass;
+
+>>>>>>> w_dev
 
 
 namespace cnsoftbei_A8
@@ -42,7 +47,6 @@ namespace cnsoftbei_A8
             initializeCustomComponents();
             Network.getNetwork().init();
             Kernel.getKernel().init();
-            Kernel.getKernel().lockCurrentUser();
         }
 
         public void TZ()

@@ -14,7 +14,7 @@ namespace cnsoftbei_A8
         CONNECT_COUNT_OUT = 5,
         RAPP_EXIST = 6,
         RAPP_NOT_EXIST = 7,
-        OPEN_AUTO_FAILED = 8,
-        CLOSE_AUTO_FAILED = 9,
+        LOCK_USER_FAILED = 8,
+        RDP_NOT_OPEN = 9,
     }
 }
