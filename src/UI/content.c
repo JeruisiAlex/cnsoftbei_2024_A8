@@ -29,7 +29,7 @@ GtkWidget *contentGrid1,*contentGrid2,*contentGrid3,*contentGrid4,*contentGrid5;
 // 记录现在的行数
 int row1 = 0, row2 = 0, row3 = 0;
 // 记录一行最多多少个盒子
-int maxCol1 = 2, maxCol2 = 3, maxCol3 = 5;
+int maxCol1 = 2, maxCol2 = 5, maxCol3 = 2;
 // 记录现在的列数
 int col1 = 1,col2 = 0,col3 = 0;
 
@@ -79,6 +79,9 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
 
     // 添加内容到已发布应用
     AddFolder("opt");
+    AddSoftware("clion",NULL,1);
+    AddSoftware("clion",NULL,1);
+    AddSoftware("clion",NULL,1);
     AddSoftware("clion",NULL,1);
 
     // 添加内容到已发布应用
@@ -349,15 +352,15 @@ GtkWidget *CreatePublishSoftware(GtkWidget *contentStack,char *label) {
 // 添加已发布应用框
 void AddPublishedSoftware(char * imgpath, char *name,char *alias) {
     // 创建一个新的 GtkEventBox 以便能够实现悬停效果
-    GtkWidget *event_box = gtk_event_box_new();
-    gtk_widget_set_name(event_box, "inactive-clickbox");
+    GtkWidget *eventBox = gtk_event_box_new();
+    gtk_widget_set_name(eventBox, "inactive-clickbox");
 
     // 创建一个水平的 GtkBox 并将其添加到 GtkEventBox 中
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-    gtk_container_add(GTK_CONTAINER(event_box), box);
+    gtk_container_add(GTK_CONTAINER(eventBox), box);
 
     // 为 event_box 设置边距
-    gtk_container_set_border_width(GTK_CONTAINER(event_box), 10);
+    gtk_container_set_border_width(GTK_CONTAINER(eventBox), 10);
 
     // 创建图标
     GtkWidget *image = gtk_image_new_from_file(imgpath);
@@ -396,7 +399,7 @@ void AddPublishedSoftware(char * imgpath, char *name,char *alias) {
     gtk_box_pack_start(GTK_BOX(box), inbox, FALSE, FALSE, 0);
 
     // 设置 event_box 大小
-    gtk_widget_set_size_request(event_box, (gint)(windowWidth * 3 / 8.0), 150); // 调整宽度和高度宽度和高度
+    gtk_widget_set_size_request(eventBox, (gint)(windowWidth * 3 / 8.0), 150); // 调整宽度和高度宽度和高度
 
     // 创建右键菜单
     GtkWidget *menu = gtk_menu_new();
@@ -405,24 +408,24 @@ void AddPublishedSoftware(char * imgpath, char *name,char *alias) {
     // g_signal_connect(menuItemOpen, "activate", G_CALLBACK(onMenuItemActivate), "打开");
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuItemOpen);
 
-    GtkWidget *menuItemUninstall = gtk_menu_item_new_with_label("卸载");
-    // g_signal_connect(menuItemUninstall, "activate", G_CALLBACK(onMenuItemActivate), "卸载");
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuItemUninstall);
+    GtkWidget *menuItemRemove = gtk_menu_item_new_with_label("移除");
+    g_signal_connect_data(G_OBJECT(menuItemRemove), "activate", G_CALLBACK(ClickRemove), eventBox, NULL, 0);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuItemRemove);
 
     gtk_widget_show_all(menu);
 
     // 连接鼠标右键事件到 event_box
-    g_signal_connect(event_box, "button-press-event", G_CALLBACK(RightClickToolBar), menu);
+    g_signal_connect(eventBox, "button-press-event", G_CALLBACK(RightClickToolBar), menu);
 
     // 确定行列
     row3 += col3 / maxCol3;
     col3 %= maxCol3;
 
     // 将 event_box 添加到主 grid 中
-    gtk_grid_attach(GTK_GRID(contentGrid4), event_box, col3, row3, 1, 1);
+    gtk_grid_attach(GTK_GRID(contentGrid4), eventBox, col3, row3, 1, 1);
 
     // 显示盒子
-    gtk_widget_show_all(event_box);
+    gtk_widget_show_all(eventBox);
 
     col3++;
 }
@@ -711,7 +714,7 @@ void AddSoftware(char * name,char * iconData,int iconLength) {
     gtk_container_add(GTK_CONTAINER(button), box);
 
     // 设置按钮相关数据
-    g_object_set_data(G_OBJECT(button), "folderName", name);
+    g_object_set_data(G_OBJECT(button), "name", name);
     gtk_widget_set_name(button,"software");
     gtk_widget_set_size_request(button, (gint)(windowWidth/7.0), 100); // 设置按钮大小
 
@@ -719,7 +722,7 @@ void AddSoftware(char * name,char * iconData,int iconLength) {
     GtkWidget *menu = gtk_menu_new();
 
     GtkWidget *menuItemPublish = gtk_menu_item_new_with_label("发布");
-    // g_signal_connect(menuItemOpen, "activate", G_CALLBACK(onMenuItemActivate), "发布");
+    g_signal_connect_data(G_OBJECT(menuItemPublish), "activate", G_CALLBACK(CilckPublish), button, NULL, 0);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuItemPublish);
 
     gtk_widget_show_all(menu);
@@ -742,4 +745,9 @@ void AddSoftware(char * name,char * iconData,int iconLength) {
     gtk_widget_show_all(contentGrid3);
 
     col2++;
+}
+
+// 移除“发布应用”界面的所有图标
+void RemoveAllSoftware() {
+    RemoveAllChild(contentGrid3,row2,maxCol2,0);
 }

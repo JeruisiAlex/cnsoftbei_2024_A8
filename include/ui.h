@@ -144,6 +144,7 @@ void AddLanBox(char *ip);
 void AddPublishedSoftware(char * imgpath, char *name,char *alias);
 void RemoveAllLanBox();
 void RemoveAllPublishedSoftware();
+void RemoveAllSoftware();
 void ConnectingHome(char * ip);
 void UnconnectHome();
 void ConnectedHome(char *ip);

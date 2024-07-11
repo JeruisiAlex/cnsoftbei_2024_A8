@@ -367,3 +367,16 @@ gboolean ClickFolder(GtkWidget *widget, GdkEventButton *event, gpointer userData
     }
     return FALSE;  // 允许其他事件继续处理
 }
+
+// 用于已发布应用的移除
+void ClickRemove(GtkWidget *menuitem, GtkWidget *eventBox) {
+    gtk_widget_hide(eventBox);  // 隐藏 widget，可选，确保它不再显示
+    gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(eventBox)), eventBox);  // 从其父容器中移除
+}
+
+// 发布应用
+void CilckPublish(GtkMenuItem *menuitem, gpointer data) {
+    GtkWidget *button = GTK_WIDGET(data);  // 将user_data转换回GtkWidget类型
+    const gchar *name = g_object_get_data(G_OBJECT(button), "name");  // 获取存储的name
+    g_print("发布事件：应用名称是 %s\n", name);
+}
