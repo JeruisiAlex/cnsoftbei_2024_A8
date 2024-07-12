@@ -16,5 +16,6 @@ namespace RemoteApp
         RAPP_NOT_EXIST = 7,
         LOCK_USER_FAILED = 8,
         RDP_NOT_OPEN = 9,
+        RDP_NOT_FOUND = 12,
     }
 }
