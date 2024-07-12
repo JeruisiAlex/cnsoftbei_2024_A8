@@ -6,7 +6,10 @@
         ///  Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-
+        public static int screenWidth;
+        public static int screenHeight;
+        public static Version version;
+        public static String status;
         /// <summary>
         ///  Clean up any resources being used.
         /// </summary>
@@ -34,11 +37,18 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(992, 779);
+            Margin = new Padding(4, 4, 4, 4);
             Name = "Form1";
-            Text = "Form1";
-            FormClosed += Form1_FormClosed;
+            StartPosition = FormStartPosition.CenterScreen;
+            //FormClosed += Form1_FormClosed;
             ResumeLayout(false);
+        }
+
+        private void getResolution()
+        {
+            screenWidth = Screen.PrimaryScreen.Bounds.Width;
+            screenHeight = Screen.PrimaryScreen.Bounds.Height;
         }
 
         #endregion

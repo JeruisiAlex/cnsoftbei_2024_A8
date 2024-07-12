@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
 
-namespace RemoteApp
+namespace cnsoftbei_A8
 {
     public partial class Kernel
     {
@@ -13,18 +13,18 @@ namespace RemoteApp
             return instance;
         }
         private Err err;
-        private List<App> remoteAppList;
-        private List<App> updateList;
-        private List<App> removeList;
+        private List<RemoteApp> remoteAppList;
+        private List<RemoteApp> updateList;
+        private List<RemoteApp> removeList;
         private string hostName;
         private string rdpRegistryKeyPath = @"SYSTEM\CurrentControlSet\Control\Terminal Server";
         private string remoteAppRegistryKeyPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications";
 
-        private Kernel()
+        private Kernel() 
         {
             err = Err.getErr();
-            remoteAppList = new List<App>();
-            updateList = new List<App>();
+            remoteAppList = new List<RemoteApp>();
+            updateList = new List<RemoteApp>();
             hostName = "";
         }
 
@@ -64,13 +64,13 @@ namespace RemoteApp
         {
             remoteAppList.Clear();
             RegistryKey key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(remoteAppRegistryKeyPath, false);
-            if (key != null)
+            if( key != null)
             {
                 RegistryKey remoteAppKey;
                 foreach (String fullName in key.GetSubKeyNames())
                 {
                     remoteAppKey = key.OpenSubKey(fullName, false);
-                    App remoteApp = new App(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string);
+                    RemoteApp remoteApp = new RemoteApp(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string);
                     updateList.Add(remoteApp);
                     remoteAppList.Add(remoteApp);
                 }
@@ -89,7 +89,7 @@ namespace RemoteApp
         {
             addRemoteAppToRegistry(fullName, path, iconPath);
         }
-        public App isAppExist(string fullName)
+        public RemoteApp isAppExist(string fullName)
         {
             for (int i = 0; i < remoteAppList.Count; i++)
             {
@@ -120,7 +120,7 @@ namespace RemoteApp
                     newKey.SetValue("FullName", fullName, RegistryValueKind.String);
                     newKey.SetValue("Path", path, RegistryValueKind.String);
                     newKey.SetValue("IconPath", iconPath, RegistryValueKind.String);
-                    App remoteApp = new App(name, fullName, path, iconPath);
+                    RemoteApp remoteApp = new RemoteApp(name, fullName, path, iconPath);
                     updateList.Add(remoteApp);
                     remoteAppList.Add(remoteApp);
                     err.setErrType(ErrType.SUCCESS);
@@ -136,16 +136,16 @@ namespace RemoteApp
         public void removeApp(string fullName)
         {
             RegistryKey key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(remoteAppRegistryKeyPath, true);
-            if (key == null)
+            if(key == null)
             {
-                err.setErrType(ErrType.GET_RAPP_ERR);
+               err.setErrType(ErrType.GET_RAPP_ERR);
             }
             else
             {
-                if (key.OpenSubKey(fullName) != null) key.DeleteSubKeyTree(fullName);
+                if(key.OpenSubKey(fullName) != null) key.DeleteSubKeyTree(fullName);
                 key.Close();
             }
-            App remoteApp = isAppExist(fullName);
+            RemoteApp remoteApp = isAppExist(fullName);
             if (remoteApp != null)
             {
                 remoteAppList.Remove(remoteApp);
@@ -192,10 +192,10 @@ namespace RemoteApp
             }
             name = name.Trim();
             return name;
-        }
+        } 
         public string getHostName() { return hostName; }
-        public List<App> getRemoteAppList() { return remoteAppList; }
-        public List<App> getUpdateList() { return updateList; }
-        public List<App> getRemoveList() { return removeList; }
+        public List<RemoteApp> getRemoteAppList() { return remoteAppList; }
+        public List<RemoteApp> getUpdateList() { return updateList; }
+        public List<RemoteApp> getRemoveList() { return removeList; }
     }
 }

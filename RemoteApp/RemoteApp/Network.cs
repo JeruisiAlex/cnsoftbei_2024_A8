@@ -37,11 +37,13 @@ namespace RemoteApp
         {
             mutex.WaitOne();
             thread.Start();
+            Debug.WriteLine("主线程回归");
         }
         private void connect()
         {
             try
             {
+                Debug.WriteLine("通信线程开始");
                 server = new TcpListener(port);
                 server.Start(); 
                 client = server.AcceptTcpClient();
