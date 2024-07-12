@@ -14,53 +14,30 @@ namespace RemoteApp
         }
         private Err err;
         private List<App> remoteAppList;
-        private List<App> updateList;
-        private List<App> removeList;
-        private string hostName;
+        private List<App> installList;
+        private List<App> uninstallList;
         private string rdpRegistryKeyPath = @"SYSTEM\CurrentControlSet\Control\Terminal Server";
         private string remoteAppRegistryKeyPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications";
+        private string[] UnistallRegistryPaths = new string[]{
+            @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
+            @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"};
 
         private Kernel()
         {
             err = Err.getErr();
             remoteAppList = new List<App>();
-            updateList = new List<App>();
-            hostName = "";
+            installList = new List<App>();
+            uninstallList = new List<App>();
         }
 
         public void init()
         {
-            if (!checkRDP())
-            {
-
-            }
-            hostName = Environment.MachineName;
             readRemoteAppList();
             err.handle();
         }
-        public bool checkRDP()
-        {
-            try
-            {
-                RegistryKey key = Registry.LocalMachine.OpenSubKey(rdpRegistryKeyPath, false);
-                if (key != null)
-                {
-                    int value = (int)key.GetValue("fDenyTSConnections");
-                    key.Close();
-                    if (value != 0)
-                    {
-                        // 告诉用户 RDP 未开启，需要开启 RDP
-                    }
-                    return value == 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error checking remote desktop status: " + ex.Message);
-            }
-            return false;
-        }
-        public void readRemoteAppList()
+        
+        // 读取远程应用列表。（同时会读取到各个应用列表的卸载程序）
+        private void readRemoteAppList()
         {
             remoteAppList.Clear();
             RegistryKey key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(remoteAppRegistryKeyPath, false);
@@ -70,9 +47,13 @@ namespace RemoteApp
                 foreach (String fullName in key.GetSubKeyNames())
                 {
                     remoteAppKey = key.OpenSubKey(fullName, false);
-                    App remoteApp = new App(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string);
-                    updateList.Add(remoteApp);
+
+                    App uninstall = getUninstall(fullName);
+                    if (uninstall != null) uninstallList.Add(uninstall);
+
+                    App remoteApp = new App(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string, uninstall);
                     remoteAppList.Add(remoteApp);
+
                 }
                 key.Close();
             }
@@ -81,15 +62,36 @@ namespace RemoteApp
                 err.setErrType(ErrType.GET_RAPP_ERR);
             }
         }
-        public void addRemoteApp(string fullName, string path)
+
+        // 检查注册表和App的路径等是否相同，若不相同，则修改App的路径
+        private void checkAppInRegistry(App app)
         {
-            addRemoteAppToRegistry(fullName, path, path);
+            RegistryKey key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(remoteAppRegistryKeyPath, false);
+            if (key != null)
+            {
+                RegistryKey remoteAppKey = key.OpenSubKey(app.getFullName(), false);
+
+                if(remoteAppKey != null)
+                {
+                    app.setName(remoteAppKey.GetValue("Name") as string);
+                    app.setPath(remoteAppKey.GetValue("Path") as string);
+                    app.setIconPath(remoteAppKey.GetValue("IconPath") as string);
+                }
+                else
+                {
+                    err.setErrType(ErrType.RAPP_NOT_EXIST);
+                }
+
+                key.Close();
+            }
+            else
+            {
+                err.setErrType(ErrType.GET_RAPP_ERR);
+            }
         }
-        public void addRemoteApp(string fullName, string path, string iconPath)
-        {
-            addRemoteAppToRegistry(fullName, path, iconPath);
-        }
-        public App isAppExist(string fullName)
+
+        // 从本地远程应用列表中根据fullName查找App
+        private App isAppExist(string fullName)
         {
             for (int i = 0; i < remoteAppList.Count; i++)
             {
@@ -97,7 +99,86 @@ namespace RemoteApp
             }
             return null;
         }
-        private void addRemoteAppToRegistry(string fullName, string path, string iconPath)
+
+        /* 
+         * 功能：查找应用的卸载程序。
+         * 参数：需要查找的应用名称
+         * 注意：使用后 err.handle()
+         * 返回值：
+         *  * null
+         *  * 卸载程序的 App
+        */
+        private App getUninstall(string fullName)
+        {
+            //遍历注册表
+            foreach (string regPath in UnistallRegistryPaths)
+            {
+                using RegistryKey? key = Registry.LocalMachine.OpenSubKey(regPath);
+                if (key != null)
+                {
+                    foreach (string subKeyName in key.GetSubKeyNames())
+                    {
+                        using RegistryKey? subKey = key.OpenSubKey(subKeyName);
+                        string? displayName = subKey?.GetValue("DisplayName") as string;
+                        if (displayName != null && displayName.IndexOf(fullName, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            string path = subKey.GetValue("UninstallString") as string;
+                            string name = Path.GetFileNameWithoutExtension(path);
+                            err.setErrType(ErrType.SUCCESS);
+                            return new App(getName(name), name, path);
+                        }
+                    }
+                }
+            }
+            err.setErrType(ErrType.CAN_NOT_UNINSTALL);
+            return null;
+        }
+
+        // 从注册表中移除该应用
+        private void removeAppFromRegistry(string fullName)
+        {
+            RegistryKey key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(remoteAppRegistryKeyPath, true);
+            if (key == null)
+            {
+                err.setErrType(ErrType.GET_RAPP_ERR);
+            }
+            else
+            {
+                if (key.OpenSubKey(fullName) != null) key.DeleteSubKeyTree(fullName);
+                key.Close();
+                err.setErrType(ErrType.SUCCESS);
+            }
+        }
+
+        public void removeAppFromList(string fullName)
+        {
+            App remoteApp = isAppExist(fullName);
+            if (remoteApp != null)
+            {
+                remoteAppList.Remove(remoteApp);
+            }
+        }
+
+        private string getName(string fullName)
+        {
+            Regex rx = new Regex(@"[^\p{L}0-9\-_"" ]");
+            string name = fullName;
+            if (rx.IsMatch(fullName))
+            {
+                name = rx.Replace(fullName, string.Empty);
+            }
+            name = name.Trim();
+            return name;
+        }
+        
+        /* 
+         * 功能：添加应用到远程应用
+         * flag说明：
+         *  0:表示这是一个卸载程序，可以重新发布
+         *  1;表示这是应用，不能够重复发布
+         *  2:表示这是一个安装程序，可以重复发布
+         */
+        private void addRemoteAppToRegistry(string fullName, string path, string iconPath, int flag)
         {
             if (isAppExist(fullName) != null)
             {
@@ -120,82 +201,142 @@ namespace RemoteApp
                     newKey.SetValue("FullName", fullName, RegistryValueKind.String);
                     newKey.SetValue("Path", path, RegistryValueKind.String);
                     newKey.SetValue("IconPath", iconPath, RegistryValueKind.String);
-                    App remoteApp = new App(name, fullName, path, iconPath);
-                    updateList.Add(remoteApp);
-                    remoteAppList.Add(remoteApp);
                     err.setErrType(ErrType.SUCCESS);
                 }
-                else
+                else if(flag == 1)
                 {
                     remoteAppKey.Close();
                     err.setErrType(ErrType.RAPP_EXIST);
                 }
+                else
+                {
+                    err.setErrType(ErrType.SUCCESS);
+                }
                 key.Close();
             }
         }
+
+        
+        // 发布远程应用
+        public void addRemoteApp(string fullName, string path)
+        {
+            if (isAppExist(fullName) == null)
+            {
+                // 找到卸载程序
+                App uninstall = getUninstall(fullName);
+                err.setErrType(ErrType.SUCCESS);
+                uninstallList.Add(uninstall);
+                App app;
+                app = new App(getName(fullName), fullName, path, path, uninstall);
+
+                if (uninstall != null)
+                {
+                    uninstallList.Add(uninstall);
+                }
+
+                remoteAppList.Add(app);
+                addRemoteAppToRegistry(fullName, path, path, 1);
+            }
+            else
+            {
+                err.setErrType(ErrType.RAPP_EXIST);
+            }
+            err.handle();
+        }
+        // 发布远程应用
+        public void addRemoteApp(string fullName, string path, string iconPath)
+        {
+            if (isAppExist(fullName) == null)
+            {
+                // 找到卸载程序
+                App uninstall = getUninstall(fullName);
+                err.setErrType(ErrType.SUCCESS);
+                uninstallList.Add(uninstall);
+                App app;
+                app = new App(getName(fullName), fullName, path, iconPath, uninstall);
+
+                if (uninstall != null)
+                {
+                    uninstallList.Add(uninstall);
+                }
+
+                remoteAppList.Add(app);
+                addRemoteAppToRegistry(fullName, path, iconPath, 1);
+            }
+            else
+            {
+                err.setErrType(ErrType.RAPP_EXIST);
+            }
+            err.handle();
+        }
+
+        // 卸载已发布应用
+        public void uninstallApp(string fullname)
+        {
+            App app = isAppExist(fullname);
+            if (app != null && app.getUninstall != null)
+            {
+                addRemoteAppToRegistry(app.getUninstall().getFullName(), app.getUninstall().getPath(), app.getUninstall().getIconPath(), 0);
+                // 调用网络层
+                err.setErrType(ErrType.SUCCESS);
+            }
+            else
+            {
+                err.setErrType(ErrType.CAN_NOT_UNINSTALL);
+            }
+        }
+        // 移除已发布应用
         public void removeApp(string fullName)
         {
-            RegistryKey key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(remoteAppRegistryKeyPath, true);
-            if (key == null)
+            App app = isAppExist(fullName);
+            if (app != null && app.getUninstall() != null)
             {
-                err.setErrType(ErrType.GET_RAPP_ERR);
+                uninstallList.Remove(app.getUninstall());
+                removeAppFromRegistry(app.getUninstall().getFullName());
             }
-            else
-            {
-                if (key.OpenSubKey(fullName) != null) key.DeleteSubKeyTree(fullName);
-                key.Close();
-            }
-            App remoteApp = isAppExist(fullName);
-            if (remoteApp != null)
-            {
-                remoteAppList.Remove(remoteApp);
-                removeList.Add(remoteApp);
-            }
+            removeAppFromList(fullName);
+            removeAppFromRegistry(fullName);
+            err.handle();
         }
-        private static extern void WTSFreeMemory(IntPtr pointer);
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool LockWorkStation();
-        public void lockCurrentUser()
+
+        // 安装
+        public void installApp(string fullName, string path)
         {
-            bool result = LockWorkStation();
-            if (!result)
-            {
-                err.setErrType(ErrType.LOCK_USER_FAILED);
-            }
+            App app = new App(fullName, path);
+            installList.Add(app);
+            addRemoteAppToRegistry(fullName, path, path, 2);
+            err.handle();
+            // 调用网络层
         }
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern bool LogonUser(string lpszUsername, string lpszDomain, string lpszPassword, int dwLogonType, int dwLogonProvider, out IntPtr phToken);
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        private extern static bool CloseHandle(IntPtr handle);
-        public void checkUserInfo(string username, string password)
+
+        // 打开远程应用
+        public void openApp(string fullName)
         {
-            IntPtr tokenHandle = IntPtr.Zero;
-            // 调用 LogonUser 函数来验证用户名和密码
-            bool isSuccess = LogonUser(username, "", password, 2, 0, out tokenHandle);
-            if (isSuccess)
+            App app = isAppExist(fullName);
+            if (app != null)
             {
-                err.setErrType(ErrType.SUCCESS);
-                CloseHandle(tokenHandle);
-            }
-            else
-            {
-                err.setErrType(ErrType.USER_INFO_ERR);
+                checkAppInRegistry(app);
+                if(err.getErrType() == ErrType.SUCCESS)
+                {
+                    if (File.Exists(app.getPath()))
+                    {
+                        // 调用网络层
+                    }
+                    else
+                    {
+                        remoteAppList.Remove(app);
+                        removeAppFromRegistry(app.getFullName());
+                        err.setErrType(ErrType.RAPP_NOT_IN_PATH);
+                    }
+                }
+                else
+                {
+                    err.handle();
+                }
             }
         }
-        private string getName(string fullName)
-        {
-            Regex rx = new Regex(@"[^\p{L}0-9\-_"" ]");
-            string name = fullName;
-            if (rx.IsMatch(fullName))
-            {
-                name = rx.Replace(fullName, string.Empty);
-            }
-            name = name.Trim();
-            return name;
-        }
-        public string getHostName() { return hostName; }
+
+
         public List<App> getRemoteAppList() { return remoteAppList; }
-        public List<App> getUpdateList() { return updateList; }
-        public List<App> getRemoveList() { return removeList; }
     }
 }
