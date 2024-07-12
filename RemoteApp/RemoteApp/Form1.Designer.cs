@@ -1,12 +1,9 @@
-﻿using System;
-using System.Windows.Forms;
-
-namespace cnsoftbei_A8
+﻿namespace RemoteApp
 {
     partial class Form1
     {
         /// <summary>
-        /// 必需的设计器变量。
+        ///  Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
         public static int screenWidth;
@@ -14,9 +11,9 @@ namespace cnsoftbei_A8
         public static Version version;
         public static String status;
         /// <summary>
-        /// 清理所有正在使用的资源。
+        ///  Clean up any resources being used.
         /// </summary>
-        /// <param name="disposing">如果应释放托管资源，为 true；否则为 false。</param>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -26,11 +23,11 @@ namespace cnsoftbei_A8
             base.Dispose(disposing);
         }
 
-        #region Windows 窗体设计器生成的代码
+        #region Windows Form Designer generated code
 
         /// <summary>
-        /// 设计器支持所需的方法 - 不要
-        /// 使用代码编辑器修改此方法的内容。
+        ///  Required method for Designer support - do not modify
+        ///  the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
@@ -44,7 +41,7 @@ namespace cnsoftbei_A8
             Margin = new Padding(4, 4, 4, 4);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
-            FormClosed += Form1_FormClosed;
+            //FormClosed += Form1_FormClosed;
             ResumeLayout(false);
         }
 
@@ -53,6 +50,7 @@ namespace cnsoftbei_A8
             screenWidth = Screen.PrimaryScreen.Bounds.Width;
             screenHeight = Screen.PrimaryScreen.Bounds.Height;
         }
+
         #endregion
     }
 }
