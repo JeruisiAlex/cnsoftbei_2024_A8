@@ -41,8 +41,8 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     contentGrid1 = CreateHome(contentStack, "主页");
     contentGrid2 = CreateAndAddGridWithScrollFuc(contentStack, "历史连接");
     // contentGrid3 = CreateAndAddGridWithScrollFuc(contentStack, "局域网连接");
-    contentGrid3 = CreatePublishSoftware(contentStack, "发布应用");
-    contentGrid4 = CreateAndAddGridWithScrollFuc(contentStack, "已发布应用");
+    // contentGrid3 = CreatePublishSoftware(contentStack, "发布应用");
+    // contentGrid4 = CreateAndAddGridWithScrollFuc(contentStack, "已发布应用");
     contentGrid5 = CreateAndAddGrid(contentStack, "主机信息");
 
     int res = ReadAllHistoryRecords(); // 找到历史记录
@@ -78,14 +78,14 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     // AddLanBox("IP：192.168.0.5");
 
     // 添加内容到已发布应用
-    AddFolder("opt");
-    AddSoftware("clion",NULL,1);
-    AddSoftware("clion",NULL,1);
-    AddSoftware("clion",NULL,1);
-    AddSoftware("clion",NULL,1);
+    // AddFolder("opt");
+    // AddSoftware("clion",NULL,1);
+    // AddSoftware("clion",NULL,1);
+    // AddSoftware("clion",NULL,1);
+    // AddSoftware("clion",NULL,1);
 
     // 添加内容到已发布应用
-    AddPublishedSoftware("../assets/software/clion.svg","Clion 2024 2.4","Clion");
+    // AddPublishedSoftware("../assets/software/clion.svg","Clion 2024 2.4","Clion");
 
     // 添加内容到主机信息
     AddContent(contentGrid5, "主机名：", 0, 0, 0);
@@ -461,7 +461,7 @@ void AddIPBox(GtkWidget * window) {
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
 
     // 加载图片并调整大小
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("../assets/add.png", NULL); // 加载原始图片
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("assets/add.png", NULL); // 加载原始图片
     GdkPixbuf *scaled_pixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint)(windowWidth / 10.0), (gint)(windowWidth / 10.0), GDK_INTERP_BILINEAR); // 调整大小
     GtkWidget *image = gtk_image_new_from_pixbuf(scaled_pixbuf); // 使用调整后的图片创建图像控件
 

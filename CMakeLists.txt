@@ -29,4 +29,6 @@ add_executable(cnsoftbei_2024_A8
 
 #
 target_link_libraries (cnsoftbei_2024_A8 ${FC_DEP_LIBS})
+# 复制图片资源到构建目录
+file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
 

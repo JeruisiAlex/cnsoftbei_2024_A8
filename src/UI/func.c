@@ -311,7 +311,7 @@ void ErrDialog(char *content) {
 
     // 加载并缩放图像
     GError *error = NULL;
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("../assets/err.png", &error);
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("assets/err.png", &error);
     if (!error) {
         GdkPixbuf *scaled_pixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint) (windowHeight / 6.0), (gint) (windowHeight / 6.0), GDK_INTERP_BILINEAR);
         GtkWidget *image = gtk_image_new_from_pixbuf(scaled_pixbuf);
