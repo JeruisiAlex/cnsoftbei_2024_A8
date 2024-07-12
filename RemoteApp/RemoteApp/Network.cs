@@ -23,6 +23,7 @@ namespace RemoteApp
         private NetworkState networkState;
         private Queue<string> messages;
         private int code;
+        private string clentName;
         
         private Network() {
             isRun = true;
@@ -51,6 +52,7 @@ namespace RemoteApp
                     stateMutex.ReleaseMutex();
 
                     stream = client.GetStream();
+                    readClientName();
                     run();
                     stream.Close();
                     client.Close();
@@ -62,7 +64,13 @@ namespace RemoteApp
                 
             }
         }
-        public void run()
+        private void readClientName()
+        {
+            byte[] buffer = new byte[1024];
+            int length = stream.Read(buffer, 0, buffer.Length);
+            clentName = Encoding.UTF8.GetString(buffer, 0, length);
+        }
+        private void run()
         {
             stateMutex.WaitOne();
             while (isRun)
@@ -103,6 +111,7 @@ namespace RemoteApp
             mutex.ReleaseMutex();
 
             release();
+            Debug.WriteLine("网络资源释放完毕");
         }
         private void release()
         {
@@ -114,6 +123,6 @@ namespace RemoteApp
         }
 
         public int getPort() { return port; }
-        public Thread getThread() { return thread; }
+        public string getClientName() { return clentName; }
     }
 }
