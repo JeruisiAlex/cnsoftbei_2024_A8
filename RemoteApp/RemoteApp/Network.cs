@@ -23,7 +23,7 @@ namespace RemoteApp
         private NetworkState networkState;
         private Queue<string> messages;
         private int code;
-        private string clentName;
+        private string clientName;
         
         private Network() {
             isRun = true;
@@ -37,7 +37,6 @@ namespace RemoteApp
         {
             mutex.WaitOne();
             thread.Start();
-            Debug.WriteLine("主线程回归");
         }
         private void connect()
         {
@@ -45,7 +44,7 @@ namespace RemoteApp
             {
                 Debug.WriteLine("通信线程开始");
                 server = new TcpListener(port);
-                server.Start(); 
+                server.Start();
                 client = server.AcceptTcpClient();
                 if (isRun)
                 {
@@ -59,7 +58,6 @@ namespace RemoteApp
                     stream.Close();
                     client.Close();
                 }
-                Debug.WriteLine("通信服务线程结束");
             }
             catch (Exception e)
             {
@@ -70,7 +68,8 @@ namespace RemoteApp
         {
             byte[] buffer = new byte[1024];
             int length = stream.Read(buffer, 0, buffer.Length);
-            clentName = Encoding.UTF8.GetString(buffer, 0, length);
+            clientName = Encoding.UTF8.GetString(buffer, 0, length);
+            Debug.WriteLine("客户端名称为：" + clientName);
         }
         private void run()
         {
@@ -99,6 +98,7 @@ namespace RemoteApp
         }
         public void stop()
         {
+            /*Debug.WriteLine("开始停止网络服务");*/
             stateMutex.WaitOne();
             isRun = false;
             if (networkState == NetworkState.Waiting)
@@ -109,11 +109,9 @@ namespace RemoteApp
             {
                 send(0, "");
             }
-            stateMutex.ReleaseMutex();
-            mutex.ReleaseMutex();
 
             release();
-            Debug.WriteLine("网络资源释放完毕");
+/*            Debug.WriteLine("网络资源释放完毕");*/
         }
         private void release()
         {
@@ -125,6 +123,6 @@ namespace RemoteApp
         }
 
         public int getPort() { return port; }
-        public string getClientName() { return clentName; }
+        public string getClientName() { return clientName; }
     }
 }

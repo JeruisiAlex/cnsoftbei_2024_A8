@@ -38,10 +38,10 @@
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(992, 779);
-            Margin = new Padding(4, 4, 4, 4);
+            Margin = new Padding(4);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
-            //FormClosed += Form1_FormClosed;
+            FormClosed += Form1_FormClosed;
             ResumeLayout(false);
         }
 
