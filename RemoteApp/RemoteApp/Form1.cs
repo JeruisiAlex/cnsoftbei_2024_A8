@@ -5,6 +5,13 @@ namespace RemoteApp
         public Form1()
         {
             InitializeComponent();
+            Network.getNetwork().init();
+
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Network.getNetwork().stop();
         }
     }
 }
