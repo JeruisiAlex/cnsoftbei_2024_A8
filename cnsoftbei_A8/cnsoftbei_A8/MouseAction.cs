@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -141,7 +142,8 @@ namespace MouseActionFactory
                     string selectedFilePath = openFileDialog.FileName;
                     // 获取文件信息
                     FileInfo fileInfo = new FileInfo(selectedFilePath);
-                    string fileName = fileInfo.Name;
+                    FileVersionInfo file = FileVersionInfo.GetVersionInfo(selectedFilePath);
+                    string fileName = file.ProductName;
                     long fileSize = fileInfo.Length; // 文件大小，单位为字节
                     DateTime creationTime = fileInfo.CreationTime; // 创建时间
                     DateTime lastAccessTime = fileInfo.LastAccessTime; // 上次访问时间
@@ -179,7 +181,7 @@ namespace MouseActionFactory
             // 创建应用程序面板
             Panel appPanel = new Panel
             {
-                Size = new Size(560, 100),
+                Size = new Size(600, 100),
                 BackColor = Color.LightGray,
                 BorderStyle = BorderStyle.FixedSingle,
                 Margin = new Padding(200, 100, 0, 0)
@@ -200,7 +202,7 @@ namespace MouseActionFactory
             // 创建显示名称的 Label
             Label nameLabel = new Label
             {
-                Text = "程序名：" + app.getFullName, // 设置名称文本
+                Text = "程序名：" + app.getFullName(), // 设置名称文本
                 Location = new Point(100, 20), // 设置位置
                 AutoSize = true, // 自动调整大小以适应内容
                 Font = new Font("Arial", 12, FontStyle.Bold), // 设置字体
@@ -208,7 +210,7 @@ namespace MouseActionFactory
             appPanel.Controls.Add(nameLabel); // 将 Label 添加到面板
             Label otherNameLabel = new Label
             {
-                Text = "别名：" + app.getName, // 设置名称文本
+                Text = "别名：" + app.getName(), // 设置名称文本
                 Location = new Point(100, 60), // 设置位置
                 AutoSize = true, // 自动调整大小以适应内容
                 Font = new Font("Arial", 12, FontStyle.Bold), // 设置字体

@@ -63,13 +63,8 @@ namespace cnsoftbei_A8
             appInfoPanel = createAddAppInfoPanel();
             this.Controls.Add(appInfoPanel);
 
+
             mouseAction.flushAppPanel(kernel.getRemoteAppList());
-            /*Bitmap bit = new Bitmap("C:\\Users\\99286\\Desktop\\cat.jpeg");
-            for (int i = 0; i < 5; i++)
-            {
-                Panel panel = createAppPanel("miao", bit);
-                appInfoPanel.Controls.Add(panel);
-            }*/
             //appInfoPanel.Visible = false;
         }
 
@@ -104,6 +99,7 @@ namespace cnsoftbei_A8
         {
             version = new Version(1, 0, 0);
             contentPanel = new Panel();
+            contentPanel.BackColor = Color.White;
             contentPanel.Dock = DockStyle.Fill;
             this.Controls.Add(contentPanel);
 
@@ -252,20 +248,25 @@ namespace cnsoftbei_A8
             {
                 Dock = DockStyle.Fill,
                 AutoScroll = true,
-                FlowDirection = FlowDirection.TopDown, // 从左到右布局
+                FlowDirection = FlowDirection.TopDown, //上下布局
                 WrapContents = false,
             };
 
+            Panel panel=new Panel
+            {
+                Margin = new Padding(180, 500, 10, 10), // 调整Margin确保不会超出范围
+                Size = new Size(500,100),
+            };
             //title
             Label titleLabel = new Label
             {
                 Text = "已发布程序",
                 Font = new Font("华文中宋", 20, FontStyle.Bold),
-                Margin = new Padding(180, 15, 0, 10),
+                
                 AutoSize = true
             };
-            allAppInfoPanel.Controls.Add(titleLabel);
-
+            panel.Controls.Add(titleLabel);
+            allAppInfoPanel.Controls.Add(panel);
             // 添加按钮
             Button addButton = new Button
             {

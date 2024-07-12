@@ -22,8 +22,6 @@ namespace cnsoftbei_A8
         private Network()
         {
             port = 6789;
-            maxConnect = 1;
-            connectCount = 0;
             clientName = "还没有被客户端连接";
         }
         public void init()
