@@ -20,6 +20,7 @@ extern char **environ;
 struct NetworkInfo networkInfo;
 char *serverName;
 int isConnect;
+pthread_mutex_t isConnectMutex;
 int isShare;
 
 pthread_mutex_t mutex;
@@ -30,6 +31,7 @@ int port;
 
 
 int NetworkInit() {
+    pthread_mutex_init(&isConnectMutex, NULL);
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&cond, NULL);
     isConnect = 0;
@@ -179,7 +181,7 @@ void* ConnectToRemoteApp(void *info) {
     return NULL;
 }
 
-int OpenRemoteApp(char *name) {
+int OpenRemoteApp(const char *name) {
     pid_t pid;
 
     if(isShare == 0) {

@@ -6,6 +6,8 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
+#include <pthread.h>
+
 #define PORT "6789"
 #define SERVER_PORT 6789
 #define REMOTEAPP_PORT 5678
@@ -24,6 +26,7 @@ struct RDPInfo {
 extern struct NetworkInfo networkInfo;
 extern char *serverName;
 extern int isConnect;
+extern pthread_mutex_t isConnectMutex;
 
 int NetworkInit();
 
@@ -41,7 +44,7 @@ int DisconnectToServer();
 
 void* ConnectToRemoteApp(void *info);
 
-int OpenRemoteApp(char *name);
+int OpenRemoteApp(const char *name);
 
 
 #endif //NETWORK_H
