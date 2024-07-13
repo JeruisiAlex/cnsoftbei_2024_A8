@@ -99,6 +99,9 @@ extern gint minWidth;
 // 设置窗口最小高度
 extern gint minHeight;
 
+// 记录现在的版本号
+#define VERSION "v1.0"
+
 // 记录所有历史记录的结构体数组
 extern struct NetworkInfo *historyRecords;
 // 记录共有多少个历史连接记录

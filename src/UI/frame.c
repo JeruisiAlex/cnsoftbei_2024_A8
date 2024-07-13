@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "../../include/ui.h"
 
 double windowWidth;
@@ -76,6 +78,11 @@ void LoadCss() {
 GtkWidget * CreateWindow(int width,int height) {
     GtkWidget * window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_default_size(GTK_WINDOW(window), width, height);
+
+    // 移除最大化按钮
+    gtk_window_set_deletable(GTK_WINDOW(window), TRUE);
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+
     g_signal_connect(window, "destroy", G_CALLBACK(OnWindowDestroy), NULL);
     return window;
 }
@@ -83,7 +90,9 @@ GtkWidget * CreateWindow(int width,int height) {
 // 创建标题栏
 void CreateTitle(GtkWidget* window) {
     GtkWidget * headerBar = gtk_header_bar_new();
-    gtk_header_bar_set_title(GTK_HEADER_BAR(headerBar), "SKRO");
+    char title[50] = "SKRO  ";
+    strcat(title,VERSION);
+    gtk_header_bar_set_title(GTK_HEADER_BAR(headerBar), title);
     gtk_header_bar_set_show_close_button(GTK_HEADER_BAR(headerBar), TRUE);
     gtk_widget_set_name(headerBar, "headerbar");
     gtk_window_set_titlebar(GTK_WINDOW(window), headerBar);
@@ -96,4 +105,7 @@ GtkWidget * CreateBoxFrame(GtkWidget *window) {
     gtk_container_add(GTK_CONTAINER(window), mainBox);
     return CreateBar(mainBox);
 }
+
+
+
 
