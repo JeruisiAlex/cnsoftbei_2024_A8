@@ -2,6 +2,7 @@
 #include "../../include/err.h"
 #include "../../include/network.h"
 #include "../../include/uifunc.h"
+#include "../../include/kernel.h"
 
 #include <regex.h>
 #include <gdk/gdk.h>
@@ -13,6 +14,9 @@ struct NetworkInfo *historyRecords = NULL;
 int cnt = 0;
 
 GtkWidget *window;
+
+GtkWidget *homePage;
+GtkWidget *content;
 
 GtkWidget *ipEntry;
 GtkWidget *usernameEntry;
@@ -142,7 +146,27 @@ void ClickConfirm(GtkWidget *widget, gpointer data) {
     else {
         // 输入合法，执行相关操作
         AddOneHistoryRecord(ip,username,password);
-        AddHistoryBox(ip,username);
+        AddHistoryBox(ip,username,password);
+        // 开始连接
+        pthread_mutex_lock(&isConnectMutex);
+        isConnect = 1;
+        pthread_mutex_unlock(&isConnectMutex);
+
+        // 跳转到主页
+        OnSwitchPage(GTK_BUTTON(homePage),content);
+
+        // 调用网络层连接
+        SetNetworkInfo(ip,username,password);
+        if(ConnectToServer() == 1) {
+            UnconnectHome();
+
+            pthread_mutex_lock(&isConnectMutex);
+            isConnect = 0;
+            pthread_mutex_unlock(&isConnectMutex);
+
+            ErrDialog("连接失败！");
+        }
+
         gtk_widget_destroy(dialog); // 销毁对话框
     }
 }
@@ -265,6 +289,7 @@ int ReadAllHistoryRecords() {
 // 点击“断开连接”按钮的回调函数
 void ClickUnconnect(GtkWidget *widget, gpointer data) {
     UnconnectHome();
+    DisconnectToServer();
 }
 
 /*
@@ -379,4 +404,33 @@ void CilckPublish(GtkMenuItem *menuitem, gpointer data) {
     GtkWidget *button = GTK_WIDGET(data);  // 将user_data转换回GtkWidget类型
     const gchar *name = g_object_get_data(G_OBJECT(button), "name");  // 获取存储的name
     g_print("发布事件：应用名称是 %s\n", name);
+}
+
+// 点击历史连接盒子
+void ClickHistory(GtkWidget *widget, gpointer data) {
+
+    // 跳转到主页
+    OnSwitchPage(GTK_BUTTON(homePage),content);
+
+    pthread_mutex_lock(&isConnectMutex);
+    isConnect = 1;
+    pthread_mutex_unlock(&isConnectMutex);
+
+    struct NetworkInfo *info = (struct NetworkInfo *)data;
+    SetNetworkInfo(info->address,info->username,info->password);
+    if(ConnectToServer() == 1) {
+        UnconnectHome();
+
+        pthread_mutex_lock(&isConnectMutex);
+        isConnect = 0;
+        pthread_mutex_unlock(&isConnectMutex);
+
+        ErrDialog("连接失败！");
+    }
+    free(info);
+}
+
+void ClickReconnect(GtkWidget *widget, gpointer data) {
+    // 移除并销毁按钮
+    gtk_widget_destroy(data);
 }

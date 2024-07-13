@@ -3,6 +3,9 @@
 double windowWidth;
 double windowHeight;
 
+GtkWidget *homePage;
+GtkWidget *content;
+
 /* 实现左侧导航栏功能 */
 
 // 切换堆栈页面的回调函数
@@ -21,8 +24,8 @@ void OnSwitchPage(GtkButton *button, gpointer data) {
     activeButton = GTK_WIDGET(button);
 }
 
-// 增加左侧导航栏按钮
-void AddBarButton(GtkWidget *contentStack, GtkWidget *sidebarBox, char *content) {
+// 增加左侧导航栏按钮。返回创建的按钮
+GtkWidget *AddBarButton(GtkWidget *contentStack, GtkWidget *sidebarBox, char *content) {
     GtkWidget *button;
     button = gtk_button_new_with_label(content);
     g_signal_connect(button, "clicked", G_CALLBACK(OnSwitchPage), contentStack);
@@ -38,6 +41,8 @@ void AddBarButton(GtkWidget *contentStack, GtkWidget *sidebarBox, char *content)
         activeButton = GTK_WIDGET(button);
         gtk_widget_set_name(GTK_WIDGET(button), "active-button");
     }
+
+    return button;
 }
 
 // 在box中增加分隔符，让按钮之间可以分开
@@ -64,12 +69,13 @@ GtkWidget * CreateBar(GtkWidget *mainBox) {
 
     // 创建内容堆栈
     GtkWidget *contentStack = gtk_stack_new();
+    content = contentStack;
     gtk_stack_set_transition_type(GTK_STACK(contentStack), GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT);
     gtk_container_add(GTK_CONTAINER(scrolled_window), contentStack);
 
     // 添加侧边栏按钮
     AddSeparator(sidebarBox);
-    AddBarButton(contentStack, sidebarBox, "主页");
+    homePage = AddBarButton(contentStack, sidebarBox, "主页");
     AddSeparator(sidebarBox);
     AddBarButton(contentStack, sidebarBox, "历史连接");
     // AddSeparator(sidebarBox);
