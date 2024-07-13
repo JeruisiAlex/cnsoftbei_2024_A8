@@ -20,13 +20,11 @@ namespace Server
         public Form1()
         {
             InitializeComponent();
-<<<<<<< HEAD
-
             Kernel kernel = Kernel.getKernel();
             kernel.histories.Add(new History("123", "123", "123"));
             kernel.writeHistories();
             kernel.readHistories();
-            if(kernel.histories == null)
+            if (kernel.histories == null)
             {
                 Debug.WriteLine("++++++++++++++++");
             }
@@ -34,10 +32,7 @@ namespace Server
             {
                 Debug.WriteLine(kernel.histories[0].getIp());
             }
-=======
-            Kernel kernel = Kernel.getKernel();
             kernel.init();
->>>>>>> 25cbad7f32163f83012e0fde935f721fbf365537
         }
 
         private void initializeCustomComponents()
@@ -195,6 +190,12 @@ namespace Server
             contentPanel.Paint += mouseAction.ContentPanel_Paint;
 
             return contentPanel;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            MessageBox.Show("服务端已被连接，请断开连接后再关闭！");
+            e.Cancel = true;
         }
     }
 }
