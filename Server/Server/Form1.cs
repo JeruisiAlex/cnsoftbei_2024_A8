@@ -1,7 +1,10 @@
 using System;
 using System.Diagnostics;
 using MouseActionFactory;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Windows.Forms;
+using MyClass;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using System.Net;
 namespace Server
 {
     public partial class Form1 : Form
@@ -14,15 +17,14 @@ namespace Server
         public static Panel connectionPanel;
         public static Panel contentPanel;
         public static Panel broadPanel;
-        public static Panel startupPanel;
+        public static FlowLayoutPanel historyPanel;
         private MouseActionFactory.MouseActionFactory mouseAction;
 
         public Form1()
         {
             InitializeComponent();
-<<<<<<< HEAD
-
             Kernel kernel = Kernel.getKernel();
+            kernel.init();
             kernel.histories.Add(new History("123", "123", "123"));
             kernel.writeHistories();
             kernel.readHistories();
@@ -32,12 +34,10 @@ namespace Server
             }
             else
             {
-                Debug.WriteLine(kernel.histories[0].getIp());
+                //Debug.WriteLine(kernel.histories[0].getIp());
             }
-=======
-            Kernel kernel = Kernel.getKernel();
-            kernel.init();
->>>>>>> 25cbad7f32163f83012e0fde935f721fbf365537
+            initializeCustomComponents();
+
         }
 
         private void initializeCustomComponents()
@@ -52,12 +52,11 @@ namespace Server
             contentPanel = createContentPanel();
             this.Controls.Add(contentPanel);
 
-            //应用程序面板
-            /*appInfoPanel = createAddAppInfoPanel();
-            this.Controls.Add(appInfoPanel);
+            //历史连接面板
+            historyPanel = createHistoryPanel();
+            this.Controls.Add(historyPanel);
 
-
-            mouseAction.flushAppPanel(kernel.getRemoteAppList());*/
+            
             //appInfoPanel.Visible = false;
         }
 
@@ -129,10 +128,10 @@ namespace Server
             addInfoLabel(ipPortPanel, "主机名:", new Point(20, 15), "华文中宋");
             addInfoLabel(ipPortPanel, "Port:", new Point(320, 15), "华文中宋");
 
-            String hostName = getHostName();
+            //String hostName = getHostName();
 
             // 添加 IP 和端口显示控件
-            addInfoLabel(ipPortPanel, hostName, new Point(60, 15), "Times New Roman");
+            addInfoLabel(ipPortPanel, "hostName", new Point(100, 15), "Times New Roman");
             addInfoLabel(ipPortPanel, "6789", new Point(370, 15), "Times New Roman");
 
             // 开关控件
@@ -159,17 +158,6 @@ namespace Server
             chkBroadcast.Location = new Point(320, 15);
             broadPanel.Controls.Add(chkBroadcast);
 
-            startupPanel = new Panel();
-            addPanel(startupPanel, new Point(180, 310));
-            startupPanel.MouseEnter += mouseAction.startupPanel_MouseEnter;
-            startupPanel.MouseLeave += mouseAction.startupPanel_MouseLeave;
-            addInfoLabel(startupPanel, "开机启动", new Point(20, 15), "华文中宋");
-
-            ToggleButton chkStartup = new ToggleButton();
-            chkStartup.Location = new Point(320, 15);
-            //chkStartup.AutoSize = true;
-            startupPanel.Controls.Add(chkStartup);
-
             // 顶部logo和连接状态
             Label lblLogo = new Label();
             lblLogo.Text = "SKRO";
@@ -195,6 +183,90 @@ namespace Server
             contentPanel.Paint += mouseAction.ContentPanel_Paint;
 
             return contentPanel;
+        }
+
+        private void addPanel(Panel panel, Point location)
+        {
+            panel.Location = location;
+            panel.Size = new Size(540, 50);
+            panel.BackColor = Color.Transparent;
+            contentPanel.Controls.Add(panel);
+        }
+
+        // 增加信息标签
+        private Label addInfoLabel(Panel panel, string text, Point location, String font)
+        {
+            Label label = new Label();
+            label.Text = text;
+            label.Location = location;
+            label.AutoSize = true;
+            label.Font = new Font(font, 13, FontStyle.Regular);
+            panel.Controls.Add(label);
+            return label;
+
+        }
+
+        private FlowLayoutPanel createHistoryPanel()
+        {
+            FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel
+            {
+                Location = new Point(180, 0),
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Right, // 锚定到底部和右侧
+                FlowDirection = FlowDirection.LeftToRight,
+                WrapContents = true,
+                AutoScroll  = true,
+                BackColor = Color.White,
+
+            };
+            History his = new History("123", "nanananna", "woshipinpin");
+            for(int i = 0; i < 5; i++)
+            {
+                Panel panel;
+                panel = createConnectionPanel(his);
+                flowLayoutPanel.Controls.Add(panel);
+            }
+
+            return flowLayoutPanel;
+        }
+
+        private Panel createConnectionPanel(History his)
+        {
+            Panel panel = new Panel
+            {
+                Size = new Size(300,150),
+                Margin = new Padding(180,10,0,10),
+                BackColor = Color.WhiteSmoke,
+            };
+            // 创建并配置 Label 控件
+            Label ipLabel = new Label
+            {
+                Text = "IP地址: " + his.ip,
+                AutoSize = true,
+                Location = new Point(10, 20),
+                Font = new Font("华文中宋",16)
+            };
+
+            Label hostLabel = new Label
+            {
+                Text = "主机名: " + his.hostName,
+                AutoSize = true,
+                Location = new Point(10, 50),
+                Font = new Font("华文中宋", 16)
+            };
+
+            Label userLabel = new Label
+            {
+                Text = "用户名: " + his.userName,
+                AutoSize = true,
+                Location = new Point(10, 80),
+                Font = new Font("华文中宋", 16)
+            };
+
+            // 将 Label 添加到 Panel
+            panel.Controls.Add(ipLabel);
+            panel.Controls.Add(hostLabel);
+            panel.Controls.Add(userLabel);
+            return panel;
         }
     }
 }

@@ -10,13 +10,15 @@ namespace Server
     {
         public string ip { get; set; }
         public string userName { get; set; }
-        public string password { get; set; }
 
-        public History(string ip, string userName, string password)
+        public string hostName { get; set; }
+
+
+        public History(string ip, string hostName,string userName)
         {
             this.ip = ip;
             this.userName = userName;
-            this.password = password;
+            this.hostName = hostName;
         }
     }
 }

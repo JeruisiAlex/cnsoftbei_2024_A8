@@ -87,6 +87,7 @@ namespace MouseActionFactory
                     break;
                 case "历史连接":
                     //Form1.appInfoPanel.Visible = true;
+                    Form1.historyPanel.Visible = true;
                     break;
             }
         }
@@ -98,16 +99,6 @@ namespace MouseActionFactory
         public void broadPanel_MouseLeave(object sender, EventArgs e)
         {
             Form1.broadPanel.BackColor = Color.Transparent;
-        }
-
-        public void startupPanel_MouseEnter(object sender, EventArgs e)
-        {
-            Form1.startupPanel.BackColor = Color.LightGray;
-        }
-
-        public void startupPanel_MouseLeave(object sender, EventArgs e)
-        {
-            Form1.startupPanel.BackColor = Color.Transparent;
         }
 
 

@@ -13,9 +13,6 @@ namespace MouseActionFactory
         void BtnSidePanel_Click(object sender, EventArgs e);
         void showContent(string buttonText);
         void broadPanel_MouseEnter(object sender, EventArgs e);
-        void broadPanel_MouseLeave(object sender, EventArgs e);
-        void startupPanel_MouseEnter(object sender, EventArgs e);
-        void startupPanel_MouseLeave(object sender, EventArgs e);
 
         void ContentPanel_Paint(object sender, PaintEventArgs e);
         // 窗口大小改变时，元素位置自适应

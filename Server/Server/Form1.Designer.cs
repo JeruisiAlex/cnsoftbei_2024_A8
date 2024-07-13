@@ -6,7 +6,8 @@
         ///  Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-
+        public static Version version;
+        public static String status;
         /// <summary>
         ///  Clean up any resources being used.
         /// </summary>
@@ -30,7 +31,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(899, 550);
             this.Text = "Form1";
         }
 
