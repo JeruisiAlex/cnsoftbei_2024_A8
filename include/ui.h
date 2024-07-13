@@ -105,7 +105,7 @@ extern struct NetworkInfo *historyRecords;
 extern int cnt;
 
 // 记录历史连接数据路径（相对于UI实现的.c文件的路径）
-#define HISTORY_PATH "/usr/local/share/SKRO/data"
+#define HISTORY_PATH "../data/history"
 
 void CreateUI(int argc,char *argv[]);
 
