@@ -68,7 +68,7 @@ namespace MouseActionFactory
                 Form1.lastClickedButton = btn; // 更新最后点击的按钮
 
                 showContent(btn.Text);
-                mouseAction.errMessage("111");
+                //mouseAction.errMessage("111");
             }
 
         }
