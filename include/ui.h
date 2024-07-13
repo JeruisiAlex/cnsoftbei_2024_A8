@@ -11,8 +11,9 @@
 static char * css =
     "#headerbar {"
     "  font-weight: bold;"
-    "  font-size: 30px;"
+    "  font-size: 26px;"
     "  font-family: Times New Roman, sans-serif;"
+    "  background-color: #F2F3F4;"
     "}"
     "#sidebar {"
     "  background-color: #F5F5F5;"
