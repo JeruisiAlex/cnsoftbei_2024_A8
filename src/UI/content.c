@@ -47,9 +47,11 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
 
     int res = ReadAllHistoryRecords(); // 找到历史记录
 
-    UnconnectHome();
+    ConnectedHome("123","123");
+    ShowUnconnectButton();
+    ShowReconnectButton();
 
-    // // 添加内容到主页
+    // // 自动连接历史连接
     // if(res == 0) {
     //     if(cnt == 0) {
     //         // 暂未连接
@@ -67,7 +69,7 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
         struct NetworkInfo *temp = historyRecords;
 
         for(int i=0;i<cnt;i++) {
-            AddHistoryBox((temp + i)->address,(temp + i)->username);
+            AddHistoryBox((temp + i)->address,(temp + i)->username,(temp + i)->password);
         }
 
         if(cnt != 0) {
@@ -164,7 +166,7 @@ void AddSwitchInGrid(GtkWidget *grid, int row, int col) {
 }
 
 // 添加历史连接
-void AddHistoryBox(char *ip, char *username) {
+void AddHistoryBox(char *ip, char *username, char *password) {
     GtkWidget *button = gtk_button_new(); // 创建按钮
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
 
@@ -201,6 +203,13 @@ void AddHistoryBox(char *ip, char *username) {
     col1 %= maxCol1;
 
     gtk_grid_attach(GTK_GRID(contentGrid2), button, col1, row1, 1, 1);
+
+    // 添加点击事件
+    struct NetworkInfo *in = (struct NetworkInfo *)malloc(sizeof(struct NetworkInfo));
+    strcpy(in->address,ip);
+    strcpy(in->username,username);
+    strcpy(in->password,password);
+    g_signal_connect(button, "clicked", G_CALLBACK(ClickHistory), in);
 
     // 显示新按钮及其所有子控件
     gtk_widget_show_all(contentGrid2);
@@ -533,7 +542,7 @@ void RemoveAllPublishedSoftware() {
 // 功能：设置主页为“正在连接”状态
 void ConnectingHome(char * ip) {
 
-    RemoveAllChild(contentGrid1,3,1,0);
+    RemoveAllChild(contentGrid1,5,1,0);
 
     // 创建一个水平的盒子
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
@@ -558,19 +567,6 @@ void ConnectingHome(char * ip) {
     gtk_spinner_start(GTK_SPINNER(spinner)); // 启动加载动画
     gtk_grid_attach(GTK_GRID(contentGrid1), spinner, 0, 1, 1, 1);
 
-    // // 创建“断开连接”按钮
-    // GtkWidget *button;
-    // button = gtk_button_new_with_label("断开连接");
-    // gtk_widget_set_margin_top(button, 0);
-    // gtk_widget_set_margin_bottom(button, 0);
-    // gtk_widget_set_margin_start(button, 0);
-    // gtk_widget_set_margin_end(button, 0);
-    // gtk_widget_set_size_request(button, (gint)(windowWidth/6.0), 25); // 设置按钮大小
-    // g_signal_connect(button,"clicked",G_CALLBACK(ClickUnconnect),NULL);
-    //
-    // // 将按钮放入网格
-    // gtk_grid_attach(GTK_GRID(contentGrid1), button, 0, 2, 1, 1);
-
     // 显示
     gtk_widget_show_all(contentGrid1);
 }
@@ -578,7 +574,7 @@ void ConnectingHome(char * ip) {
 // 设置主页为未连接状态
 void UnconnectHome() {
 
-    RemoveAllChild(contentGrid1,3,1,0);
+    RemoveAllChild(contentGrid1,5,1,0);
 
     // 显示"未连接"
     GtkWidget *label = gtk_label_new("未连接服务端");
@@ -593,7 +589,7 @@ void UnconnectHome() {
 // 设置主页为已经连接状态
 void ConnectedHome(char *ip,char *hostName) {
 
-    RemoveAllChild(contentGrid1,3,1,0);
+    RemoveAllChild(contentGrid1,5,1,0);
 
     // 显示"连接成功"
     GtkWidget *label = gtk_label_new("连接成功");
@@ -613,19 +609,6 @@ void ConnectedHome(char *ip,char *hostName) {
     label = gtk_label_new(temp2);
     gtk_widget_set_name(label,"inline-label");
     gtk_grid_attach(GTK_GRID(contentGrid1), label, 0, 2, 1, 1);
-
-    // 创建“断开连接”按钮
-    GtkWidget *button;
-    button = gtk_button_new_with_label("断开连接");
-    gtk_widget_set_margin_top(button, 0);
-    gtk_widget_set_margin_bottom(button, 0);
-    gtk_widget_set_margin_start(button, 0);
-    gtk_widget_set_margin_end(button, 0);
-    gtk_widget_set_size_request(button, (gint)(windowWidth/6.0), 25); // 设置按钮大小
-    g_signal_connect(button,"clicked",G_CALLBACK(ClickUnconnect),NULL);
-
-    // 将按钮放入网格
-    gtk_grid_attach(GTK_GRID(contentGrid1), button, 0, 3, 1, 1);
 
     // 显示
     gtk_widget_show_all(contentGrid1);
@@ -759,4 +742,42 @@ void AddSoftware(char * name,char * iconData,int iconLength) {
 // 移除“发布应用”界面的所有图标
 void RemoveAllSoftware() {
     RemoveAllChild(contentGrid3,row2,maxCol2,0);
+}
+
+// 显示“断开连接”按钮
+void ShowUnconnectButton() {
+    // 创建“断开连接”按钮
+    GtkWidget *button;
+    button = gtk_button_new_with_label("断开连接");
+    gtk_widget_set_margin_top(button, 0);
+    gtk_widget_set_margin_bottom(button, 0);
+    gtk_widget_set_margin_start(button, 0);
+    gtk_widget_set_margin_end(button, 0);
+    gtk_widget_set_size_request(button, (gint)(windowWidth/6.0), 25); // 设置按钮大小
+    g_signal_connect(button,"clicked",G_CALLBACK(ClickUnconnect),NULL);
+
+    // 将按钮放入网格
+    gtk_grid_attach(GTK_GRID(contentGrid1), button, 0, 3, 1, 1);
+
+    // 显示
+    gtk_widget_show_all(contentGrid1);
+}
+
+// 显示“重连应用端”按钮
+void ShowReconnectButton() {
+    // 创建“重连应用端”按钮
+    GtkWidget *button;
+    button = gtk_button_new_with_label("重连应用端");
+    gtk_widget_set_margin_top(button, 0);
+    gtk_widget_set_margin_bottom(button, 0);
+    gtk_widget_set_margin_start(button, 0);
+    gtk_widget_set_margin_end(button, 0);
+    gtk_widget_set_size_request(button, (gint)(windowWidth/6.0), 25); // 设置按钮大小
+    g_signal_connect(button,"clicked",G_CALLBACK(ClickReconnect),button);
+
+    // 将按钮放入网格
+    gtk_grid_attach(GTK_GRID(contentGrid1), button, 0, 4, 1, 1);
+
+    // 显示
+    gtk_widget_show_all(contentGrid1);
 }

@@ -103,9 +103,13 @@ extern gint minHeight;
 extern struct NetworkInfo *historyRecords;
 // 记录共有多少个历史连接记录
 extern int cnt;
-
 // 记录历史连接数据路径（相对于UI实现的.c文件的路径）
 #define HISTORY_PATH "../data/history"
+
+// 记录主页的按钮（因为连接后要跳到主页，此时应该设置主页按钮为激活状态）
+extern GtkWidget *homePage;
+// 记录内容栈（因为连接后要跳到主页，此时应该将内容栈跳转到主页）
+extern GtkWidget *content;
 
 void CreateUI(int argc,char *argv[]);
 
@@ -123,7 +127,7 @@ GtkWidget * CreateBoxFrame(GtkWidget *window);
 static GtkWidget *activeButton = NULL;// 存储当前激活的按钮
 GtkWidget * CreateBar(GtkWidget *mainBox);
 void OnSwitchPage(GtkButton *button, gpointer data);
-void AddBarButton(GtkWidget *contentStack, GtkWidget *sidebarBox, char *content);
+GtkWidget *AddBarButton(GtkWidget *contentStack, GtkWidget *sidebarBox, char *content);
 void AddSeparator(GtkWidget* box);
 
 /* 构建右侧内容栈 */
@@ -139,7 +143,7 @@ void AddIPBox(GtkWidget * window);
 void RemoveAllChild(GtkWidget *grid,int row,int col,int flag);
 void AddSoftware(char * name,char * iconData,int iconLength);
 // 下面的函数供 Jeruisi 调用
-void AddHistoryBox(char *ip, char *username);
+void AddHistoryBox(char *ip, char *username, char *password);
 void AddLanBox(char *ip);
 void AddPublishedSoftware(char * imgpath, char *name,char *alias);
 void RemoveAllLanBox();
@@ -150,5 +154,7 @@ void UnconnectHome();
 void ConnectedHome(char *ip, char *hostName);
 void ErrDialog(char *content);
 void AddFolder(char * folderName);
+void ShowUnconnectButton();
+void ShowReconnectButton();
 
 #endif //UI_H
