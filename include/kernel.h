@@ -15,6 +15,7 @@
 struct PIDList {
     int pid;
     struct PIDList *next;
+    struct PIDList *last;
 };
 
 extern char hostName[256];
@@ -45,5 +46,9 @@ int CreateFile(char *filePath);
 int CheckFreeRDP();
 
 int SaveSharePath();
+
+void addPid(int pid);
+
+void removePid(struct PIDList *pid);
 
 #endif //KERNEL_H

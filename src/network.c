@@ -18,22 +18,28 @@
 extern char **environ;
 
 struct NetworkInfo networkInfo;
+struct RDPInfo rdpInfo;
 char *serverName;
 int isConnect;
 pthread_mutex_t isConnectMutex;
 int isShare;
+struct PIDList *head;
 
 pthread_mutex_t mutex;
 pthread_cond_t cond;
 pthread_t threadForServer;
 pthread_t threadForRemoteApp;
 int port;
+int isRun;
+pthread_mutex_t isRunMutex;
 
 
 int NetworkInit() {
     pthread_mutex_init(&isConnectMutex, NULL);
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&cond, NULL);
+    pthread_mutex_init(&isRunMutex, NULL);
+    isRun = 1;
     isConnect = 0;
     if(CheckPort() == 1) {
         return 1;
@@ -44,6 +50,8 @@ int NetworkInit() {
 void NetworkClose() {
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&cond);
+    pthread_mutex_destroy(&isConnectMutex);
+    pthread_mutex_destroy(&isRunMutex);
 }
 
 int CheckPort() {
@@ -132,6 +140,8 @@ int SendHostName(int sock) {
 }
 
 int ConnectToServer() {
+    ConnectingHome(networkInfo.address);
+
     struct sockaddr_in addr;
     int sock = CreateClient(&addr, SERVER_PORT);
     if(sock < 0) return 1;
@@ -156,27 +166,81 @@ int ConnectToServer() {
 void *ReveiveServer(void *sock) {
     int sockId = *((int *)sock);
     int length = 0;
-    struct RDPInfo *info = malloc(sizeof(struct RDPInfo));
-    if(recv(sockId, &length, sizeof(int), 0) <=0 ) {
-        free(info);
-        return NULL;
+    if(recv(sockId, &length, sizeof(int), 0) <=0 ) return NULL;
+    rdpInfo.name = malloc(length + 1);
+    if(recv(sockId, rdpInfo.name, length, 0) <=0 ) return NULL;
+    // 打开断开连接的按钮
+
+    pthread_mutex_lock(&mutex);
+    if(pthread_create(&threadForRemoteApp, NULL, ConnectToRemoteApp, NULL) != 0) {
+        // 打开重连应用端的按钮
+
     }
-    info->name = malloc(length + 1);
-    if(recv(sockId, info->name, length, 0) <=0 ) {
-        free(info);
-        return NULL;
-    }
-    int pid = OpenRemoteApp(info->name);
+
+
+    pthread_cond_wait(&cond, &mutex);
+    pthread_mutex_unlock(&mutex);
+    pthread_mutex_lock(&isConnectMutex);
+    isConnect = 0;
+    pthread_mutex_unlock(&isConnectMutex);
 
     return NULL;
 }
 
 int DisconnectToServer() {
-
+    pthread_mutex_lock(&isRunMutex);
+    isRun = 0;
+    pthread_mutex_unlock(&isRunMutex);
+    for(struct PIDList *p = head; p; p = p -> next) {
+        kill(p->pid, SIGTERM);
+        removePid(p);
+    }
     return 0;
 }
 
+void ReConnectToRemoteApp() {
+    if(pthread_create(&threadForRemoteApp, NULL, ConnectToRemoteApp, NULL) != 0) {
+        // 打开重连应用端的按钮
+
+    }
+}
+
 void* ConnectToRemoteApp(void *info) {
+    int pid = OpenRemoteApp(rdpInfo.name);
+
+    if(pid < 0) {
+        // 打开重连应用端按钮
+
+    } else {
+        sleep(2);
+        if(kill(pid, 0) == 0) {
+            struct sockaddr_in addr;
+            int sock = CreateClient(&addr, REMOTEAPP_PORT);
+            if(connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr)) < 0) {
+                // 打开重连应用端按钮
+
+            } else {
+                pthread_mutex_lock(&isRunMutex);
+                while(isRun) {
+                    pthread_mutex_unlock(&isRunMutex);
+                    int length = 0;
+                    char *name;
+                    if(recv(sock, &length, sizeof(int), 0) > 0) {
+                        name = malloc(length);
+                        if(recv(sock, name, length, 0) > 0) {
+                            OpenRemoteApp(name);
+                        }
+                        free(name);
+                    }
+                    pthread_mutex_lock(&isRunMutex);
+                }
+                pthread_mutex_unlock(&isRunMutex);
+            }
+        } else {
+            // 打开重连应用端按钮
+
+        }
+    }
 
     return NULL;
 }
@@ -205,5 +269,6 @@ int OpenRemoteApp(const char *name) {
         }
     }
 
+    addPid(pid);
     return pid;
 }

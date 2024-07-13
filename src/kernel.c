@@ -22,9 +22,11 @@ char hostName[256];
 char *sharePath;
 int isShare;
 int fd;
+struct PIDList *head;
 
 int KernelInit() {
     errorNumber = SUCCESS;
+    head = NULL;
     if(LockFile() == 1) return 1;
     GetHostName();
     ReadSharePath();
@@ -147,4 +149,41 @@ int SaveSharePath() {
         fclose(file);
     }
     return 0;
+}
+
+void addPid(int pid) {
+    if(head == NULL) {
+        head = malloc(sizeof(struct PIDList));
+        head -> pid = pid;
+        head -> next = NULL;
+        head -> last = head;
+    } else {
+        struct PIDList *p = malloc(sizeof(struct PIDList));
+        struct PIDList *q = head -> last;
+        q -> next = p;
+        p -> pid = pid;
+        p -> last = q;
+        p -> next = NULL;
+        head -> last = p;
+    }
+}
+
+void removePid(struct PIDList *pid) {
+    if(pid == head) {
+        struct PIDList *p = head -> next;
+        if(p != NULL) {
+            p -> last = head -> last;
+            head = p;
+        }
+    } else if(pid -> next == NULL){
+        struct PIDList *p = pid -> last;
+        p -> next = NULL;
+        head -> last = p;
+    } else {
+        struct PIDList *p = pid -> last;
+        struct PIDList *q = pid -> next;
+        p -> next = q;
+        q -> last = p;
+    }
+    free(pid);
 }

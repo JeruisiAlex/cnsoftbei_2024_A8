@@ -24,6 +24,7 @@ struct RDPInfo {
 };
 
 extern struct NetworkInfo networkInfo;
+extern struct RDPInfo rdpInfo;
 extern char *serverName;
 extern int isConnect;
 extern pthread_mutex_t isConnectMutex;
@@ -41,6 +42,8 @@ int ConnectToServer();
 void *ReveiveServer(void *sock);
 
 int DisconnectToServer();
+
+void ReConnectToRemoteApp();
 
 void* ConnectToRemoteApp(void *info);
 
