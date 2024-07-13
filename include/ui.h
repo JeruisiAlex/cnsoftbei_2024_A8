@@ -105,7 +105,7 @@ extern struct NWInfo *historyRecords;
 extern int cnt;
 
 // 记录历史连接数据路径（相对于UI实现的.c文件的路径）
-#define HISTORY_PATH "../data/history"
+#define HISTORY_PATH "/usr/local/share/SKRO/data"
 
 void CreateUI(int argc,char *argv[]);
 
