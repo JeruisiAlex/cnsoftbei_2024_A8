@@ -276,6 +276,7 @@ namespace Server
             {
                 // 执行关闭前的其他操作
                 // 例如，保存设置或清理资源
+                kernel.writeHistories();
             }
         }
     }
