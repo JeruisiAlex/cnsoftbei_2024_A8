@@ -18,24 +18,17 @@ namespace Server
         public static Panel contentPanel;
         public static Panel broadPanel;
         public static FlowLayoutPanel historyPanel;
+        private Kernel kernel;
         private MouseActionFactory.MouseActionFactory mouseAction;
 
         public Form1()
         {
             InitializeComponent();
-            Kernel kernel = Kernel.getKernel();
+            kernel = Kernel.getKernel();
             kernel.init();
             kernel.histories.Add(new History("123", "123", "123"));
             kernel.writeHistories();
             kernel.readHistories();
-            if(kernel.histories == null)
-            {
-                Debug.WriteLine("++++++++++++++++");
-            }
-            else
-            {
-                //Debug.WriteLine(kernel.histories[0].getIp());
-            }
             initializeCustomComponents();
 
         }
@@ -56,7 +49,8 @@ namespace Server
             historyPanel = createHistoryPanel();
             this.Controls.Add(historyPanel);
             this.Resize += Form1_Resize;
-            
+
+            this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
             //appInfoPanel.Visible = false;
         }
 
@@ -215,7 +209,7 @@ namespace Server
         {
             FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel
             {
-                Location = new Point(180, 0),
+                Location = new Point(150, 0),
                 Size= new Size(this.ClientSize.Width - 150, this.ClientSize.Height),
                 FlowDirection = FlowDirection.LeftToRight,
                 WrapContents = true,
@@ -223,8 +217,7 @@ namespace Server
                 BackColor = Color.White,
 
             };
-            History his = new History("123", "nanananna", "woshipinpin");
-            for (int i = 0; i < 5; i++)
+            foreach(History his in kernel.histories)
             {
                 Panel panel;
                 panel = createConnectionPanel(his);
@@ -239,7 +232,7 @@ namespace Server
             Panel panel = new Panel
             {
                 Size = new Size(300,150),
-                Margin = new Padding(10,10,0,10),
+                Margin = new Padding(20,10,0,10),
                 BackColor = Color.WhiteSmoke,
             };
             // 创建并配置 Label 控件
@@ -272,6 +265,21 @@ namespace Server
             panel.Controls.Add(hostLabel);
             panel.Controls.Add(userLabel);
             return panel;
+        }
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 在这里执行关闭前的操作，例如：
+            // 询问用户是否真的要关闭
+            var result = MessageBox.Show("确认关闭", "Confirm Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.No)
+            {
+                e.Cancel = true; // 取消关闭操作
+            }
+            else
+            {
+                // 执行关闭前的其他操作
+                // 例如，保存设置或清理资源
+            }
         }
     }
 }
