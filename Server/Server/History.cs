@@ -8,30 +8,15 @@ namespace Server
 {
     public class History
     {
-        private string ip;
-        private string userName;
-        private string password;
+        public string ip { get; set; }
+        public string userName { get; set; }
+        public string password { get; set; }
 
         public History(string ip, string userName, string password)
         {
             this.ip = ip;
             this.userName = userName;
             this.password = password;
-        }
-
-        public string getIp()
-        {
-            return ip;
-        }
-
-        public string getUserName()
-        {
-            return userName;
-        }
-
-        public string getPassword()
-        {
-            return password;
         }
     }
 }

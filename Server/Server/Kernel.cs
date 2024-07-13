@@ -1,8 +1,9 @@
-﻿using System.Drawing.Imaging;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Xml;
 using Microsoft.Win32;
 
 namespace Server
@@ -125,10 +126,16 @@ namespace Server
         // 写入历史记录。在Form1关闭的时候调用。其他时候，pinpin只需要改动 histories 这个 List
         public void writeHistories()
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            string jsonString = JsonSerializer.Serialize(histories, options);
-
-            File.WriteAllText(historiesPath, jsonString);
+            try
+            {
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                string json = JsonSerializer.Serialize(histories, options);
+                File.WriteAllText(historiesPath, json);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while saving history: {ex.Message}");
+            }
         }
 
         private static extern void WTSFreeMemory(IntPtr pointer);
