@@ -8,6 +8,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Windows.Forms;
 using RemoteApp;
+using IWshRuntimeLibrary;
 namespace MouseActionFactory
 {
     public class MouseActionFactory : IMouseActionFactory
@@ -66,23 +67,17 @@ namespace MouseActionFactory
                     // 获取文件信息
                     FileInfo fileInfo = new FileInfo(selectedFilePath);
                     FileVersionInfo file = FileVersionInfo.GetVersionInfo(selectedFilePath);
-                    string fileName = file.ProductName;
-                    long fileSize = fileInfo.Length; // 文件大小，单位为字节
-                    DateTime creationTime = fileInfo.CreationTime; // 创建时间
-                    DateTime lastAccessTime = fileInfo.LastAccessTime; // 上次访问时间
-                    DateTime lastWriteTime = fileInfo.LastWriteTime; // 上次写入时间
+                    string fileName = file.FileDescription;
 
+                    
                     // 添加到应用程序信息列表
                     kernel.addRemoteApp(fileName, selectedFilePath);
+
 
                     flushAppPanel(kernel.getRemoteAppList());
                     // 显示文件信息
                     /*string message = $"文件路径: {selectedFilePath}\n" +
-                                     $"文件名: {fileName}\n" +
-                                     $"文件大小: {fileSize} 字节\n" +
-                                     $"创建时间: {creationTime}\n" +
-                                     $"上次访问时间: {lastAccessTime}\n" +
-                                     $"上次写入时间: {lastWriteTime}";*/
+                                     $"文件名: {fileName}\n";*/
                     //MessageBox.Show(message, "选择的exe程序");
                     //MessageBox.Show("你选择的文件路径: " + selectedFilePath, "选择的exe程序");
                 }
