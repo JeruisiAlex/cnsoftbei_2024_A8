@@ -68,6 +68,7 @@ namespace MouseActionFactory
                 Form1.lastClickedButton = btn; // 更新最后点击的按钮
 
                 showContent(btn.Text);
+                //mouseAction.errMessage("111");
             }
 
         }
@@ -118,6 +119,12 @@ namespace MouseActionFactory
                 g.DrawLine(pen, 270, 137, 430, 137); // IP下方虚线
                 g.DrawLine(pen, 550, 137, 600, 137); // Port下方虚线
             }
+        }
+
+        public void errMessage(string message)
+        {
+            MessageBox.Show(message);
+            Application.Exit();
         }
     }
 }
