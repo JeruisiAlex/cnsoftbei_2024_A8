@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +13,6 @@ using System.Net.Sockets;
 using MouseActionFactory;
 using Microsoft.Win32;
 using System.Diagnostics;
-using MouseActionFactory;
 
 namespace RemoteApp
 {
@@ -22,16 +20,19 @@ namespace RemoteApp
     {
         public static Panel sidePanel;
         public static Button lastClickedButton; // 用于跟踪最后点击的按钮
-        public static Panel appInfoPanel;
-        public static FlowLayoutPanel appInstallPanel;
+        public static FlowLayoutPanel appInfoPanel;
+        public static Panel appInstallPanel;
         public static Panel broadPanel;
         public static Panel startupPanel;
         public static Button buttonAppList;
-        public static Button buttonInstallApp;
-        public static List<App> appList=new List<App>();
+        public static Button buttonAddApp;
+        public static Panel contentPanel;
+        public static Label title; 
+        public static List<App> appList = new List<App>();
         //public static Kernel kernel;
-        // 命名空間.类名 变量名
+        // 命名空间.类名 变量名
         private MouseActionFactory.MouseActionFactory mouseAction;
+
         //加载初始化窗口
         public Form1()
         {
@@ -39,25 +40,36 @@ namespace RemoteApp
             InitializeComponent();
             initializeCustomComponents();
         }
+
         private void initializeCustomComponents()
         {
             // 获取 MouseActionFactory 的唯一实例
             mouseAction = MouseActionFactory.MouseActionFactory.Instance;
+
             // 左侧面板
             sidePanel = createSidePanel();
             this.Controls.Add(sidePanel);
 
-
-            //应用程序面板
+            // 初始化 contentPanel
+            contentPanel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.White
+            };
+            // 应用程序面板
             appInfoPanel = createAppInfoPanel();
-            this.Controls.Add(appInfoPanel);
+            contentPanel.Controls.Add(appInfoPanel);
 
+            this.Controls.Add(contentPanel);
+            //buttonAddApp =
+            appInstallPanel = new Panel();
+            this.Controls.Add(appInstallPanel);
 
             //mouseAction.flushAppPanel(kernel.getRemoteAppList());
             mouseAction.flushAppPanel(appList);
             //appInfoPanel.Visible = false;
-        }
 
+        }
 
         public Panel createSidePanel()
         {
@@ -78,10 +90,8 @@ namespace RemoteApp
                 Margin = new Padding(0),
             };
 
-            buttonAppList = CreateButton("应用程序");
+            buttonAppList = CreateButton("发布程序");
             flowLayoutPanel.Controls.Add(buttonAppList);
-            buttonInstallApp = CreateButton("安装程序");
-            flowLayoutPanel.Controls.Add(buttonInstallApp);
             sidePanel.Controls.Add(flowLayoutPanel);
 
             return sidePanel;
@@ -90,16 +100,17 @@ namespace RemoteApp
         // 增加左侧按钮
         private Button CreateButton(string text)
         {
-            Button button = new Button();
-            button.Text = text;
-            button.Size = new Size(150, 50);
-            button.FlatStyle = FlatStyle.Flat;
-            button.BackColor = Color.LightGray;
-            button.FlatAppearance.BorderSize = 0;
-            button.Margin = new Padding(0, 0, 0, 15); // 设置底部间距为 10 像素
-            button.TextAlign = ContentAlignment.MiddleCenter;
-
-            button.Font = new Font("等线", 15);
+            Button button = new Button
+            {
+                Text = text,
+                Size = new Size(150, 50),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.LightGray,
+                FlatAppearance = { BorderSize = 0 },
+                Margin = new Padding(0, 0, 0, 15), // 设置底部间距为 10 像素
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = new Font("等线", 15)
+            };
 
             button.Click += mouseAction.BtnSidePanel_Click;
             return button;
@@ -109,45 +120,64 @@ namespace RemoteApp
         {
             FlowLayoutPanel allAppInfoPanel = new FlowLayoutPanel
             {
-                Dock = DockStyle.Fill,
+                Size = new Size(this.ClientSize.Width,this.ClientSize.Height-100),
                 AutoScroll = true,
-                FlowDirection = FlowDirection.TopDown, //上下布局
+                FlowDirection = FlowDirection.TopDown, // 上下
                 WrapContents = false,
-                BackColor = Color.White
+                Location = new Point(0,50),
             };
 
-            Panel panel = new Panel
-            {
-                Margin = new Padding(500, 20, 10, 0), // 调整Margin确保不会超出范围
-                Size = new Size(500, 50),
-                BackColor = Color.White,
-                AutoSize = true
-            };
             //title
             Label titleLabel = new Label
             {
                 Text = "已发布程序",
-                Location = new Point(200,15),
                 Font = new Font("华文中宋", 20, FontStyle.Bold),
+                Location=new Point(180,15),
+                BackColor= Color.White,     
                 AutoSize = true
             };
-            panel.Controls.Add(titleLabel);
-            this.Controls.Add(panel);
+            contentPanel.Controls.Add(titleLabel);
             // 添加按钮
+            // 创建按钮容器面板
+            Panel buttonPanel = new Panel
+            {
+                BackColor = Color.White,
+                Dock = DockStyle.Bottom,
+                Height = 70, // 设置容器面板的高度
+                Padding = new Padding(0, 0, 0, 0) // 设置按钮容器的内边距
+            };
             Button addButton = new Button
             {
-                Text = "+",
+                Text = "发布应用",
                 Font = new Font("Arial", 16, FontStyle.Bold),
-                Size = new Size(50, 50),
-                Location = new Point(this.ClientSize.Width - 70, this.ClientSize.Height - 70),
+                Size = new Size(120, 50),
+                BackColor = Color.LightGray,
+                FlatAppearance = { BorderSize = 0 },
+                FlatStyle = FlatStyle.Flat,
+                //Location = new Point(0),
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Right
             };
-            this.Controls.Add(addButton);
+
+            Button installButton = new Button
+            {
+                Text = "选择安装程序",
+                Font = new Font("Arial", 16, FontStyle.Bold),
+                Size = new Size(180,50),
+                Location = new Point(540,0),
+                BackColor = Color.LightGray,
+                FlatAppearance = { BorderSize = 0 },
+                FlatStyle = FlatStyle.Flat,
+            };
+            // 添加按钮到按钮容器面板
+            buttonPanel.Controls.Add(addButton);
+            buttonPanel.Controls.Add(installButton);
+
+            // 将按钮容器面板添加到 FlowLayoutPanel
+            contentPanel.Controls.Add(buttonPanel);
 
             addButton.MouseClick += mouseAction.SelectExeButton_Click;
-
+            installButton.MouseClick += mouseAction.SelectInstallButton_Click;
             return allAppInfoPanel;
-
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)

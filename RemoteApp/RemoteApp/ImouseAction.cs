@@ -6,8 +6,9 @@ namespace MouseActionFactory
     {
 
         void BtnSidePanel_Click(object sender, EventArgs e);
-        void showContent(string buttonText);
         void SelectExeButton_Click(object sender, EventArgs e);
+        void SelectInstallButton_Click(object sender, EventArgs e);
+
     }
 }
 
