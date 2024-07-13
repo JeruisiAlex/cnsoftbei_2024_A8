@@ -55,11 +55,16 @@ namespace Server
             //历史连接面板
             historyPanel = createHistoryPanel();
             this.Controls.Add(historyPanel);
-
+            this.Resize += Form1_Resize;
             
             //appInfoPanel.Visible = false;
         }
 
+        private void Form1_Resize(object? sender, EventArgs e)
+        {
+            historyPanel.Size = new Size(this.ClientSize.Width - 150, this.ClientSize.Height);
+            historyPanel.Location = new Point(150, 0);
+        }
 
         public Panel createSidePanel()
         {
@@ -211,7 +216,7 @@ namespace Server
             FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel
             {
                 Location = new Point(180, 0),
-                Anchor = AnchorStyles.Bottom | AnchorStyles.Right, // 锚定到底部和右侧
+                Size= new Size(this.ClientSize.Width - 150, this.ClientSize.Height),
                 FlowDirection = FlowDirection.LeftToRight,
                 WrapContents = true,
                 AutoScroll  = true,
@@ -219,7 +224,7 @@ namespace Server
 
             };
             History his = new History("123", "nanananna", "woshipinpin");
-            for(int i = 0; i < 5; i++)
+            for (int i = 0; i < 5; i++)
             {
                 Panel panel;
                 panel = createConnectionPanel(his);
@@ -234,7 +239,7 @@ namespace Server
             Panel panel = new Panel
             {
                 Size = new Size(300,150),
-                Margin = new Padding(180,10,0,10),
+                Margin = new Padding(10,10,0,10),
                 BackColor = Color.WhiteSmoke,
             };
             // 创建并配置 Label 控件
