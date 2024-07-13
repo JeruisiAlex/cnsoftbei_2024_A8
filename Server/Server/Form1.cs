@@ -28,7 +28,7 @@ namespace Server
             kernel.histories.Add(new History("123", "123", "123"));
             kernel.writeHistories();
             kernel.readHistories();
-            if(kernel.histories == null)
+            if (kernel.histories == null)
             {
                 Debug.WriteLine("++++++++++++++++");
             }
@@ -267,6 +267,12 @@ namespace Server
             panel.Controls.Add(hostLabel);
             panel.Controls.Add(userLabel);
             return panel;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            MessageBox.Show("服务端已被连接，请断开连接后再关闭！");
+            e.Cancel = true;
         }
     }
 }
