@@ -318,7 +318,7 @@ namespace RemoteApp
             {
                 addRemoteAppToRegistry(app.getUninstall().getFullName(), app.getUninstall().getPath(), app.getUninstall().getIconPath(), "",0);
 
-                network.send(0, app.getUninstall().getName());
+                network.send(1, app.getUninstall().getName());
 
                 // 如果卸载成功，移除卸载程序和发布应用
                 if (!File.Exists(app.getPath()))
@@ -357,7 +357,7 @@ namespace RemoteApp
             addRemoteAppToRegistry(fullName, path, path, "",2);
             if (err.getErrType() == ErrType.SUCCESS)
             {
-                network.send(0, app.getName());
+                network.send(1, app.getName());
             }
             else
             {
@@ -376,7 +376,7 @@ namespace RemoteApp
                 {
                     if (File.Exists(app.getPath()))
                     {
-                        network.send(0,app.getName());
+                        network.send(1,app.getName());
                     }
                     else
                     {
