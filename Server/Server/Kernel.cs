@@ -1,0 +1,173 @@
+﻿using System.Drawing.Imaging;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using Microsoft.Win32;
+
+namespace Server
+{
+    public class Kernel
+    {
+        private static Kernel instance = new Kernel();
+
+        public static Kernel getKernel()
+        {
+            return instance;
+        }
+
+        private string hostName;
+        public List<History> histories;
+        private string historiesPath = "./history.json"; // 历史记录的路径
+        private string rappFullName = "RemoteApp"; // remoteApp.exe 的全称
+        private string rappPath = "./RemoteApp.exe"; // remoteApp.exe 的路径
+        private string rdpRegistryKeyPath = @"SYSTEM\CurrentControlSet\Control\Terminal Server";
+        private string remoteAppRegistryKeyPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications";
+
+        private Kernel()
+        {
+            hostName = "";
+            histories = new List<History>();
+        }
+
+        public void init()
+        {
+            if (!checkRDP())
+            {
+                // 错误框,错误框关闭，则整个程序关闭
+                // “请打开远程桌面”
+                // 弹出 pdf
+                return;
+            }
+            if (!File.Exists(rappPath))
+            {
+                // 错误框,错误框关闭，则整个程序关闭
+                // “没有找到必要程序，请重新安装”
+                return ;
+            }
+            hostName = Environment.MachineName;
+            checkRemoteApp();
+            readHistories();
+        }
+
+        // 检查 rdp 是否打开
+        public bool checkRDP()
+        {
+            try
+            {
+                RegistryKey key = Registry.LocalMachine.OpenSubKey(rdpRegistryKeyPath, false);
+                if (key != null)
+                {
+                    int value = (int)key.GetValue("fDenyTSConnections");
+                    key.Close();
+                    if (value != 0)
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error checking remote desktop status: " + ex.Message);
+            }
+            return false;
+        }
+
+        // 从注册表中读 remoteApp.exe 注册表是否存在。如果不存在则创建
+        public void checkRemoteApp()
+        {
+            string name = getName(rappFullName);
+            RegistryKey key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(remoteAppRegistryKeyPath, true);
+            if(key != null)
+            {
+                RegistryKey remoteAppKey = key.OpenSubKey(rappFullName, false);
+                if (remoteAppKey == null)
+                {
+                    RegistryKey newKey = key.CreateSubKey(rappFullName, true);
+                    newKey.SetValue("Name", name, RegistryValueKind.String);
+                    newKey.SetValue("FullName", rappFullName, RegistryValueKind.String);
+                    newKey.SetValue("Path", rappPath, RegistryValueKind.String);
+                    newKey.SetValue("IconPath", rappPath, RegistryValueKind.String);
+                }
+                else
+                {
+                    remoteAppKey.Close();
+                }
+                key.Close();
+            }
+        }
+
+        // 读取历史连接记录
+        public void readHistories()
+        {
+            try
+            {
+                if (File.Exists(historiesPath))
+                {
+                    string jsonString = File.ReadAllText(historiesPath);
+                    histories = JsonSerializer.Deserialize<List<History>>(jsonString);
+                }
+            }
+
+            catch (JsonException ex)
+            {
+                // 处理JSON解析错误
+                Console.WriteLine($"JSON 解析错误: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                // 处理其他错误
+                Console.WriteLine($"读取或反序列化期间发生错误: {ex.Message}");
+            }
+        }
+        
+        // 写入历史记录。在Form1关闭的时候调用。其他时候，pinpin只需要改动 histories 这个 List
+        public void writeHistories()
+        {
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(histories, options);
+
+            File.WriteAllText(historiesPath, jsonString);
+        }
+
+        private static extern void WTSFreeMemory(IntPtr pointer);
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool LockWorkStation();
+        public bool lockCurrentUser()
+        {
+            return LockWorkStation();
+        }
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern bool LogonUser(string lpszUsername, string lpszDomain, string lpszPassword, int dwLogonType, int dwLogonProvider, out IntPtr phToken);
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        private extern static bool CloseHandle(IntPtr handle);
+        public bool checkUserInfo(string username, string password)
+        {
+            IntPtr tokenHandle = IntPtr.Zero;
+            // 调用 LogonUser 函数来验证用户名和密码
+            bool isSuccess = LogonUser(username, "", password, 2, 0, out tokenHandle);
+            if (isSuccess)
+            {
+                CloseHandle(tokenHandle);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        private string getName(string fullName)
+        {
+            Regex rx = new Regex(@"[^\p{L}0-9\-_"" ]");
+            string name = fullName;
+            if (rx.IsMatch(fullName))
+            {
+                name = rx.Replace(fullName, string.Empty);
+            }
+            name = name.Trim();
+            return name;
+        }
+        public string getHostName() { return hostName; }
+    }
+}
