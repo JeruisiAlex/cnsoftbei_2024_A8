@@ -15,4 +15,6 @@ namespace RemoteApp
         CAN_NOT_UNINSTALL = 4,
         RAPP_NOT_IN_PATH = 5,
     }
+
+
 }

@@ -35,7 +35,7 @@ namespace RemoteApp
         public void init()
         {
             readRemoteAppList();
-            err.handle();
+            
         }
         
         // 读取远程应用列表。（同时会读取到各个应用列表的卸载程序）
@@ -58,6 +58,7 @@ namespace RemoteApp
 
                 }
                 key.Close();
+                err.setErrType(ErrType.SUCCESS);
             }
             else
             {
