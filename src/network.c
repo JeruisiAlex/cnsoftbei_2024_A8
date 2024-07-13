@@ -19,6 +19,7 @@ extern char **environ;
 
 struct NetworkInfo networkInfo;
 char *serverName;
+int isConnect;
 int isShare;
 
 pthread_mutex_t mutex;
@@ -31,6 +32,7 @@ int port;
 int NetworkInit() {
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&cond, NULL);
+    isConnect = 0;
     if(CheckPort() == 1) {
         return 1;
     }

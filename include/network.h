@@ -23,6 +23,7 @@ struct RDPInfo {
 
 extern struct NetworkInfo networkInfo;
 extern char *serverName;
+extern int isConnect;
 
 int NetworkInit();
 
