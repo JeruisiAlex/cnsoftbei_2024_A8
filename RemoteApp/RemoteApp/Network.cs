@@ -22,6 +22,7 @@ namespace RemoteApp
         private NetworkStream stream;
         private NetworkState networkState;
         private Queue<string> messages;
+        private string message;
         private int code;
         private string clientName;
         
@@ -79,7 +80,8 @@ namespace RemoteApp
                 stateMutex.ReleaseMutex();
 
                 mutex.WaitOne();
-                string name = messages.Dequeue();
+                /*string name = messages.Dequeue();*/
+                string name = message;
                 int length = name.Length;
                 byte[] data = Encoding.UTF8.GetBytes(code+length+name);
                 stream.Write(data);
@@ -92,7 +94,8 @@ namespace RemoteApp
         public void send(int code, string name)
         {
             this.code = code;
-            messages.Enqueue(name);
+            message = name;
+            /*messages.Enqueue(name);*/
             mutex.ReleaseMutex();
             mutex.WaitOne();
         }
