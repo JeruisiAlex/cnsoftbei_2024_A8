@@ -7,7 +7,7 @@
 double windowWidth;
 double windowHeight;
 
-struct NWInfo *historyRecords;
+struct NetworkInfo *historyRecords;
 int cnt;
 
 GtkWidget * connectState;
@@ -62,7 +62,7 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     // 添加内容到历史连接
     AddIPBox(window);
     if(res == 0) {
-        struct NWInfo *temp = historyRecords;
+        struct NetworkInfo *temp = historyRecords;
 
         for(int i=0;i<cnt;i++) {
             AddHistoryBox((temp + i)->address,(temp + i)->username);
@@ -589,7 +589,7 @@ void UnconnectHome() {
 }
 
 // 设置主页为已经连接状态
-void ConnectedHome(char *ip) {
+void ConnectedHome(char *ip,char *hostName) {
 
     RemoveAllChild(contentGrid1,3,1,0);
 
@@ -598,12 +598,19 @@ void ConnectedHome(char *ip) {
     gtk_widget_set_name(label, "head-label");
     gtk_grid_attach(GTK_GRID(contentGrid1), label, 0, 0, 1, 1);
 
-    // 显示正在连接的IP
+    // 显示连接的IP
     char temp[100] = "IP：";
     strcat(temp,ip);
     label = gtk_label_new(temp);
     gtk_widget_set_name(label,"inline-label");
     gtk_grid_attach(GTK_GRID(contentGrid1), label, 0, 1, 1, 1);
+
+    // 显示主机名
+    char temp2[200] = "主机名：";
+    strcat(temp2,hostName);
+    label = gtk_label_new(temp2);
+    gtk_widget_set_name(label,"inline-label");
+    gtk_grid_attach(GTK_GRID(contentGrid1), label, 0, 2, 1, 1);
 
     // 创建“断开连接”按钮
     GtkWidget *button;
@@ -616,7 +623,7 @@ void ConnectedHome(char *ip) {
     g_signal_connect(button,"clicked",G_CALLBACK(ClickUnconnect),NULL);
 
     // 将按钮放入网格
-    gtk_grid_attach(GTK_GRID(contentGrid1), button, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(contentGrid1), button, 0, 3, 1, 1);
 
     // 显示
     gtk_widget_show_all(contentGrid1);

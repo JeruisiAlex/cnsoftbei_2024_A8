@@ -9,7 +9,7 @@
 double windowWidth;
 double windowHeight;
 
-struct NWInfo *historyRecords = NULL;
+struct NetworkInfo *historyRecords = NULL;
 int cnt = 0;
 
 GtkWidget *window;
@@ -216,7 +216,7 @@ int ReadAllHistoryRecords() {
         return HISTORY_NF;
     }
 
-    struct NWInfo info[200];
+    struct NetworkInfo info[200];
     int i = 0; // 0:正在读IP 1:正在读用户名 2:正在读密码
     int j = 0; // 正在读第几个字符
     char ch = '\0';
@@ -255,8 +255,8 @@ int ReadAllHistoryRecords() {
 
     }
 
-    historyRecords = (struct NWInfo *)malloc(cnt * sizeof(struct NWInfo));
-    memcpy(historyRecords,info,cnt * sizeof(struct NWInfo));
+    historyRecords = (struct NetworkInfo *)malloc(cnt * sizeof(struct NetworkInfo));
+    memcpy(historyRecords,info,cnt * sizeof(struct NetworkInfo));
 
     fclose(file);
     return 0;

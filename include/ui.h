@@ -100,7 +100,7 @@ extern gint minWidth;
 extern gint minHeight;
 
 // 记录所有历史记录的结构体数组
-extern struct NWInfo *historyRecords;
+extern struct NetworkInfo *historyRecords;
 // 记录共有多少个历史连接记录
 extern int cnt;
 
@@ -147,7 +147,7 @@ void RemoveAllPublishedSoftware();
 void RemoveAllSoftware();
 void ConnectingHome(char * ip);
 void UnconnectHome();
-void ConnectedHome(char *ip);
+void ConnectedHome(char *ip, char *hostName);
 void ErrDialog(char *content);
 void AddFolder(char * folderName);
 

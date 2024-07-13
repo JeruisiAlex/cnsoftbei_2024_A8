@@ -7,21 +7,40 @@
 #define NETWORK_H
 
 #define PORT "6789"
+#define SERVER_PORT 6789
+#define REMOTEAPP_PORT 5678
 
-struct NWInfo {
+struct NetworkInfo {
     char address[20];
     char username[30];
     char password[256];
 };
 
-extern struct NWInfo nwInfo;
+struct RDPInfo {
+    char *name;
+    int pid;
+};
 
-int SetNWInfo(const char *address, const char *username, const char *password);
+extern struct NetworkInfo networkInfo;
+extern char *serverName;
+
+int NetworkInit();
+
+void NetworkClose();
+
+int CheckPort();
+
+int SetNetworkInfo(const char *address, const char *username, const char *password);
 
 int ConnectToServer();
 
-void Heartbeat();
+void *ReveiveServer(void *sock);
 
 int DisconnectToServer();
+
+void* ConnectToRemoteApp(void *info);
+
+int OpenRemoteApp(char *name);
+
 
 #endif //NETWORK_H
