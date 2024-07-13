@@ -54,7 +54,7 @@ namespace MouseActionFactory
 
         public void SelectExeButton_Click(object sender, EventArgs e)
         {
-            //Kernel kernel = Kernel.getKernel();
+            Kernel kernel = Kernel.getKernel();
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.Filter = "Executable files (*.exe)|*.exe|All files (*.*)|*.*";
@@ -73,11 +73,9 @@ namespace MouseActionFactory
                     DateTime lastWriteTime = fileInfo.LastWriteTime; // 上次写入时间
 
                     // 添加到应用程序信息列表
-                    //kernel.addRemoteApp(fileName, selectedFilePath);
-                    Form1.appList.Add(new App(fileName, selectedFilePath));
+                    kernel.addRemoteApp(fileName, selectedFilePath);
 
-                    //flushAppPanel(kernel.getRemoteAppList());
-                    flushAppPanel(Form1.appList);
+                    flushAppPanel(kernel.getRemoteAppList());
                     // 显示文件信息
                     /*string message = $"文件路径: {selectedFilePath}\n" +
                                      $"文件名: {fileName}\n" +
@@ -93,11 +91,11 @@ namespace MouseActionFactory
 
         public void SelectInstallButton_Click(object sender, EventArgs e)
         {
-            //Kernel kernel = Kernel.getKernel();
+            Kernel kernel = Kernel.getKernel();
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Filter = "Executable files (*.exe)|*.exe|All files (*.*)|*.*";
-                openFileDialog.Title = "选择exe程序";
+                openFileDialog.Filter = "安装程序 (*.exe;*.msi)|*.exe;*.msi|All files (*.*)|*.*";
+                openFileDialog.Title = "选择安装程序";
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -112,11 +110,9 @@ namespace MouseActionFactory
                     DateTime lastWriteTime = fileInfo.LastWriteTime; // 上次写入时间
 
                     // 添加到应用程序信息列表
-                    //kernel.addRemoteApp(fileName, selectedFilePath);
-                    Form1.appList.Add(new App(fileName, selectedFilePath));
+                    kernel.installApp(fileName, selectedFilePath);
 
                     //flushAppPanel(kernel.getRemoteAppList());
-                    flushAppPanel(Form1.appList);
                     // 显示文件信息
                     /*string message = $"文件路径: {selectedFilePath}\n" +
                                      $"文件名: {fileName}\n" +
@@ -165,7 +161,7 @@ namespace MouseActionFactory
             // 创建显示名称的 Label
             Label nameLabel = new Label
             {
-                Text =app.getFullName(), // 设置名称文本
+                Text = app.getFullName(), // 设置名称文本
                 Location = new Point(60, 15), // 设置位置
                 AutoSize = true, // 自动调整大小以适应内容
                 Font = new Font("Arial", 16, FontStyle.Bold), // 设置字体
@@ -173,12 +169,22 @@ namespace MouseActionFactory
             appPanel.Controls.Add(nameLabel); // 将 Label 添加到面板
 
             // 创建 ContextMenuStrip 并添加菜单项
-            ContextMenuStrip appMenuStrip = getContextMenu();
-            appPanel.ContextMenuStrip = appMenuStrip;
+            ContextMenuStrip contextMenu = new ContextMenuStrip();
+            ToolStripMenuItem runMenuItem = new ToolStripMenuItem("运行");
+            ToolStripMenuItem deleteMenuItem = new ToolStripMenuItem("移除");
+            ToolStripMenuItem unistallMenuItem = new ToolStripMenuItem("卸载");
+            ToolStripMenuItem saveDataMenuItem = new ToolStripMenuItem("保存数据");
+
+            // 添加菜单项到 ContextMenuStrip
+            contextMenu.Items.Add(runMenuItem);
+            contextMenu.Items.Add(deleteMenuItem);
+            contextMenu.Items.Add(unistallMenuItem);
+            contextMenu.Items.Add(saveDataMenuItem);
+            appPanel.ContextMenuStrip = contextMenu;
             // 处理菜单项的点击事件
-            /*runMenuItem.Click += RunMenuItem_Click;
-            installMenuItem.Click += InstallMenuItem_Click;
-            deleteMenuItem.Click += DeleteMenuItem_Click;*/
+            runMenuItem.Click += (sender, e) => runMenuItem_Click(sender, e, app);
+            deleteMenuItem.Click += (sender, e) => deleteMenuItem_Click(sender, e, app);
+            unistallMenuItem.Click += (sender, e) => unistallMenuItem_Click(sender, e, app);
 
             // 绑定鼠标移入和移出事件
             appPanel.MouseEnter += (sender, e) => appPanel.BackColor = Color.WhiteSmoke;
@@ -187,20 +193,22 @@ namespace MouseActionFactory
             return appPanel;
         }
 
-        private ContextMenuStrip getContextMenu()
-        {
-            ContextMenuStrip contextMenu = new ContextMenuStrip();
-            ToolStripMenuItem runMenuItem = new ToolStripMenuItem("运行");
-            ToolStripMenuItem installMenuItem = new ToolStripMenuItem("安装");
-            ToolStripMenuItem deleteMenuItem = new ToolStripMenuItem("删除");
-            ToolStripMenuItem saveDataMenuItem = new ToolStripMenuItem("保存数据");
 
-            // 添加菜单项到 ContextMenuStrip
-            contextMenu.Items.Add(runMenuItem);
-            contextMenu.Items.Add(installMenuItem);
-            contextMenu.Items.Add(deleteMenuItem);
-            contextMenu.Items.Add(saveDataMenuItem);
-            return contextMenu;
+        private void deleteMenuItem_Click(object sender, EventArgs e, App app)
+        {
+            Kernel kernel = Kernel.getKernel();
+            kernel.removeApp(app.getFullName());
+            flushAppPanel(kernel.getRemoteAppList());
+        }
+        private void runMenuItem_Click(Object sender, EventArgs e, App app)
+        {
+            Kernel kernel = Kernel.getKernel();
+            kernel.openApp(app.getFullName());
+        }
+        private void unistallMenuItem_Click(Object sender, EventArgs e, App app)
+        {
+            Kernel kernel = Kernel.getKernel();
+            kernel.uninstallApp(app.getFullName());
         }
     }
 }

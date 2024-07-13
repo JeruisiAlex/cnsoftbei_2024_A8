@@ -28,15 +28,16 @@ namespace RemoteApp
         public static Button buttonAddApp;
         public static Panel contentPanel;
         public static Label title; 
-        public static List<App> appList = new List<App>();
-        //public static Kernel kernel;
+        public static Kernel kernel;
         // 命名空间.类名 变量名
         private MouseActionFactory.MouseActionFactory mouseAction;
 
         //加载初始化窗口
         public Form1()
         {
+            Kernel.getKernel().init();
             Network.getNetwork().init();
+            kernel = Kernel.getKernel();
             InitializeComponent();
             initializeCustomComponents();
         }
@@ -59,14 +60,9 @@ namespace RemoteApp
             // 应用程序面板
             appInfoPanel = createAppInfoPanel();
             contentPanel.Controls.Add(appInfoPanel);
-
             this.Controls.Add(contentPanel);
-            //buttonAddApp =
-            appInstallPanel = new Panel();
-            this.Controls.Add(appInstallPanel);
 
-            //mouseAction.flushAppPanel(kernel.getRemoteAppList());
-            mouseAction.flushAppPanel(appList);
+            mouseAction.flushAppPanel(kernel.getRemoteAppList());
             //appInfoPanel.Visible = false;
 
         }
