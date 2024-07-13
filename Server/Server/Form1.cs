@@ -26,11 +26,8 @@ namespace Server
             InitializeComponent();
             kernel = Kernel.getKernel();
             kernel.init();
-            kernel.histories.Add(new History("123", "123", "123"));
-            kernel.writeHistories();
             kernel.readHistories();
             initializeCustomComponents();
-
         }
 
         private void initializeCustomComponents()

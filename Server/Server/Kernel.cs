@@ -19,6 +19,7 @@ namespace Server
 
         private string hostName;
         public List<History> histories;
+        private MouseActionFactory.MouseActionFactory mouseAction;
         private string historiesPath = "./history.json"; // 历史记录的路径
         private string rappFullName = "RemoteApp"; // remoteApp.exe 的全称
         private string rappPath = "./RemoteApp.exe"; // remoteApp.exe 的路径
@@ -33,17 +34,18 @@ namespace Server
 
         public void init()
         {
+            mouseAction = MouseActionFactory.MouseActionFactory.Instance;
             if (!checkRDP())
             {
                 // 错误框,错误框关闭，则整个程序关闭
-                // “请打开远程桌面”
+                mouseAction.errMessage("没有启用远程桌面！请手动启用。可参考应用程序同目录下“启用远程连接”的pdf文件启用远程桌面。");
                 // 弹出 pdf
                 return;
             }
             if (!File.Exists(rappPath))
             {
                 // 错误框,错误框关闭，则整个程序关闭
-                // “没有找到必要程序，请重新安装”
+                mouseAction.errMessage("没有找到必要程序，请重新安装");
                 return ;
             }
             hostName = Environment.MachineName;
