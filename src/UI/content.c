@@ -47,17 +47,19 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
 
     int res = ReadAllHistoryRecords(); // 找到历史记录
 
-    // 添加内容到主页
-    if(res == 0) {
-        if(cnt == 0) {
-            // 暂未连接
-            UnconnectHome();
-        }
-        else {
-            // 正在连接最近连接的历史连接
-            ConnectingHome(historyRecords[cnt-1].address);
-        }
-    }
+    UnconnectHome();
+
+    // // 添加内容到主页
+    // if(res == 0) {
+    //     if(cnt == 0) {
+    //         // 暂未连接
+    //         UnconnectHome();
+    //     }
+    //     else {
+    //         // 正在连接最近连接的历史连接
+    //         ConnectingHome(historyRecords[cnt-1].address);
+    //     }
+    // }
 
     // 添加内容到历史连接
     AddIPBox(window);
@@ -556,18 +558,18 @@ void ConnectingHome(char * ip) {
     gtk_spinner_start(GTK_SPINNER(spinner)); // 启动加载动画
     gtk_grid_attach(GTK_GRID(contentGrid1), spinner, 0, 1, 1, 1);
 
-    // 创建“断开连接”按钮
-    GtkWidget *button;
-    button = gtk_button_new_with_label("断开连接");
-    gtk_widget_set_margin_top(button, 0);
-    gtk_widget_set_margin_bottom(button, 0);
-    gtk_widget_set_margin_start(button, 0);
-    gtk_widget_set_margin_end(button, 0);
-    gtk_widget_set_size_request(button, (gint)(windowWidth/6.0), 25); // 设置按钮大小
-    g_signal_connect(button,"clicked",G_CALLBACK(ClickUnconnect),NULL);
-
-    // 将按钮放入网格
-    gtk_grid_attach(GTK_GRID(contentGrid1), button, 0, 2, 1, 1);
+    // // 创建“断开连接”按钮
+    // GtkWidget *button;
+    // button = gtk_button_new_with_label("断开连接");
+    // gtk_widget_set_margin_top(button, 0);
+    // gtk_widget_set_margin_bottom(button, 0);
+    // gtk_widget_set_margin_start(button, 0);
+    // gtk_widget_set_margin_end(button, 0);
+    // gtk_widget_set_size_request(button, (gint)(windowWidth/6.0), 25); // 设置按钮大小
+    // g_signal_connect(button,"clicked",G_CALLBACK(ClickUnconnect),NULL);
+    //
+    // // 将按钮放入网格
+    // gtk_grid_attach(GTK_GRID(contentGrid1), button, 0, 2, 1, 1);
 
     // 显示
     gtk_widget_show_all(contentGrid1);
