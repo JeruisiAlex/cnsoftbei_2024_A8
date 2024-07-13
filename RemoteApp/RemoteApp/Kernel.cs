@@ -13,6 +13,7 @@ namespace RemoteApp
             return instance;
         }
         private Err err;
+        private Network network;
         private List<App> remoteAppList;
         private List<App> installList;
         private List<App> uninstallList;
@@ -25,6 +26,7 @@ namespace RemoteApp
         private Kernel()
         {
             err = Err.getErr();
+            network = Network.getNetwork();
             remoteAppList = new List<App>();
             installList = new List<App>();
             uninstallList = new List<App>();
@@ -170,6 +172,21 @@ namespace RemoteApp
             name = name.Trim();
             return name;
         }
+
+        // 从注册表中移除所有的安装程序和卸载程序
+        public void removeUninstallAndInstall()
+        {
+            for(int i = 0; i < uninstallList.Count; i++)
+            {
+                removeAppFromRegistry(uninstallList[i].getFullName());
+            }
+            for(int i = 0; i < installList.Count; i++)
+            {
+                removeAppFromRegistry(installList[i].getFullName());
+            }
+        }
+
+        /* **********************   下面的函数供 pinpin 调用   ************************/
         
         /* 
          * 功能：添加应用到远程应用
@@ -277,7 +294,17 @@ namespace RemoteApp
             if (app != null && app.getUninstall != null)
             {
                 addRemoteAppToRegistry(app.getUninstall().getFullName(), app.getUninstall().getPath(), app.getUninstall().getIconPath(), 0);
-                // 调用网络层
+
+                network.send(0, app.getUninstall().getName());
+
+                // 如果卸载成功，移除这卸载程序和发布应用
+                if (!File.Exists(app.getPath()))
+                {
+                    removeAppFromRegistry(fullname);
+                    removeAppFromRegistry(app.getUninstall().getFullName());
+                    uninstallList.Remove(app.getUninstall());
+                    removeAppFromList(fullname);
+                }
                 err.setErrType(ErrType.SUCCESS);
             }
             else
@@ -305,8 +332,14 @@ namespace RemoteApp
             App app = new App(fullName, path);
             installList.Add(app);
             addRemoteAppToRegistry(fullName, path, path, 2);
-            err.handle();
-            // 调用网络层
+            if (err.getErrType() == ErrType.SUCCESS)
+            {
+                network.send(0, app.getName());
+            }
+            else
+            {
+                err.handle();
+            }
         }
 
         // 打开远程应用
@@ -320,7 +353,7 @@ namespace RemoteApp
                 {
                     if (File.Exists(app.getPath()))
                     {
-                        // 调用网络层
+                        network.send(0,app.getName());
                     }
                     else
                     {
