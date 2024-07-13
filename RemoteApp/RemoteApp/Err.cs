@@ -19,7 +19,7 @@ namespace RemoteApp
 
         public void handle()
         {
-
+            MessageBox.Show("588");
         }
         public ErrType getErrType()
         {
