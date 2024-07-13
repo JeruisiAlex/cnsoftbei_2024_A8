@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,17 @@ namespace RemoteApp
         public static Err getErr() { return err; }
 
         private ErrType errType;
+
+        private string[] ErrContent = new string[6]
+        {
+            "",
+            "获取应用列表或已发布应用列表失败",
+            "发布一个已发布应用",
+            "远程打开一个应用发现应用不存在",
+            "不能卸载",
+            "路径下不存在该应用，应用可能已经迁移"
+        };
+
         private Err()
         {
             errType = ErrType.SUCCESS;
@@ -19,7 +31,11 @@ namespace RemoteApp
 
         public void handle()
         {
-
+            ErrType errType = getErrType();
+            if (errType != ErrType.SUCCESS)
+            {
+                MessageBox.Show(ErrContent[(int)errType]);
+            }
         }
         public ErrType getErrType()
         {

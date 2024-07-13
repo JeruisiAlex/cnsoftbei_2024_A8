@@ -8,8 +8,6 @@
         private System.ComponentModel.IContainer components = null;
         public static int screenWidth;
         public static int screenHeight;
-        public static Version version;
-        public static String status;
         /// <summary>
         ///  Clean up any resources being used.
         /// </summary>

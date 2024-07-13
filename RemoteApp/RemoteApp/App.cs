@@ -12,6 +12,7 @@ namespace RemoteApp
         private string fullName;
         private string path;
         private string iconPath;
+        private App uninstall; // 卸载程序
 
         public App(string fullName, string path)
         {
@@ -19,6 +20,7 @@ namespace RemoteApp
             this.fullName = fullName;
             this.path = path;
             this.iconPath = path;
+            this.uninstall = null;
         }
         public App(string name, string fullName, string path)
         {
@@ -26,6 +28,7 @@ namespace RemoteApp
             this.fullName = fullName;
             this.path = path;
             this.iconPath = path;
+            this.uninstall = null;
         }
         public App(string name, string fullName, string path, string iconPath)
         {
@@ -33,7 +36,17 @@ namespace RemoteApp
             this.fullName = fullName;
             this.path = path;
             this.iconPath = iconPath;
+            this.uninstall = null;
         }
+        public App(string name, string fullName, string path, string iconPath,App uninstall)
+        {
+            this.name = name;
+            this.fullName = fullName;
+            this.path = path;
+            this.iconPath = iconPath;
+            this.uninstall = uninstall;
+        }
+
 
 
         public string getName()
@@ -51,6 +64,25 @@ namespace RemoteApp
         public string getIconPath()
         {
             return iconPath;
+        }
+        public App getUninstall()
+        {
+            return uninstall;
+        }
+
+        public void setName(string name)
+        {
+            this.name = name;
+        }
+
+        public void setPath(string path)
+        {
+            this.path = path;
+        }
+
+        public void setIconPath(string iconPath)
+        {
+            this.iconPath = iconPath;
         }
     }
 }
