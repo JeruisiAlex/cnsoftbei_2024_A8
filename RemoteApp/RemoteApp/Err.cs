@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,7 +32,10 @@ namespace RemoteApp
         public void handle()
         {
             ErrType errType = getErrType();
-            MessageBox.Show(ErrContent[(int)errType]);
+            if (errType != ErrType.SUCCESS)
+            {
+                MessageBox.Show(ErrContent[(int)errType]);
+            }
         }
         public ErrType getErrType()
         {

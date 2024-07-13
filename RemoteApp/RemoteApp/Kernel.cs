@@ -17,9 +17,8 @@ namespace RemoteApp
         private List<App> remoteAppList;
         private List<App> installList;
         private List<App> uninstallList;
-        private string rdpRegistryKeyPath = @"SYSTEM\CurrentControlSet\Control\Terminal Server";
         private string remoteAppRegistryKeyPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications";
-        private string[] UnistallRegistryPaths = new string[]{
+        private string[] unistallRegistryPaths = new string[]{
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
             @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"};
 
@@ -35,7 +34,7 @@ namespace RemoteApp
         public void init()
         {
             readRemoteAppList();
-            
+            err.handle();
         }
         
         // 读取远程应用列表。（同时会读取到各个应用列表的卸载程序）
@@ -50,7 +49,16 @@ namespace RemoteApp
                 {
                     remoteAppKey = key.OpenSubKey(fullName, false);
 
-                    App uninstall = getUninstall(fullName);
+                    App uninstall;
+                    string uninstallPath = remoteAppKey.GetValue("UninstallPath") as string;
+                    if ("".Equals( uninstallPath ))
+                    {
+                        uninstall = null;
+                    }
+                    else
+                    {
+                        uninstall = new App(Path.GetFileNameWithoutExtension(uninstallPath),uninstallPath);
+                    }
                     if (uninstall != null) uninstallList.Add(uninstall);
 
                     App remoteApp = new App(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string, uninstall);
@@ -114,7 +122,7 @@ namespace RemoteApp
         private App getUninstall(string fullName)
         {
             //遍历注册表
-            foreach (string regPath in UnistallRegistryPaths)
+            foreach (string regPath in unistallRegistryPaths)
             {
                 using RegistryKey? key = Registry.LocalMachine.OpenSubKey(regPath);
                 if (key != null)
@@ -127,13 +135,13 @@ namespace RemoteApp
                         {
                             string path = subKey.GetValue("UninstallString") as string;
                             string name = Path.GetFileNameWithoutExtension(path);
-                            err.setErrType(ErrType.SUCCESS);
+                            
                             return new App(getName(name), name, path);
                         }
                     }
                 }
             }
-            err.setErrType(ErrType.CAN_NOT_UNINSTALL);
+            
             return null;
         }
 
@@ -180,11 +188,14 @@ namespace RemoteApp
             for(int i = 0; i < uninstallList.Count; i++)
             {
                 removeAppFromRegistry(uninstallList[i].getFullName());
+                
             }
-            for(int i = 0; i < installList.Count; i++)
+            for (int i = 0; i < installList.Count; i++)
             {
                 removeAppFromRegistry(installList[i].getFullName());
             }
+
+            err.handle();
         }
 
         /* **********************   下面的函数供 pinpin 调用   ************************/
@@ -196,7 +207,7 @@ namespace RemoteApp
          *  1;表示这是应用，不能够重复发布
          *  2:表示这是一个安装程序，可以重复发布
          */
-        private void addRemoteAppToRegistry(string fullName, string path, string iconPath, int flag)
+        private void addRemoteAppToRegistry(string fullName, string path, string iconPath, string uninstallPath ,int flag)
         {
             if (isAppExist(fullName) != null)
             {
@@ -219,6 +230,7 @@ namespace RemoteApp
                     newKey.SetValue("FullName", fullName, RegistryValueKind.String);
                     newKey.SetValue("Path", path, RegistryValueKind.String);
                     newKey.SetValue("IconPath", iconPath, RegistryValueKind.String);
+                    newKey.SetValue("UninstallPath", uninstallPath, RegistryValueKind.String);
                     err.setErrType(ErrType.SUCCESS);
                 }
                 else if(flag == 1)
@@ -243,17 +255,22 @@ namespace RemoteApp
                 // 找到卸载程序
                 App uninstall = getUninstall(fullName);
                 err.setErrType(ErrType.SUCCESS);
-                uninstallList.Add(uninstall);
+
                 App app;
                 app = new App(getName(fullName), fullName, path, path, uninstall);
 
                 if (uninstall != null)
                 {
                     uninstallList.Add(uninstall);
+                    addRemoteAppToRegistry(fullName, path, path, uninstall.getPath(), 1);
+                }
+                else
+                {
+                    addRemoteAppToRegistry(fullName, path, path, "", 1);
                 }
 
                 remoteAppList.Add(app);
-                addRemoteAppToRegistry(fullName, path, path, 1);
+                
             }
             else
             {
@@ -269,17 +286,22 @@ namespace RemoteApp
                 // 找到卸载程序
                 App uninstall = getUninstall(fullName);
                 err.setErrType(ErrType.SUCCESS);
-                uninstallList.Add(uninstall);
+
                 App app;
                 app = new App(getName(fullName), fullName, path, iconPath, uninstall);
 
                 if (uninstall != null)
                 {
                     uninstallList.Add(uninstall);
+                    addRemoteAppToRegistry(fullName, path, iconPath, uninstall.getPath(), 1);
+                }
+                else
+                {
+                    addRemoteAppToRegistry(fullName, path, iconPath, "", 1);
                 }
 
                 remoteAppList.Add(app);
-                addRemoteAppToRegistry(fullName, path, iconPath, 1);
+
             }
             else
             {
@@ -294,11 +316,11 @@ namespace RemoteApp
             App app = isAppExist(fullname);
             if (app != null && app.getUninstall != null)
             {
-                addRemoteAppToRegistry(app.getUninstall().getFullName(), app.getUninstall().getPath(), app.getUninstall().getIconPath(), 0);
+                addRemoteAppToRegistry(app.getUninstall().getFullName(), app.getUninstall().getPath(), app.getUninstall().getIconPath(), "",0);
 
                 network.send(0, app.getUninstall().getName());
 
-                // 如果卸载成功，移除这卸载程序和发布应用
+                // 如果卸载成功，移除卸载程序和发布应用
                 if (!File.Exists(app.getPath()))
                 {
                     removeAppFromRegistry(fullname);
@@ -332,7 +354,7 @@ namespace RemoteApp
         {
             App app = new App(fullName, path);
             installList.Add(app);
-            addRemoteAppToRegistry(fullName, path, path, 2);
+            addRemoteAppToRegistry(fullName, path, path, "",2);
             if (err.getErrType() == ErrType.SUCCESS)
             {
                 network.send(0, app.getName());
