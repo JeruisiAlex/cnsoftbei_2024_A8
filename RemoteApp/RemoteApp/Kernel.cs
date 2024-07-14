@@ -323,7 +323,7 @@ namespace RemoteApp
         public void uninstallApp(string fullname)
         {
             App app = isAppExist(fullname);
-            if (app != null && app.getUninstall != null)
+            if (app != null && app.getUninstall() != null)
             {
                 addRemoteAppToRegistry(app.getUninstall().getFullName(), app.getUninstall().getPath(), app.getUninstall().getIconPath(), "",0);
                 uninstallList.Add(app.getUninstall());
@@ -335,6 +335,7 @@ namespace RemoteApp
             {
                 err.setErrType(ErrType.CAN_NOT_UNINSTALL);
             }
+            err.handle();
         }
         // 移除已发布应用
         public void removeApp(string fullName)
