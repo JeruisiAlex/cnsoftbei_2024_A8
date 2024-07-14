@@ -145,13 +145,15 @@ void ClickConfirm(GtkWidget *widget, gpointer data) {
     }
     else {
 
+        // 跳转到主页
+        OnSwitchPage(GTK_BUTTON(homePage),content);
+
         // 开始连接
         pthread_mutex_lock(&isConnectMutex);
         isConnect = 1;
         pthread_mutex_unlock(&isConnectMutex);
 
-        // 跳转到主页
-        OnSwitchPage(GTK_BUTTON(homePage),content);
+
 
         // 调用网络层连接
         SetNetworkInfo(ip,username,password);
