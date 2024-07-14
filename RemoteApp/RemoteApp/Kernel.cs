@@ -17,6 +17,7 @@ namespace RemoteApp
         private List<App> remoteAppList;
         private List<App> installList;
         private List<App> uninstallList;
+        private string rappName = "RemoteApp";
         private string remoteAppRegistryKeyPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications";
         private string[] unistallRegistryPaths = new string[]{
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
@@ -47,22 +48,24 @@ namespace RemoteApp
                 RegistryKey remoteAppKey;
                 foreach (String fullName in key.GetSubKeyNames())
                 {
-                    remoteAppKey = key.OpenSubKey(fullName, false);
-
-                    App uninstall;
-                    string uninstallPath = remoteAppKey.GetValue("UninstallPath") as string;
-                    if ("".Equals( uninstallPath ))
+                    if (!fullName.Equals(rappName))
                     {
-                        uninstall = null;
-                    }
-                    else
-                    {
-                        uninstall = new App(Path.GetFileNameWithoutExtension(uninstallPath),uninstallPath);
-                    }
+                        remoteAppKey = key.OpenSubKey(fullName, false);
 
-                    App remoteApp = new App(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string, uninstall);
-                    remoteAppList.Add(remoteApp);
+                        App uninstall;
+                        string uninstallPath = remoteAppKey.GetValue("UninstallPath") as string;
+                        if ("".Equals(uninstallPath))
+                        {
+                            uninstall = null;
+                        }
+                        else
+                        {
+                            uninstall = new App(Path.GetFileNameWithoutExtension(uninstallPath), uninstallPath);
+                        }
 
+                        App remoteApp = new App(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string, uninstall);
+                        remoteAppList.Add(remoteApp);
+                    }
                 }
                 key.Close();
                 err.setErrType(ErrType.SUCCESS);

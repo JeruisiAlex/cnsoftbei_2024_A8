@@ -96,20 +96,18 @@ namespace Server
             RegistryKey key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(remoteAppRegistryKeyPath, true);
             if(key != null)
             {
-                RegistryKey remoteAppKey = key.OpenSubKey(rappFullName, false);
+                RegistryKey remoteAppKey = key.OpenSubKey(rappFullName, true);
                 if (remoteAppKey == null)
                 {
-                    RegistryKey newKey = key.CreateSubKey(rappFullName, true);
-                    newKey.SetValue("Name", name, RegistryValueKind.String);
-                    newKey.SetValue("FullName", rappFullName, RegistryValueKind.String);
-                    newKey.SetValue("Path", Path.GetFullPath(rappPath), RegistryValueKind.String);
-                    newKey.SetValue("IconPath", Path.GetFullPath(rappPath), RegistryValueKind.String);
-                    newKey.SetValue("UninstallPath", "", RegistryValueKind.String);
+                    remoteAppKey = key.CreateSubKey(rappFullName, true);
                 }
-                else
-                {
-                    remoteAppKey.Close();
-                }
+                // 用户可能迁移这个应用，所以每一次应该重新加一遍
+                remoteAppKey.SetValue("Name", name, RegistryValueKind.String);
+                remoteAppKey.SetValue("FullName", rappFullName, RegistryValueKind.String);
+                remoteAppKey.SetValue("Path", Path.GetFullPath(rappPath), RegistryValueKind.String);
+                remoteAppKey.SetValue("IconPath", Path.GetFullPath(rappPath), RegistryValueKind.String);
+                remoteAppKey.SetValue("UninstallPath", "", RegistryValueKind.String);
+                remoteAppKey.Close();
                 key.Close();
             }
         }
