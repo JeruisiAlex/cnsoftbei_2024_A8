@@ -99,7 +99,7 @@ namespace Server
         {
             try
             {
-                
+                mainMutex.WaitOne();
                 while (isRun)
                 {
                     mainMutex.ReleaseMutex();
@@ -117,6 +117,7 @@ namespace Server
 
                             isConnectMutex.WaitOne();
                             isConnect = true;
+                            kernel.lockCurrentUser();
                             isConnectMutex.ReleaseMutex();
 
                             serverListener = new TcpListener(port);
@@ -220,11 +221,6 @@ namespace Server
             stream.Read(data, 0 ,4);
             int number = BitConverter.ToInt32(data);
             return number;
-        }
-        public void release()
-        {
-            mainMutex.Dispose();
-            isConnectMutex.Dispose();
         }
     }
 }

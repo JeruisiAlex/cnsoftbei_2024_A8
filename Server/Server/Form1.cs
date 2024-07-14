@@ -270,7 +270,6 @@ namespace Server
             else
             {
                 network.stop();
-                network.release();
             }
             network.isConnectMutex.ReleaseMutex();
         }
