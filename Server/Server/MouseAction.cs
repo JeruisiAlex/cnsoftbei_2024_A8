@@ -85,11 +85,11 @@ namespace MouseActionFactory
             {
                 case "主机信息":
                     Form1.contentPanel.Visible = true;
-                    showConnection("123");
+                    //showConnection("123");
                     break;
                 case "历史连接":
                     //Form1.appInfoPanel.Visible = true;
-                    
+                    errPDF("111");
                     Form1.historyPanel.Visible = true;
                     break;
             }
@@ -131,10 +131,33 @@ namespace MouseActionFactory
             g.FillEllipse(Form1.brush, center.X - radius, center.Y - radius, radius * 2, radius * 2);
         }
 
+        //供调用
+        /*
+         * errMessage：展示错误信息
+         * message：错误信息内容
+         */
         public void errMessage(string message)
         {
             MessageBox.Show(message);
             Application.Exit();
+        }
+
+        /*
+         * errPDF展示错误信息，可以选择打开”启用远程桌面“
+         */
+        public void errPDF(string message)
+        {
+            var result = MessageBox.Show(message, "打开PDF", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.No)
+            {
+                
+            }
+            else
+            {
+                // 执行关闭前的其他操作
+                // 例如，保存设置或清理资源
+            }
+            Environment.Exit(0);
         }
 
         public void showConnection(String client)
@@ -149,7 +172,7 @@ namespace MouseActionFactory
                 Font = new Font("华文中宋",16),
             };
             Form1.contentPanel.Controls.Add(label);
-            Form1.lblStatus.Text = "Connected";
+            Form1.lblStatus.Text = "已连接";
             Form1.brush = Brushes.Green;
             Form1.contentPanel.Invalidate(); // 触发重新绘制
         }

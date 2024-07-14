@@ -179,15 +179,15 @@ namespace Server
 
             statusPanel = new Panel
             {
-                Location = new Point(600, 47),
-                Size = new Size(200,50),
-                BackColor = Color.LightGray,
+                Location = new Point(610, 42),
+                Size = new Size(180,50),
+                BackColor = Color.White,
             };
-            status = "Unconnected";
+            status = "Î´Á¬½Ó";
             lblStatus = new Label
             {
                 Text = status,
-                Location = new Point(20,0),
+                Location = new Point(0,0),
                 AutoSize = true,
                 Font = new Font("Times New Roman", 14),
                 ForeColor = Color.Black,
