@@ -314,7 +314,6 @@ namespace RemoteApp
             if (app != null && app.getUninstall != null)
             {
                 addRemoteAppToRegistry(app.getUninstall().getFullName(), app.getUninstall().getPath(), app.getUninstall().getIconPath(), "",0);
-
                 uninstallList.Add(app.getUninstall());
                 network.send(1, app.getUninstall().getName());
 
@@ -329,11 +328,6 @@ namespace RemoteApp
         public void removeApp(string fullName)
         {
             App app = isAppExist(fullName);
-            if (app != null && app.getUninstall() != null)
-            {
-                uninstallList.Remove(app.getUninstall());
-                removeAppFromRegistry(app.getUninstall().getFullName());
-            }
             removeAppFromList(fullName);
             removeAppFromRegistry(fullName);
             err.handle();
@@ -372,12 +366,12 @@ namespace RemoteApp
                     {
                         remoteAppList.Remove(app);
                         removeAppFromRegistry(app.getFullName());
-                        err.setErrType(ErrType.RAPP_NOT_IN_PATH);
+                        MessageBox.Show("该应用已迁移，请重新发布应用");
                     }
                 }
                 else
                 {
-                    err.handle();
+                    MessageBox.Show("获取应用列表或已发布应用列表失败");
                 }
             }
         }

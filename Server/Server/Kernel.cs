@@ -53,9 +53,7 @@ namespace Server
             if (!checkRDP())
             {
                 // 错误框,错误框关闭，则整个程序关闭
-                mouseAction.errMessage("没有启用远程桌面！请手动启用。可参考应用程序同目录下“启用远程连接”的pdf文件启用远程桌面。");
-                // 弹出 pdf
-                // OpenTutorial();
+                mouseAction.errPDF("没有启用远程桌面！请手动启用。是否参考启用远程桌面教程？");
                 return;
             }
             if (!File.Exists(rappPath))
@@ -104,8 +102,9 @@ namespace Server
                     RegistryKey newKey = key.CreateSubKey(rappFullName, true);
                     newKey.SetValue("Name", name, RegistryValueKind.String);
                     newKey.SetValue("FullName", rappFullName, RegistryValueKind.String);
-                    newKey.SetValue("Path", rappPath, RegistryValueKind.String);
-                    newKey.SetValue("IconPath", rappPath, RegistryValueKind.String);
+                    newKey.SetValue("Path", Path.GetFullPath(rappPath), RegistryValueKind.String);
+                    newKey.SetValue("IconPath", Path.GetFullPath(rappPath), RegistryValueKind.String);
+                    newKey.SetValue("UninstallPath", "", RegistryValueKind.String);
                 }
                 else
                 {
