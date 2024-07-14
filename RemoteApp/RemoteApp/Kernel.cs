@@ -18,6 +18,7 @@ namespace RemoteApp
         private List<App> installList;
         private List<App> uninstallList;
         private string rappName = "RemoteApp";
+        private string serveName = "Server";
         private string remoteAppRegistryKeyPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications";
         private string[] unistallRegistryPaths = new string[]{
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
@@ -252,7 +253,7 @@ namespace RemoteApp
         // 发布远程应用
         public void addRemoteApp(string fullName, string path)
         {
-            if (isAppExist(fullName) == null && !fullName.Equals(rappName))
+            if (isAppExist(fullName) == null && !fullName.Equals(rappName) && !fullName.Equals(serveName))
             {
                 // 找到卸载程序
                 App uninstall = getUninstall(fullName);
@@ -273,7 +274,7 @@ namespace RemoteApp
                 remoteAppList.Add(app);
                 
             }
-            else if (fullName.Equals(rappName))
+            else if (fullName.Equals(rappName) || fullName.Equals(serveName))
             {
                 err.setErrType(ErrType.CNOT_SEND_RAPP);
             }
@@ -286,7 +287,7 @@ namespace RemoteApp
         // 发布远程应用
         public void addRemoteApp(string fullName, string path, string iconPath)
         {
-            if (isAppExist(fullName) == null)
+            if (isAppExist(fullName) == null && !fullName.Equals(rappName) && !fullName.Equals(serveName))
             {
                 // 找到卸载程序
                 App uninstall = getUninstall(fullName);
@@ -306,6 +307,10 @@ namespace RemoteApp
 
                 remoteAppList.Add(app);
 
+            }
+            else if (fullName.Equals(rappName) || fullName.Equals(serveName))
+            {
+                err.setErrType(ErrType.CNOT_SEND_RAPP);
             }
             else
             {
