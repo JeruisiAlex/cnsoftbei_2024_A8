@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using MyClass;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using System.Net;
+using System.Drawing;
 namespace Server
 {
     public partial class Form1 : Form
@@ -18,6 +19,10 @@ namespace Server
         public static Panel contentPanel;
         public static Panel broadPanel;
         public static FlowLayoutPanel historyPanel;
+        public static Label lblStatus;
+        public static Panel statusPanel;
+        //颜色
+        public static Brush brush;
         private Kernel kernel;
         private MouseActionFactory.MouseActionFactory mouseAction;
 
@@ -105,6 +110,7 @@ namespace Server
 
         public Panel createContentPanel()
         {
+            brush = Brushes.Red;
             version = new Version(1, 0, 0);
             contentPanel = new Panel();
             contentPanel.BackColor = Color.White;
@@ -124,11 +130,12 @@ namespace Server
             addInfoLabel(ipPortPanel, "主机名:", new Point(20, 15), "华文中宋");
             addInfoLabel(ipPortPanel, "Port:", new Point(320, 15), "华文中宋");
 
-            //String hostName = getHostName();
+            String hostName = kernel.getHostName();
 
             // 添加 IP 和端口显示控件
-            addInfoLabel(ipPortPanel, "hostName", new Point(100, 15), "Times New Roman");
+            addInfoLabel(ipPortPanel, hostName, new Point(90, 15), "Times New Roman");
             addInfoLabel(ipPortPanel, "6789", new Point(370, 15), "Times New Roman");
+            //MessageBox.Show($"{hostName}");
 
             // 开关控件
             connectionPanel = new Panel();
@@ -166,21 +173,29 @@ namespace Server
             string ver = version.ToString();
             addInfoLabel(contentPanel, "v" + ver, new Point(400, 47), "Times New Roman");
 
-            status = "Connected";
-            Label lblStatus = new Label();
-            lblStatus.Text = status;
-            lblStatus.Location = new Point(600, 47);
-            lblStatus.AutoSize = true;
-            lblStatus.Font = new Font("Times New Roman", 14);
-            lblStatus.ForeColor = Color.Black;
-            contentPanel.Controls.Add(lblStatus);
+
+            statusPanel = new Panel
+            {
+                Location = new Point(610, 42),
+                Size = new Size(180,50),
+                BackColor = Color.White,
+            };
+            status = "未连接";
+            lblStatus = new Label
+            {
+                Text = status,
+                Location = new Point(0,0),
+                AutoSize = true,
+                Font = new Font("Times New Roman", 14),
+                ForeColor = Color.Black,
+            };
+            statusPanel.Controls.Add(lblStatus);
+            contentPanel.Controls.Add(statusPanel);
 
             // 增加paint事件
             contentPanel.Paint += mouseAction.ContentPanel_Paint;
-
             return contentPanel;
         }
-
         private void addPanel(Panel panel, Point location)
         {
             panel.Location = location;
