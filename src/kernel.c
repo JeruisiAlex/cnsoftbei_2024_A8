@@ -48,6 +48,8 @@ int KernetCheck() {
         } else {
             isShare = 1;
         }
+    } else {
+        isShare = 1;
     }
     if(CheckFreeRDP() == 1) {
         ErrDialog(strdup(FREE_RDP_LOST_STRING));
