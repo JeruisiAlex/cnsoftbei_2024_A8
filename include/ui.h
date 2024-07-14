@@ -11,8 +11,9 @@
 static char * css =
     "#headerbar {"
     "  font-weight: bold;"
-    "  font-size: 30px;"
+    "  font-size: 26px;"
     "  font-family: Times New Roman, sans-serif;"
+    "  background-color: #F2F3F4;"
     "}"
     "#sidebar {"
     "  background-color: #F5F5F5;"
@@ -98,6 +99,9 @@ extern double windowHeight;
 extern gint minWidth;
 // 设置窗口最小高度
 extern gint minHeight;
+
+// 记录现在的版本号
+#define VERSION "v1.0"
 
 // 记录所有历史记录的结构体数组
 extern struct NetworkInfo *historyRecords;

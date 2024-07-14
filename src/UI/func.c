@@ -144,9 +144,7 @@ void ClickConfirm(GtkWidget *widget, gpointer data) {
         gtk_widget_show(errorLabel); // 确保显示标签
     }
     else {
-        // 输入合法，执行相关操作
-        AddOneHistoryRecord(ip,username,password);
-        AddHistoryBox(ip,username,password);
+
         // 开始连接
         pthread_mutex_lock(&isConnectMutex);
         isConnect = 1;
@@ -165,6 +163,11 @@ void ClickConfirm(GtkWidget *widget, gpointer data) {
             pthread_mutex_unlock(&isConnectMutex);
 
             ErrDialog("连接失败！");
+        }
+        else{
+            // 输入合法，执行相关操作
+            AddOneHistoryRecord(ip,username,password);
+            AddHistoryBox(ip,username,password);
         }
 
         gtk_widget_destroy(dialog); // 销毁对话框
@@ -431,6 +434,7 @@ void ClickHistory(GtkWidget *widget, gpointer data) {
 }
 
 void ClickReconnect(GtkWidget *widget, gpointer data) {
+    ReConnectToRemoteApp();
     // 移除并销毁按钮
     gtk_widget_destroy(data);
 }

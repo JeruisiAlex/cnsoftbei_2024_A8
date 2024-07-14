@@ -47,9 +47,7 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
 
     int res = ReadAllHistoryRecords(); // 找到历史记录
 
-    ConnectedHome("123","123");
-    ShowUnconnectButton();
-    ShowReconnectButton();
+    UnconnectHome();
 
     // // 自动连接历史连接
     // if(res == 0) {
@@ -458,7 +456,7 @@ GtkWidget * CreateHome(GtkWidget* contentStack,char * label) {
     gtk_widget_set_margin_start(grid, (gint)(windowWidth / 30.0));
     gtk_widget_set_margin_end(grid, (gint)(windowWidth / 30.0));
 
-    // 将网格添加到水平盒子中
+    // 将网格添加到盒子中
     gtk_box_pack_start(GTK_BOX(hbox), grid, FALSE, FALSE, 0);
     gtk_stack_add_titled(GTK_STACK(contentStack), hbox, label, label);
 
