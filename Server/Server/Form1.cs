@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using MyClass;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using System.Net;
+using System.Drawing;
 namespace Server
 {
     public partial class Form1 : Form
@@ -18,24 +19,21 @@ namespace Server
         public static Panel contentPanel;
         public static Panel broadPanel;
         public static FlowLayoutPanel historyPanel;
+        public static Label lblStatus;
+        public static Panel statusPanel;
+        //颜色
+        public static Brush brush;
+        private Kernel kernel;
         private MouseActionFactory.MouseActionFactory mouseAction;
 
         public Form1()
         {
             InitializeComponent();
-            Kernel kernel = Kernel.getKernel();
+            kernel = Kernel.getKernel();
             kernel.init();
             kernel.histories.Add(new History("123", "123", "123"));
             kernel.writeHistories();
             kernel.readHistories();
-            if(kernel.histories == null)
-            {
-                Debug.WriteLine("++++++++++++++++");
-            }
-            else
-            {
-                //Debug.WriteLine(kernel.histories[0].getIp());
-            }
             initializeCustomComponents();
 
         }
@@ -56,7 +54,8 @@ namespace Server
             historyPanel = createHistoryPanel();
             this.Controls.Add(historyPanel);
             this.Resize += Form1_Resize;
-            
+
+            this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
             //appInfoPanel.Visible = false;
         }
 
@@ -114,6 +113,7 @@ namespace Server
 
         public Panel createContentPanel()
         {
+            brush = Brushes.Red;
             version = new Version(1, 0, 0);
             contentPanel = new Panel();
             contentPanel.BackColor = Color.White;
@@ -133,11 +133,12 @@ namespace Server
             addInfoLabel(ipPortPanel, "主机名:", new Point(20, 15), "华文中宋");
             addInfoLabel(ipPortPanel, "Port:", new Point(320, 15), "华文中宋");
 
-            //String hostName = getHostName();
+            String hostName = kernel.getHostName();
 
             // 添加 IP 和端口显示控件
-            addInfoLabel(ipPortPanel, "hostName", new Point(100, 15), "Times New Roman");
+            addInfoLabel(ipPortPanel, hostName, new Point(90, 15), "Times New Roman");
             addInfoLabel(ipPortPanel, "6789", new Point(370, 15), "Times New Roman");
+            //MessageBox.Show($"{hostName}");
 
             // 开关控件
             connectionPanel = new Panel();
@@ -175,21 +176,29 @@ namespace Server
             string ver = version.ToString();
             addInfoLabel(contentPanel, "v" + ver, new Point(400, 47), "Times New Roman");
 
-            status = "Connected";
-            Label lblStatus = new Label();
-            lblStatus.Text = status;
-            lblStatus.Location = new Point(600, 47);
-            lblStatus.AutoSize = true;
-            lblStatus.Font = new Font("Times New Roman", 14);
-            lblStatus.ForeColor = Color.Black;
-            contentPanel.Controls.Add(lblStatus);
+
+            statusPanel = new Panel
+            {
+                Location = new Point(600, 47),
+                Size = new Size(200,50),
+                BackColor = Color.LightGray,
+            };
+            status = "Unconnected";
+            lblStatus = new Label
+            {
+                Text = status,
+                Location = new Point(20,0),
+                AutoSize = true,
+                Font = new Font("Times New Roman", 14),
+                ForeColor = Color.Black,
+            };
+            statusPanel.Controls.Add(lblStatus);
+            contentPanel.Controls.Add(statusPanel);
 
             // 增加paint事件
             contentPanel.Paint += mouseAction.ContentPanel_Paint;
-
             return contentPanel;
         }
-
         private void addPanel(Panel panel, Point location)
         {
             panel.Location = location;
@@ -215,7 +224,7 @@ namespace Server
         {
             FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel
             {
-                Location = new Point(180, 0),
+                Location = new Point(150, 0),
                 Size= new Size(this.ClientSize.Width - 150, this.ClientSize.Height),
                 FlowDirection = FlowDirection.LeftToRight,
                 WrapContents = true,
@@ -223,8 +232,7 @@ namespace Server
                 BackColor = Color.White,
 
             };
-            History his = new History("123", "nanananna", "woshipinpin");
-            for (int i = 0; i < 5; i++)
+            foreach(History his in kernel.histories)
             {
                 Panel panel;
                 panel = createConnectionPanel(his);
@@ -239,7 +247,7 @@ namespace Server
             Panel panel = new Panel
             {
                 Size = new Size(300,150),
-                Margin = new Padding(10,10,0,10),
+                Margin = new Padding(20,10,0,10),
                 BackColor = Color.WhiteSmoke,
             };
             // 创建并配置 Label 控件
@@ -272,6 +280,21 @@ namespace Server
             panel.Controls.Add(hostLabel);
             panel.Controls.Add(userLabel);
             return panel;
+        }
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 在这里执行关闭前的操作，例如：
+            // 询问用户是否真的要关闭
+            var result = MessageBox.Show("确认关闭", "Confirm Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.No)
+            {
+                e.Cancel = true; // 取消关闭操作
+            }
+            else
+            {
+                // 执行关闭前的其他操作
+                // 例如，保存设置或清理资源
+            }
         }
     }
 }

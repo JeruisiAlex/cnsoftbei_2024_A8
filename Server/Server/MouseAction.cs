@@ -68,7 +68,7 @@ namespace MouseActionFactory
                 Form1.lastClickedButton = btn; // 更新最后点击的按钮
 
                 showContent(btn.Text);
-                mouseAction.errMessage("111");
+                //mouseAction.errMessage("111");
             }
 
         }
@@ -85,9 +85,11 @@ namespace MouseActionFactory
             {
                 case "主机信息":
                     Form1.contentPanel.Visible = true;
+                    showConnection("123");
                     break;
                 case "历史连接":
                     //Form1.appInfoPanel.Visible = true;
+                    
                     Form1.historyPanel.Visible = true;
                     break;
             }
@@ -119,12 +121,37 @@ namespace MouseActionFactory
                 g.DrawLine(pen, 270, 137, 430, 137); // IP下方虚线
                 g.DrawLine(pen, 550, 137, 600, 137); // Port下方虚线
             }
+            Point center = new Point(600, 50);
+            int radius = 8;
+            DrawCircle(e.Graphics, center, radius);
+        }
+
+        private void DrawCircle(Graphics g, Point center, int radius)
+        {
+            g.FillEllipse(Form1.brush, center.X - radius, center.Y - radius, radius * 2, radius * 2);
         }
 
         public void errMessage(string message)
         {
             MessageBox.Show(message);
             Application.Exit();
+        }
+
+        public void showConnection(String client)
+        {
+            MessageBox.Show("您已被连接");
+            Label label = new Label
+            {
+                Text = "远程："+client,
+                Location = new Point(200,320),
+                Size = new Size(300,100),
+                AutoSize = true,
+                Font = new Font("华文中宋",16),
+            };
+            Form1.contentPanel.Controls.Add(label);
+            Form1.lblStatus.Text = "Connected";
+            Form1.brush = Brushes.Green;
+            Form1.contentPanel.Invalidate(); // 触发重新绘制
         }
     }
 }

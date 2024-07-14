@@ -175,6 +175,9 @@ namespace Server
             name = name.Trim();
             return name;
         }
-        public string getHostName() { return hostName; }
+        public string getHostName()
+        {
+            return System.Net.Dns.GetHostName();
+        }
     }
 }
