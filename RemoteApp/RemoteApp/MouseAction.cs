@@ -74,7 +74,7 @@ namespace MouseActionFactory
                     kernel.addRemoteApp(fileName, selectedFilePath);
 
 
-                    flushAppPanel(kernel.getRemoteAppList());
+                    flushAppPanel(kernel.getRemoteAppList(),new Size(Form1.screenWidth,Form1.screenHeight));
                     // 显示文件信息
                     /*string message = $"文件路径: {selectedFilePath}\n" +
                                      $"文件名: {fileName}\n";*/
@@ -121,24 +121,23 @@ namespace MouseActionFactory
             }
         }
 
-        public void flushAppPanel(List<App> appList)
+        public void flushAppPanel(List<App> appList,Size size)
         {
             Form1.appInfoPanel.Controls.Clear();
             foreach (App app in appList)
             {
-                Panel appPanel = createAppPanel(app);
+                Panel appPanel = createAppPanel(app,size);
                 Form1.appInfoPanel.Controls.Add(appPanel);
-                //MessageBox.Show($"{app.Name}\n");
             }
         }
-        public Panel createAppPanel(App app)
+        public Panel createAppPanel(App app,Size size)
         {
             //Kernel kernel = Kernel.getKernel();
             // 创建应用程序面板
             Panel appPanel = new Panel
             {
-                Size = new Size(700, 50),
-                Margin = new Padding(190, 10, 0, 0)
+                Size = new Size((int)(0.9*size.Width), 50),
+                Margin = new Padding(10, 10, 0, 0)
             };
 
             Icon icon = Icon.ExtractAssociatedIcon(app.getIconPath());
@@ -184,6 +183,12 @@ namespace MouseActionFactory
             // 绑定鼠标移入和移出事件
             appPanel.MouseEnter += (sender, e) => appPanel.BackColor = Color.WhiteSmoke;
             appPanel.MouseLeave += (sender, e) => appPanel.BackColor = Color.Transparent;
+            appPanel.DoubleClick += (sender, e) => runMenuItem_Click(sender, e, app);
+            nameLabel.MouseEnter += (sender, e) => appPanel.BackColor = Color.WhiteSmoke;
+            nameLabel.MouseLeave += (sender, e) => appPanel.BackColor = Color.Transparent;
+
+            pictureBox.MouseEnter += (sender, e) => appPanel.BackColor = Color.WhiteSmoke;
+            pictureBox.MouseLeave += (sender, e) => appPanel.BackColor = Color.Transparent;
 
             return appPanel;
         }
@@ -193,7 +198,7 @@ namespace MouseActionFactory
         {
             Kernel kernel = Kernel.getKernel();
             kernel.removeApp(app.getFullName());
-            flushAppPanel(kernel.getRemoteAppList());
+            flushAppPanel(kernel.getRemoteAppList(),new Size(Form1.screenWidth,Form1.screenHeight));
         }
         private void runMenuItem_Click(Object sender, EventArgs e, App app)
         {

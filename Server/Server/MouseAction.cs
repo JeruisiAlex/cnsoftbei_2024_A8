@@ -85,7 +85,7 @@ namespace MouseActionFactory
             {
                 case "主机信息":
                     Form1.contentPanel.Visible = true;
-                    //showConnection("123");
+                    showConnection("123");
                     break;
                 case "历史连接":
                     //Form1.appInfoPanel.Visible = true;
