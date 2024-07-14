@@ -102,8 +102,9 @@ namespace Server
                     RegistryKey newKey = key.CreateSubKey(rappFullName, true);
                     newKey.SetValue("Name", name, RegistryValueKind.String);
                     newKey.SetValue("FullName", rappFullName, RegistryValueKind.String);
-                    newKey.SetValue("Path", rappPath, RegistryValueKind.String);
-                    newKey.SetValue("IconPath", rappPath, RegistryValueKind.String);
+                    newKey.SetValue("Path", Path.GetFullPath(rappPath), RegistryValueKind.String);
+                    newKey.SetValue("IconPath", Path.GetFullPath(rappPath), RegistryValueKind.String);
+                    newKey.SetValue("UninstallPath", "", RegistryValueKind.String);
                 }
                 else
                 {
