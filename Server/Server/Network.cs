@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -50,10 +51,6 @@ namespace Server
             if (!checkPort(serverPort))
             {
 
-                return;
-            }
-            if (!checkPort(remoteAppPort))
-            {
                 return;
             }
             start();
@@ -108,11 +105,11 @@ namespace Server
                     TcpClient client = null;
                     Debug.WriteLine("开启等待数据");
                     client = mainListener.AcceptTcpClient();
-                    Debug.WriteLine("开始接受数据");
+                    Debug.WriteLine("开始接收数据");
                     if (client != null)
                     {
                         NetworkStream stream = client.GetStream();
-                        if (isConnect == false && checkUserInfo(stream))
+                        if (checkUserInfo(stream))
                         {
                             choosePort(stream);
 
@@ -123,6 +120,7 @@ namespace Server
 
                             serverListener = new TcpListener(port);
                             serverListener.Start();
+                            serverThread = new Thread(new ThreadStart(serverStart));
                             serverThread.Start();
 
                             sendHostName(stream);
@@ -148,14 +146,36 @@ namespace Server
         }
         private void serverStart()
         {
-            TcpClient client = serverListener.AcceptTcpClient();
-            if (client != null)
+            try
             {
-                NetworkStream stream = client.GetStream();
-                string name = "RemoteApp";
-                sendInt(stream, name.Length);
-                sendString(stream, name);
-                receiveInt(stream);
+                TcpClient client = serverListener.AcceptTcpClient();
+                if (client != null)
+                {
+                    NetworkStream stream = client.GetStream();
+                    string name = "RemoteApp";
+                    sendInt(stream, name.Length);
+                    sendString(stream, name);
+                    receiveInt(stream);
+                    Debug.WriteLine("error1");
+                    stream.Close();
+                    client.Close();
+                    serverListener.Stop();
+                    serverListener.Dispose();
+
+                    isConnectMutex.WaitOne();
+                    isConnect = false;
+                    isConnectMutex.ReleaseMutex();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("error1");
+                serverListener.Stop();
+                serverListener.Dispose();
+
+                isConnectMutex.WaitOne();
+                isConnect = false;
+                isConnectMutex.ReleaseMutex();
             }
         }
         private bool checkUserInfo(NetworkStream stream)
@@ -166,9 +186,13 @@ namespace Server
             length = receiveInt(stream);
             string password = receiveString(stream, length);
             Debug.WriteLine(password);
-            if (kernel.checkUserInfo(username, password))
+            if (kernel.checkUserInfo(username, password) && isConnect == false)
             {
                 sendInt(stream, 0);
+            }
+            else if (isConnect == true)
+            {
+                sendInt(stream, 1);
             }
             else
             {
@@ -192,6 +216,7 @@ namespace Server
                     sendInt(stream, 1);
                 }
             }
+            Debug.WriteLine(port);
         } 
         private void sendHostName(NetworkStream stream)
         {
