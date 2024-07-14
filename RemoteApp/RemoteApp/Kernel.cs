@@ -252,7 +252,7 @@ namespace RemoteApp
         // 发布远程应用
         public void addRemoteApp(string fullName, string path)
         {
-            if (isAppExist(fullName) == null)
+            if (isAppExist(fullName) == null && !fullName.Equals(rappName))
             {
                 // 找到卸载程序
                 App uninstall = getUninstall(fullName);
@@ -272,6 +272,10 @@ namespace RemoteApp
 
                 remoteAppList.Add(app);
                 
+            }
+            else if (fullName.Equals(rappName))
+            {
+                err.setErrType(ErrType.CNOT_SEND_RAPP);
             }
             else
             {
