@@ -89,7 +89,6 @@ namespace MouseActionFactory
                     break;
                 case "历史连接":
                     //Form1.appInfoPanel.Visible = true;
-                    errPDF("111");
                     Form1.historyPanel.Visible = true;
                     break;
             }
