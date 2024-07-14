@@ -139,7 +139,7 @@ namespace MouseActionFactory
         public void errMessage(string message)
         {
             MessageBox.Show(message);
-            Application.Exit();
+            Environment.Exit(0);
         }
 
         /*
@@ -154,6 +154,7 @@ namespace MouseActionFactory
             }
             else
             {
+                Kernel.getKernel().OpenTutorial();
                 // 执行关闭前的其他操作
                 // 例如，保存设置或清理资源
             }
