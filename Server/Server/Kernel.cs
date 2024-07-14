@@ -41,7 +41,7 @@ namespace Server
             hostName = System.Net.Dns.GetHostName();
             if(hostName == null || hostName == "")
             {
-                hostName = "没有找到主机名"
+                hostName = "没有找到主机名";
             }
             checkRemoteApp();
             readHistories();
