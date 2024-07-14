@@ -83,13 +83,24 @@ namespace RemoteApp
                 /*string name = messages.Dequeue();*/
                 string name = message;
                 int length = name.Length;
-                byte[] data = Encoding.UTF8.GetBytes(code+length+name);
-                stream.Write(data);
+                sendInt(stream, code);
+                sendInt(stream, length);
+                sendString(stream, name);
                 mutex.ReleaseMutex();
 
                 stateMutex.WaitOne();
             }
             stateMutex.ReleaseMutex();
+        }
+        private void sendString(NetworkStream stream, string message)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(message);
+            stream.Write(data);
+        }
+        private void sendInt(NetworkStream stream, int number)
+        {
+            byte[] data = BitConverter.GetBytes(number);
+            stream.Write(data);
         }
         public void send(int code, string name)
         {
@@ -119,10 +130,6 @@ namespace RemoteApp
         private void release()
         {
             thread.Join();
-            mutex.ReleaseMutex();
-            stateMutex.ReleaseMutex();
-            server.Dispose();
-            messages.Clear();
         }
 
         public int getPort() { return port; }

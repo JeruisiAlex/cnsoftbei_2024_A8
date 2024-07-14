@@ -59,7 +59,6 @@ namespace RemoteApp
                     {
                         uninstall = new App(Path.GetFileNameWithoutExtension(uninstallPath),uninstallPath);
                     }
-                    if (uninstall != null) uninstallList.Add(uninstall);
 
                     App remoteApp = new App(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string, uninstall);
                     remoteAppList.Add(remoteApp);
@@ -261,7 +260,6 @@ namespace RemoteApp
 
                 if (uninstall != null)
                 {
-                    uninstallList.Add(uninstall);
                     addRemoteAppToRegistry(fullName, path, path, uninstall.getPath(), 1);
                 }
                 else
@@ -292,7 +290,6 @@ namespace RemoteApp
 
                 if (uninstall != null)
                 {
-                    uninstallList.Add(uninstall);
                     addRemoteAppToRegistry(fullName, path, iconPath, uninstall.getPath(), 1);
                 }
                 else
@@ -317,17 +314,9 @@ namespace RemoteApp
             if (app != null && app.getUninstall != null)
             {
                 addRemoteAppToRegistry(app.getUninstall().getFullName(), app.getUninstall().getPath(), app.getUninstall().getIconPath(), "",0);
-
+                uninstallList.Add(app.getUninstall());
                 network.send(0, app.getUninstall().getName());
 
-                // 如果卸载成功，移除卸载程序和发布应用
-                if (!File.Exists(app.getPath()))
-                {
-                    removeAppFromRegistry(fullname);
-                    removeAppFromRegistry(app.getUninstall().getFullName());
-                    uninstallList.Remove(app.getUninstall());
-                    removeAppFromList(fullname);
-                }
                 err.setErrType(ErrType.SUCCESS);
             }
             else

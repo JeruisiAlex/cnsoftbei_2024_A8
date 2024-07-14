@@ -25,19 +25,8 @@ namespace Server
             InitializeComponent();
             Kernel kernel = Kernel.getKernel();
             kernel.init();
-            kernel.histories.Add(new History("123", "123", "123"));
-            kernel.writeHistories();
-            kernel.readHistories();
-            if (kernel.histories == null)
-            {
-                Debug.WriteLine("++++++++++++++++");
-            }
-            else
-            {
-                //Debug.WriteLine(kernel.histories[0].getIp());
-            }
+            Network.getNetwork().init();
             initializeCustomComponents();
-
         }
 
         private void initializeCustomComponents()
@@ -271,8 +260,19 @@ namespace Server
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            MessageBox.Show("服务端已被连接，请断开连接后再关闭！");
-            e.Cancel = true;
+            Network network = Network.getNetwork();
+            network.isConnectMutex.WaitOne();
+            if (network.isConnect)
+            {
+                MessageBox.Show("服务端已被连接，请断开连接后再关闭！");
+                e.Cancel = true;
+            }
+            else
+            {
+                network.stop();
+                network.release();
+            }
+            network.isConnectMutex.ReleaseMutex();
         }
     }
 }
