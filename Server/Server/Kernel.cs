@@ -51,7 +51,7 @@ namespace Server
                 // 错误框,错误框关闭，则整个程序关闭
                 mouseAction.errMessage("没有启用远程桌面！请手动启用。可参考应用程序同目录下“启用远程连接”的pdf文件启用远程桌面。");
                 // 弹出 pdf
-                OpenTutorial();
+                // OpenTutorial();
                 return;
             }
             if (!File.Exists(rappPath))
