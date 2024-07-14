@@ -59,7 +59,6 @@ namespace RemoteApp
                     {
                         uninstall = new App(Path.GetFileNameWithoutExtension(uninstallPath),uninstallPath);
                     }
-                    if (uninstall != null) uninstallList.Add(uninstall);
 
                     App remoteApp = new App(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string, uninstall);
                     remoteAppList.Add(remoteApp);
