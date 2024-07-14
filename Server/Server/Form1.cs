@@ -18,12 +18,13 @@ namespace Server
         public static Panel contentPanel;
         public static Panel broadPanel;
         public static FlowLayoutPanel historyPanel;
+        private Kernel kernel;
         private MouseActionFactory.MouseActionFactory mouseAction;
 
         public Form1()
         {
             InitializeComponent();
-            Kernel kernel = Kernel.getKernel();
+            kernel = Kernel.getKernel();
             kernel.init();
             Network.getNetwork().init();
             initializeCustomComponents();
@@ -44,11 +45,17 @@ namespace Server
             //历史连接面板
             historyPanel = createHistoryPanel();
             this.Controls.Add(historyPanel);
+            this.Resize += Form1_Resize;
 
-            
+            this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
             //appInfoPanel.Visible = false;
         }
 
+        private void Form1_Resize(object? sender, EventArgs e)
+        {
+            historyPanel.Size = new Size(this.ClientSize.Width - 150, this.ClientSize.Height);
+            historyPanel.Location = new Point(150, 0);
+        }
 
         public Panel createSidePanel()
         {
@@ -199,16 +206,15 @@ namespace Server
         {
             FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel
             {
-                Location = new Point(180, 0),
-                Anchor = AnchorStyles.Bottom | AnchorStyles.Right, // 锚定到底部和右侧
+                Location = new Point(150, 0),
+                Size= new Size(this.ClientSize.Width - 150, this.ClientSize.Height),
                 FlowDirection = FlowDirection.LeftToRight,
                 WrapContents = true,
                 AutoScroll  = true,
                 BackColor = Color.White,
 
             };
-            History his = new History("123", "nanananna", "woshipinpin");
-            for(int i = 0; i < 5; i++)
+            foreach(History his in kernel.histories)
             {
                 Panel panel;
                 panel = createConnectionPanel(his);
@@ -223,7 +229,7 @@ namespace Server
             Panel panel = new Panel
             {
                 Size = new Size(300,150),
-                Margin = new Padding(180,10,0,10),
+                Margin = new Padding(20,10,0,10),
                 BackColor = Color.WhiteSmoke,
             };
             // 创建并配置 Label 控件
@@ -257,7 +263,6 @@ namespace Server
             panel.Controls.Add(userLabel);
             return panel;
         }
-
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             Network network = Network.getNetwork();
@@ -269,6 +274,7 @@ namespace Server
             }
             else
             {
+                kernel.writeHistories();
                 network.stop();
             }
             network.isConnectMutex.ReleaseMutex();

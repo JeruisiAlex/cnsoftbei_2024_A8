@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -19,9 +22,11 @@ namespace Server
 
         private string hostName;
         public List<History> histories;
+        private MouseActionFactory.MouseActionFactory mouseAction;
         private string historiesPath = "./history.json"; // 历史记录的路径
         private string rappFullName = "RemoteApp"; // remoteApp.exe 的全称
         private string rappPath = "./RemoteApp.exe"; // remoteApp.exe 的路径
+        public string tutorialPath; // 启用远程桌面教程的路径
         private string rdpRegistryKeyPath = @"SYSTEM\CurrentControlSet\Control\Terminal Server";
         private string remoteAppRegistryKeyPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications";
 
@@ -33,22 +38,33 @@ namespace Server
 
         public void init()
         {
+            hostName = System.Net.Dns.GetHostName();
+            if(hostName == null || hostName == "")
+            {
+                hostName = "没有找到主机名"
+            }
+            checkRemoteApp();
+            readHistories();
+            // 获取当前工作目录
+            string currentDirectory = Directory.GetCurrentDirectory();
+            // 将相对路径转换为绝对路径
+            tutorialPath = Path.GetFullPath(Path.Combine(currentDirectory, "./启用远程桌面.pdf"));
+            mouseAction = MouseActionFactory.MouseActionFactory.Instance;
             if (!checkRDP())
             {
                 // 错误框,错误框关闭，则整个程序关闭
-                // “请打开远程桌面”
+                mouseAction.errMessage("没有启用远程桌面！请手动启用。可参考应用程序同目录下“启用远程连接”的pdf文件启用远程桌面。");
                 // 弹出 pdf
+                // OpenTutorial();
                 return;
             }
             if (!File.Exists(rappPath))
             {
                 // 错误框,错误框关闭，则整个程序关闭
-                // “没有找到必要程序，请重新安装”
+                mouseAction.errMessage("没有找到必要程序，请重新安装");
                 return ;
             }
-            hostName = Environment.MachineName;
-            checkRemoteApp();
-            readHistories();
+;
         }
 
         // 检查 rdp 是否打开
@@ -135,6 +151,25 @@ namespace Server
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred while saving history: {ex.Message}");
+            }
+        }
+
+        // 弹出pdf
+        public void OpenTutorial()
+        {
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = tutorialPath,
+                    UseShellExecute = true,
+                    Verb = "open"
+                };
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("无法打开文件: " + ex.Message);
             }
         }
 

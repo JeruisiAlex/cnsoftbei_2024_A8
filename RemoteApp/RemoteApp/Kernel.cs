@@ -314,8 +314,9 @@ namespace RemoteApp
             if (app != null && app.getUninstall != null)
             {
                 addRemoteAppToRegistry(app.getUninstall().getFullName(), app.getUninstall().getPath(), app.getUninstall().getIconPath(), "",0);
+
                 uninstallList.Add(app.getUninstall());
-                network.send(0, app.getUninstall().getName());
+                network.send(1, app.getUninstall().getName());
 
                 err.setErrType(ErrType.SUCCESS);
             }
@@ -346,7 +347,7 @@ namespace RemoteApp
             addRemoteAppToRegistry(fullName, path, path, "",2);
             if (err.getErrType() == ErrType.SUCCESS)
             {
-                network.send(0, app.getName());
+                network.send(1, app.getName());
             }
             else
             {
@@ -365,7 +366,7 @@ namespace RemoteApp
                 {
                     if (File.Exists(app.getPath()))
                     {
-                        network.send(0,app.getName());
+                        network.send(1,app.getName());
                     }
                     else
                     {

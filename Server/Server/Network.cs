@@ -18,6 +18,7 @@ namespace Server
         private int remoteAppPort = 5678;
         private int port;
         private string clientName;
+        private string username;
 
         private Thread mainThread;
         private Thread serverThread;
@@ -125,6 +126,9 @@ namespace Server
                             serverThread.Start();
 
                             sendHostName(stream);
+                            isConnectMutex.WaitOne();
+                            kernel.histories.Add(new History((client.Client.RemoteEndPoint as IPEndPoint).ToString(), clientName, username));
+                            isConnectMutex.ReleaseMutex();
                         }
                         else
                         {
@@ -142,7 +146,6 @@ namespace Server
                 
             }
         }
-
         private void serverStart()
         {
             TcpClient client = serverListener.AcceptTcpClient();
@@ -158,7 +161,7 @@ namespace Server
         private bool checkUserInfo(NetworkStream stream)
         {
             int length = receiveInt(stream);
-            string username = receiveString(stream, length);
+            username = receiveString(stream, length);
             Debug.WriteLine(username);
             length = receiveInt(stream);
             string password = receiveString(stream, length);
@@ -195,6 +198,7 @@ namespace Server
             int length = receiveInt(stream);
             clientName = receiveString(stream, length);
             string hostname = kernel.getHostName();
+            Debug.WriteLine(hostname);
             sendInt(stream, hostname.Length);
             sendString(stream, hostname);
         }
