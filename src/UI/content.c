@@ -119,6 +119,7 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     // add_content(content_grid1, "开机启动：", 2, 0, 0);
     // add_switch(content_grid1, 2, 1); // 添加 switch
     // row6++;
+
 }
 
 
@@ -153,6 +154,11 @@ void AddContent(GtkWidget *grid, char *content, int row, int col, int type) {
     GtkWidget *label = gtk_label_new(process);
     gtk_label_set_xalign(GTK_LABEL(label), 0.0); // 设置左对齐
     gtk_grid_attach(GTK_GRID(grid), label, col, row, 1, 1);
+    // 设置标签的Tooltip文本
+    if(type == -1) {
+        gtk_widget_set_has_tooltip(label, TRUE);
+        gtk_widget_set_tooltip_text(label, content);
+    }
 
     if(type == 1) {
         gtk_widget_set_name(label, "classic-label");
@@ -211,6 +217,10 @@ void AddHistoryBox(char *ip, char *username, char *password) {
         gtk_box_pack_start(GTK_BOX(box), ipLabel, FALSE, FALSE, 0);
         gtk_box_pack_start(GTK_BOX(box), usernameLabel, FALSE, FALSE, 0);
         gtk_box_pack_start(GTK_BOX(box), password_label, FALSE, FALSE, 0);
+
+        // 设置提示框
+        gtk_widget_set_has_tooltip(usernameLabel, TRUE);
+        gtk_widget_set_tooltip_text(usernameLabel, username);
 
         gtk_container_add(GTK_CONTAINER(button), box); // 将盒子添加到按钮中
 
