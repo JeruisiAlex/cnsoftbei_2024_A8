@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-<<<<<<< HEAD
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-=======
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,20 +11,12 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
->>>>>>> w_dev
 
 namespace Server
 {
     public class Network
     {
         private static Network network = new Network();
-<<<<<<< HEAD
-        public static Network getNetwork() { return network; } 
-
-
-        private Network() { 
-            
-=======
         public static Network getNetwork() { return network; }
         private int serverPort = 6789;
         private int remoteAppPort = 5678;
@@ -55,17 +45,10 @@ namespace Server
             isConnectMutex = new Mutex();
 
             kernel = Kernel.getKernel();
->>>>>>> w_dev
         }
 
         public void init()
         {
-<<<<<<< HEAD
-
-        }
-
-
-=======
             if (!checkPort(serverPort))
             {
                 return;
@@ -138,7 +121,6 @@ namespace Server
                             sendHostName(stream);
                             isConnectMutex.WaitOne();
                             kernel.histories.Add(new History((client.Client.RemoteEndPoint as IPEndPoint).ToString(), clientName, username));
-                            MouseActionFactory.MouseActionFactory.Instance.showConnection(clientName);
                             isConnectMutex.ReleaseMutex();
                         }
                         else
@@ -266,6 +248,5 @@ namespace Server
             int number = BitConverter.ToInt32(data);
             return number;
         }
->>>>>>> w_dev
     }
 }

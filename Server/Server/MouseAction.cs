@@ -32,22 +32,12 @@ namespace MouseActionFactory
         }
         public void IpPortPanel_MouseEnter(object sender, EventArgs e)
         {
-            Form1.ipPortPanel.BackColor = Color.LightGray;
+            Form1.ipPortPanel.BackColor = Color.WhiteSmoke;
         }
 
         public void IpPortPanel_MouseLeave(object sender, EventArgs e)
         {
             Form1.ipPortPanel.BackColor = Color.Transparent;
-        }
-
-        public void connectionPanel_MouseEnter(object sender, EventArgs e)
-        {
-            Form1.connectionPanel.BackColor = Color.LightGray;
-        }
-
-        public void connectionPanel_MouseLeave(object sender, EventArgs e)
-        {
-            Form1.connectionPanel.BackColor = Color.Transparent;
         }
 
         public void BtnSidePanel_Click(object sender, EventArgs e)
@@ -79,6 +69,7 @@ namespace MouseActionFactory
             // 隐藏所有内容面板
             Form1.contentPanel.Visible = false;
             Form1.titlePanel.Visible = false;
+            Form1.historyPanel.Visible = false;
             //appPanel.Visible = false;
 
             // 根据按钮文本显示相关面板
@@ -110,17 +101,9 @@ namespace MouseActionFactory
                 pen.DashPattern = new float[] { 5, 5 };
 
                 // 绘制虚线
-                g.DrawLine(pen, 270, 142, 430, 142); // IP下方虚线
-                g.DrawLine(pen, 550, 142, 600, 142); // Port下方虚线
+                g.DrawLine(pen, 550, 40, 770, 40); // IP下方虚线
+                g.DrawLine(pen, 552, 120, 602, 120); // Port下方虚线
             }
-            Point center = new Point((int)(Form1.size.Width*0.85-10), 52);
-            int radius = 8;
-            DrawCircle(e.Graphics, center, radius);
-        }
-
-        private void DrawCircle(Graphics g, Point center, int radius)
-        {
-            g.FillEllipse(Form1.brush, center.X - radius, center.Y - radius, radius * 2, radius * 2);
         }
 
         //供调用
@@ -153,33 +136,5 @@ namespace MouseActionFactory
             Environment.Exit(0);
         }
 
-        public void showConnection(String client)
-        {
-            MessageBox.Show("您已被连接");
-            Form1.remoteLabel = new Label
-            {
-                Text = "远程："+client,
-                Location = new Point(200,320),
-                Size = new Size(300,100),
-                AutoSize = true,
-                Font = new Font("华文中宋",16),
-            };
-            Form1.contentPanel.Controls.Add(Form1.remoteLabel);
-            Form1.lblStatus.Text = "已连接";
-            Form1.brush = Brushes.Green;
-            Form1.contentPanel.Invalidate(); // 触发重新绘制
-        }
-
-        /*
-         * breakConnection:当远程断开连接时调用，弹窗连接已断开，修改主页信息
-         */
-        public void breakConnection()
-        {
-            MessageBox.Show("连接已断开");
-            Form1.contentPanel.Controls.Remove(Form1.remoteLabel);
-            Form1.lblStatus.Text = "未连接";
-            Form1.brush = Brushes.Red;
-            Form1.contentPanel.Invalidate();
-        }
     }
 }

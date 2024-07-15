@@ -8,7 +8,6 @@
         private System.ComponentModel.IContainer components = null;
         public static Version version;
         public static String status;
-        public static Size size;
         /// <summary>
         ///  Clean up any resources being used.
         /// </summary>
@@ -43,10 +42,6 @@
             ResumeLayout(false);
         }
 
-        private void getResolution()
-        {
-            size = new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
-        }
         #endregion
     }
 }
