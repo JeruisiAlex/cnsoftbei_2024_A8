@@ -34,11 +34,8 @@ namespace Server
             InitializeComponent();
             kernel = Kernel.getKernel();
             kernel.init();
-            kernel.histories.Add(new History("123", "123", "123"));
-            kernel.writeHistories();
-            kernel.readHistories();
+            Network.getNetwork().init();
             initializeCustomComponents();
-
         }
 
         private void initializeCustomComponents()
@@ -308,18 +305,19 @@ namespace Server
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // 在这里执行关闭前的操作，例如：
-            // 询问用户是否真的要关闭
-            var result = MessageBox.Show("确认关闭", "Confirm Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (result == DialogResult.No)
+            Network network = Network.getNetwork();
+            network.isConnectMutex.WaitOne();
+            if (network.isConnect)
             {
-                e.Cancel = true; // 取消关闭操作
+                MessageBox.Show("服务端已被连接，请断开连接后再关闭！");
+                e.Cancel = true;
             }
             else
             {
-                // 执行关闭前的其他操作
-                // 例如，保存设置或清理资源
+                kernel.writeHistories();
+                network.stop();
             }
+            network.isConnectMutex.ReleaseMutex();
         }
     }
 }
