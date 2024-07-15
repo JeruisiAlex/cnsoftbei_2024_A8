@@ -107,6 +107,7 @@ namespace Server
                 remoteAppKey.SetValue("Path", Path.GetFullPath(rappPath), RegistryValueKind.String);
                 remoteAppKey.SetValue("IconPath", Path.GetFullPath(rappPath), RegistryValueKind.String);
                 remoteAppKey.SetValue("UninstallPath", "", RegistryValueKind.String);
+                remoteAppKey.SetValue("Type", 1, RegistryValueKind.DWord);
                 remoteAppKey.Close();
                 key.Close();
             }

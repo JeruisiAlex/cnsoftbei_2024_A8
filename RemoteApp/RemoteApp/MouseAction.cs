@@ -15,24 +15,6 @@ namespace MouseActionFactory
 {
     public class MouseActionFactory : IMouseActionFactory
     {
-        // 添加 P/Invoke 声明
-        [DllImport("msi.dll", CharSet = CharSet.Auto)]
-        private static extern int MsiOpenDatabase(string szDatabasePath, IntPtr szPersist, out IntPtr phDatabase);
-
-        [DllImport("msi.dll", CharSet = CharSet.Auto)]
-        private static extern int MsiDatabaseOpenView(IntPtr hDatabase, string szQuery, out IntPtr phView);
-
-        [DllImport("msi.dll", CharSet = CharSet.Auto)]
-        private static extern int MsiViewExecute(IntPtr hView, IntPtr hRecord);
-
-        [DllImport("msi.dll", CharSet = CharSet.Auto)]
-        private static extern int MsiViewFetch(IntPtr hView, out IntPtr hRecord);
-
-        [DllImport("msi.dll", CharSet = CharSet.Auto)]
-        private static extern int MsiRecordGetString(IntPtr hRecord, int iField, System.Text.StringBuilder szValueBuf, ref int pcchValueBuf);
-
-        [DllImport("msi.dll", CharSet = CharSet.Auto)]
-        private static extern int MsiCloseHandle(IntPtr hAny);
         public static MouseActionFactory mouseAction;
 
         // 私有构造函数防止外部实例化
@@ -139,7 +121,7 @@ namespace MouseActionFactory
 
                     if (!string.IsNullOrEmpty(fileName))
                     {
-                        MessageBox.Show($"安装程序名称: {fileName}");
+                        //MessageBox.Show($"安装程序名称: {fileName}");
                         // 添加到应用程序信息列表
                         kernel.installApp(fileName, selectedFilePath);
                     }
