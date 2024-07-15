@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
 
@@ -360,9 +361,11 @@ namespace RemoteApp
         // 安装
         public void installApp(string fullName, string path)
         {
+
             App app = new App(fullName, path);
             installList.Add(app);
             addRemoteAppToRegistry(fullName, path, path, "",2);
+
             if (err.getErrType() == ErrType.SUCCESS)
             {
                 network.send(1, app.getName());
