@@ -8,6 +8,7 @@
         private System.ComponentModel.IContainer components = null;
         public static Version version;
         public static String status;
+        public static Size size;
         /// <summary>
         ///  Clean up any resources being used.
         /// </summary>
@@ -31,10 +32,15 @@
         {
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(899, 550);
+            this.ClientSize = new Size(800, 600);
+            size = new Size(800, 600);
             this.Text = "Form1";
         }
 
+        private void getResolution()
+        {
+            size = new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+        }
         #endregion
     }
 }

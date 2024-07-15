@@ -158,7 +158,7 @@ namespace MouseActionFactory
                 Text = app.getFullName(), // 设置名称文本
                 Location = new Point(60, 15), // 设置位置
                 AutoSize = true, // 自动调整大小以适应内容
-                Font = new Font("Arial", 16, FontStyle.Bold), // 设置字体
+                Font = new Font("华文中宋", 16, FontStyle.Bold), // 设置字体
             };
             appPanel.Controls.Add(nameLabel); // 将 Label 添加到面板
 
