@@ -85,10 +85,10 @@ namespace MouseActionFactory
             {
                 case "主机信息":
                     Form1.contentPanel.Visible = true;
-                    showConnection("123");
                     break;
                 case "历史连接":
                     //Form1.appInfoPanel.Visible = true;
+
                     Form1.historyPanel.Visible = true;
                     break;
             }
@@ -117,10 +117,10 @@ namespace MouseActionFactory
                 pen.DashPattern = new float[] { 5, 5 };
 
                 // 绘制虚线
-                g.DrawLine(pen, 270, 137, 430, 137); // IP下方虚线
-                g.DrawLine(pen, 550, 137, 600, 137); // Port下方虚线
+                g.DrawLine(pen, 270, 142, 430, 142); // IP下方虚线
+                g.DrawLine(pen, 550, 142, 600, 142); // Port下方虚线
             }
-            Point center = new Point(600, 50);
+            Point center = new Point((int)(Form1.size.Width*0.85-10), 52);
             int radius = 8;
             DrawCircle(e.Graphics, center, radius);
         }
@@ -163,7 +163,7 @@ namespace MouseActionFactory
         public void showConnection(String client)
         {
             MessageBox.Show("您已被连接");
-            Label label = new Label
+            Form1.remoteLabel = new Label
             {
                 Text = "远程："+client,
                 Location = new Point(200,320),
@@ -171,10 +171,22 @@ namespace MouseActionFactory
                 AutoSize = true,
                 Font = new Font("华文中宋",16),
             };
-            Form1.contentPanel.Controls.Add(label);
+            Form1.contentPanel.Controls.Add(Form1.remoteLabel);
             Form1.lblStatus.Text = "已连接";
             Form1.brush = Brushes.Green;
             Form1.contentPanel.Invalidate(); // 触发重新绘制
+        }
+
+        /*
+         * breakConnection:当远程断开连接时调用，弹窗连接已断开，修改主页信息
+         */
+        public void breakConnection()
+        {
+            MessageBox.Show("连接已断开");
+            Form1.contentPanel.Controls.Remove(Form1.remoteLabel);
+            Form1.lblStatus.Text = "未连接";
+            Form1.brush = Brushes.Red;
+            Form1.contentPanel.Invalidate();
         }
     }
 }

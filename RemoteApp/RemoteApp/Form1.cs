@@ -84,7 +84,7 @@ namespace RemoteApp
                 FlowDirection = FlowDirection.TopDown, // 上下
                 WrapContents = false,
                 Size = new Size(screenWidth,(int)(0.75*screenHeight)),
-                Location = new Point(10,100),
+                Location = new Point(10,70),
                 BackColor = Color.White
             };
 
@@ -117,17 +117,19 @@ namespace RemoteApp
                 FlatAppearance = { BorderSize = 0 },
                 FlatStyle = FlatStyle.Flat,
                 Location = new Point(screenWidth - 200, 15),
+                AutoSize = true
             };
 
             Button installButton = new Button
             {
                 Text = "选择安装程序",
                 Font = new Font("Arial", 16, FontStyle.Bold),
-                Size = new Size(200,50),
+                Size = new Size(220,50),
                 Location = new Point(screenWidth-500,15),
                 BackColor = Color.LightGray,
                 FlatAppearance = { BorderSize = 0 },
-                FlatStyle = FlatStyle.Flat
+                FlatStyle = FlatStyle.Flat,
+                AutoSize = true
             };
             // 添加按钮到按钮容器面板
             buttonPanel.Controls.Add(addButton);
