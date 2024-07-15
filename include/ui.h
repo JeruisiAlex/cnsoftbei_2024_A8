@@ -22,18 +22,22 @@ static char * css =
     "  background-color: #F5F5F5;"
     "  color: #515A5A;" // 灰黑色
     "  font-size: 22px;"
+    "  border: none;"
     "}"
     "#active-button {"
     "  background-color: white;"
     "  color: black;"  // 黑色
     "  font-size: 22px;"
+    "  border: none;"
     "}"
     "#inactive-clickbox {"
     "  background-color: #F2F3F4;"
     "  color: black;"  // 黑色
+    "  border: none;"
     "}"
     "#inactive-clickbox:hover {"
     "  background-color: #D3D3D3;"  // 灰色
+    "  border: none;"
     "}"
     "#inline-label {"
     "  font-size: 22px;"
@@ -99,6 +103,23 @@ static char * css =
     "}"
     "#software:hover {"
     "  background-color: #D3D3D3;"  // 灰色
+    "}"
+    "#button {"
+    "  background-color: #D3D3D3;"
+    "  color: black;"
+    "  font-size: 22px;"
+    "  cursor: pointer;"
+    "  padding-bottom: 2px;"
+    "  border: none;"
+    "}"
+    "#button:hover,"
+    "#button:active {"
+    "  background-color: #3DA3FF;"
+    "  color: white;"
+    "  font-size: 22px;"
+    "  cursor: pointer;"
+    "  padding-bottom: 2px;"
+    "  border: none;"
     "}";
 
 // 主窗口。创建错误提示框需要。

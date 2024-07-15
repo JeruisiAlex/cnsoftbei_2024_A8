@@ -108,6 +108,7 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     // 添加更改共享文件夹的按钮
     GtkWidget *button;
     button = gtk_button_new_with_label("更改共享文件夹");
+    gtk_widget_set_name(button,"button");
     gtk_widget_set_margin_top(button, 0);
     gtk_widget_set_margin_bottom(button, 0);
     gtk_widget_set_margin_start(button, 0);
@@ -879,6 +880,7 @@ void ShowUnconnectButton() {
     // 创建“断开连接”按钮
     GtkWidget *button;
     button = gtk_button_new_with_label("断开连接");
+    gtk_widget_set_name(button,"button");
     gtk_widget_set_margin_top(button, 0);
     gtk_widget_set_margin_bottom(button, 0);
     gtk_widget_set_margin_start(button, 0);
@@ -898,6 +900,7 @@ void ShowReconnectButton() {
     // 创建“重连应用端”按钮
     GtkWidget *button;
     button = gtk_button_new_with_label("重连应用端");
+    gtk_widget_set_name(button,"button");
     gtk_widget_set_margin_top(button, 0);
     gtk_widget_set_margin_bottom(button, 0);
     gtk_widget_set_margin_start(button, 0);
