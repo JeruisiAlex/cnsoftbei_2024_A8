@@ -3,12 +3,16 @@
 #include "../../include/uifunc.h"
 
 #include <string.h>
+#include <stdlib.h>
+#include <limits.h>
 
 double windowWidth;
 double windowHeight;
 
 struct NetworkInfo *historyRecords;
 int cnt;
+
+char *sharePath;
 
 GtkWidget * connectState;
 GtkWidget * spinner;
@@ -94,6 +98,24 @@ void CreateContent(GtkWidget* window,GtkWidget* contentStack) {
     AddContent(contentGrid5, hostName, 0, 1, -1);
     AddContent(contentGrid5, "端口：", 1, 0, 0);
     AddContent(contentGrid5, PORT, 1, 1, -1);
+    AddContent(contentGrid5, "共享文件夹：", 2, 0, 0);
+    // 将共享文件夹的位置转为绝对路径
+    char absolutePath[PATH_MAX];
+    realpath(sharePath,absolutePath);
+    AddContent(contentGrid5, absolutePath, 2, 1, -1);
+    // 添加更改共享文件夹的按钮
+    GtkWidget *button;
+    button = gtk_button_new_with_label("更改共享文件夹");
+    gtk_widget_set_margin_top(button, 0);
+    gtk_widget_set_margin_bottom(button, 0);
+    gtk_widget_set_margin_start(button, 0);
+    gtk_widget_set_margin_end(button, 0);
+    gtk_widget_set_size_request(button, (gint)(windowWidth/5.0), 25); // 设置按钮大小
+    g_signal_connect(button,"clicked",G_CALLBACK(ClickChangeShareFolder),contentGrid5);
+
+    // 将按钮放入网格
+    gtk_grid_attach(GTK_GRID(contentGrid5), button, 0, 3, 1, 1);
+
     // add_content(content_grid1, "开机启动：", 2, 0, 0);
     // add_switch(content_grid1, 2, 1); // 添加 switch
     // row6++;
@@ -124,7 +146,11 @@ GtkWidget* CreateAndAddGrid(GtkWidget *contentStack, char *title) {
    1：普通文本
  */
 void AddContent(GtkWidget *grid, char *content, int row, int col, int type) {
-    GtkWidget *label = gtk_label_new(content);
+
+    char process[30];
+    OmitString(content,process,20);
+
+    GtkWidget *label = gtk_label_new(process);
     gtk_label_set_xalign(GTK_LABEL(label), 0.0); // 设置左对齐
     gtk_grid_attach(GTK_GRID(grid), label, col, row, 1, 1);
 
@@ -171,7 +197,7 @@ void AddHistoryBox(char *ip, char *username, char *password) {
 
         char name[35] = "用户名：";
         char processedName[10] = "\0";
-        OmitUsername(username,processedName); // 处理用户名，防止用户名过长，导致UI不符合设计
+        OmitString(username,processedName,5); // 处理用户名，防止用户名过长，导致UI不符合设计
         strcat(name,processedName);
 
         GtkWidget *ipLabel = gtk_label_new(ip);
