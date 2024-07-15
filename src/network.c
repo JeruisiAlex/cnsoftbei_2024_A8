@@ -18,6 +18,8 @@
 #include <pthread.h>
 #include <spawn.h>
 
+#include "../include/uifunc.h"
+
 extern char **environ;
 
 struct NetworkInfo networkInfo;
@@ -35,6 +37,8 @@ pthread_t threadForRemoteApp;
 int port;
 int isRun;
 pthread_mutex_t isRunMutex;
+int isOpen;
+pthread_mutex_t isOpenMutex;
 
 
 int NetworkInit() {
@@ -42,7 +46,9 @@ int NetworkInit() {
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&cond, NULL);
     pthread_mutex_init(&isRunMutex, NULL);
+    pthread_mutex_init(&isOpenMutex, NULL);
     isRun = 1;
+    isOpen = 0;
     isConnect = 0;
     if(CheckPort() == 1) {
         return 1;
@@ -55,6 +61,7 @@ void NetworkClose() {
     pthread_cond_destroy(&cond);
     pthread_mutex_destroy(&isConnectMutex);
     pthread_mutex_destroy(&isRunMutex);
+    pthread_mutex_destroy(&isOpenMutex);
 }
 
 int CheckPort() {
@@ -115,15 +122,12 @@ int CheckUserInfo(int sock) {
     if(recv(sock, &code, sizeof(int), 0) <= 0) return 1;
     printf("%d\n", code);
     if(code == USER_INFO_ERR) {
-        ErrDialog(USER_INFO_ERR_STRING);
-        return 1;
+        return USER_INFO_ERR;
     }
-    if(code  == 1) {
-        printf("连接已经到达上限\n");
-        return 1;
+    if(code  == CONNECT_UP_TO_LIMIT) {
+        return CONNECT_UP_TO_LIMIT;
     }
     if(code < 0){
-        printf("连接失败\n");
         return 1;
     }
 
@@ -166,17 +170,20 @@ int SendHostName(int sock) {
     if(recv(sock, &length, sizeof(int), 0) <= 0) return 1;
     serverName = malloc(length+1);
     if(recv(sock, serverName, length, 0) <= 0) return 1;
+    AddOneHistoryRecord(networkInfo.address, networkInfo.username, networkInfo.password);
+    AddHistoryBox(networkInfo.address, networkInfo.username, networkInfo.password);
     printf("%s\n", serverName);
     return 0;
 }
 
-int ConnectToServer() {
-    ConnectingHome(networkInfo.address);
+int TryToConnectToServer() {
+    int ret;
+
     struct sockaddr_in addr;
     int sock = CreateClient(&addr, SERVER_PORT);
     if(sock < 0) return 1;
     if(connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in)) < 0) return 1;
-    if(CheckUserInfo(sock) != 0) return 1;
+    if((ret = CheckUserInfo(sock)) != 0) return ret;
     if(ChoosePort(sock) < 0) return 1;
     if(SendHostName(sock) != 0) return 1;
     close(sock);
@@ -189,8 +196,41 @@ int ConnectToServer() {
         return 1;
     }
 
-    ConnectedHome(networkInfo.address, serverName);
     return 0;
+}
+
+void ConnectToServer(char *address, char *username, char *password) {
+    pthread_mutex_lock(&isConnectMutex);
+    if(isConnect) {
+        pthread_mutex_unlock(&isConnectMutex);
+        DisconnectToServer();
+    }
+
+    pthread_mutex_lock(&isConnectMutex);
+    isConnect = 1;
+    pthread_mutex_unlock(&isConnectMutex);
+
+    SetNetworkInfo(address, username, password);
+    ConnectingHome(networkInfo.address);
+
+    int ret = TryToConnectToServer();
+    if(ret != 0) {
+        pthread_mutex_lock(&isConnectMutex);
+        UnconnectHome();
+        isConnect = 0;
+        pthread_mutex_unlock(&isConnectMutex);
+
+        if(ret == 1) {
+            ErrDialog(NETWORK_ERR_STRING);
+        } else if(ret == USER_INFO_ERR) {
+            ErrDialog(USER_INFO_ERR_STRING);
+        } else if(ret == CONNECT_UP_TO_LIMIT) {
+            ErrDialog(CONNECT_UP_TO_LIMIT_STRING);
+        }
+    } else {
+        ConnectedHome(networkInfo.address, serverName);
+    }
+
 }
 
 void *ReveiveServer(void *sock) {
@@ -200,11 +240,12 @@ void *ReveiveServer(void *sock) {
     rdpInfo.name = malloc(length + 1);
     if(recv(sockId, rdpInfo.name, length, 0) <=0 ) return NULL;
     // 打开断开连接的按钮
+    ShowUnconnectButton();
 
-    if(pthread_create(&threadForRemoteApp, NULL, ConnectToRemoteApp, NULL) != 0) {
-        // 打开重连应用端的按钮
-
-    }
+    pthread_mutex_lock(&isRunMutex);
+    isRun = 1;
+    pthread_mutex_unlock(&isRunMutex);
+    ReConnectToRemoteApp();
 
     pthread_mutex_lock(&mutex);
     pthread_cond_wait(&cond, &mutex);
@@ -222,10 +263,6 @@ void *ReveiveServer(void *sock) {
 
 int DisconnectToServer() {
 
-    pthread_mutex_lock(&mutex);
-    pthread_cond_signal(&cond);
-    pthread_mutex_unlock(&mutex);
-
     pthread_mutex_lock(&isRunMutex);
     isRun = 0;
     pthread_mutex_unlock(&isRunMutex);
@@ -233,62 +270,101 @@ int DisconnectToServer() {
         kill(p->pid, SIGTERM);
         removePid(p);
     }
+
+    pthread_mutex_lock(&mutex);
+    pthread_cond_signal(&cond);
+    pthread_mutex_unlock(&mutex);
+
+    pthread_mutex_lock(&isOpenMutex);
+    int isopen = isOpen;
+    pthread_mutex_unlock(&isOpenMutex);
+    if(isopen) {
+           pthread_join(&threadForRemoteApp, NULL);
+    }
+    pthread_join(&threadForServer, NULL);
+
     return 0;
 }
 
 void ReConnectToRemoteApp() {
     if(pthread_create(&threadForRemoteApp, NULL, ConnectToRemoteApp, NULL) != 0) {
         // 打开重连应用端的按钮
-
+        ShowReconnectButton();
     }
 }
 
+void LogOff() {
+    char sys[1024]=FREE_RDP_PATH;
+    strcat(sys, " /v:");
+    strcat(sys, networkInfo.address);
+    strcat(sys, " /u:");
+    strcat(sys, networkInfo.username);
+    strcat(sys, " /p:");
+    strcat(sys, networkInfo.password);
+    strcat(sys, " /logoff");
+    syscall(sys);
+}
+
 void* ConnectToRemoteApp(void *info) {
-    // int pid = OpenRemoteApp(rdpInfo.name);
-    int pid = 1;
+    pthread_mutex_lock(&isOpenMutex);
+    isOpen = 1;
+    pthread_mutex_unlock(&isOpenMutex);
+
+    int pid = OpenRemoteApp(rdpInfo.name);
     if(pid < 0) {
         // 打开重连应用端按钮
-
+        ShowReconnectButton();
     } else {
         sleep(2);
-        if(kill(pid, 0) != 0) {
-            struct sockaddr_in addr;
-            int sock = CreateClient(&addr, REMOTEAPP_PORT);
-            if(connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr)) < 0) {
-                // 打开重连应用端按钮
+        struct sockaddr_in addr;
+        int sock = CreateClient(&addr, REMOTEAPP_PORT);
+        int count = 10;
+        while(count && connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr)) < 0) {
+            count --;
+            sleep(0.5);
+        }
 
-            } else {
-                printf("连接成功\n");
-                pthread_mutex_lock(&isRunMutex);
-                while(isRun) {
-                    pthread_mutex_unlock(&isRunMutex);
-                    int code = 0;
-                    int length = 0;
-                    char *name;
-                    if(recv(sock, &code, sizeof(int), 0) > 0) {
-                        if(code > 0) {
-                            if(recv(sock, &length, sizeof(int), 0) > 0) {
-                                name = malloc(length);
-                                if(recv(sock, name, length, 0) > 0) {
-                                    OpenRemoteApp(name);
-                                }
-                                free(name);
+        if(count > 0){
+            pthread_mutex_lock(&isRunMutex);
+            while(isRun) {
+                pthread_mutex_unlock(&isRunMutex);
+                int code = 0;
+                int length = 0;
+                char *name;
+                if(isShare) {
+                    int value = 1;
+                    send(sock, &value, sizeof(int), 0);
+                } else {
+                    int value = 0;
+                    send(sock, &value, sizeof(int), 0);
+                }
+                if(recv(sock, &code, sizeof(int), 0) > 0) {
+                    if(code > 0) {
+                        if(recv(sock, &length, sizeof(int), 0) > 0) {
+                            name = malloc(length);
+                            if(recv(sock, name, length, 0) > 0) {
+                                OpenRemoteApp(name);
                             }
+                            free(name);
                         }
                     }
-                    pthread_mutex_lock(&isRunMutex);
+                    else {
+                        pthread_mutex_lock(&isRunMutex);
+                        break;
+                    }
                 }
-                pthread_mutex_unlock(&isRunMutex);
+                pthread_mutex_lock(&isRunMutex);
             }
+            pthread_mutex_unlock(&isRunMutex);
         } else {
-            // 打开重连应用端按钮
-
+            ShowReconnectButton();
         }
+        LogOff();
     }
 
-    pthread_mutex_lock(&mutex);
-    pthread_cond_signal(&cond);
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_lock(&isOpenMutex);
+    isOpen = 0;
+    pthread_mutex_unlock(&isOpenMutex);
 
     return NULL;
 }

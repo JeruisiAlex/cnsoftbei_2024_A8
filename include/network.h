@@ -37,7 +37,7 @@ int CheckPort();
 
 int SetNetworkInfo(const char *address, const char *username, const char *password);
 
-int ConnectToServer();
+void ConnectToServer(char *address, char *username, char *password);
 
 void *ReveiveServer(void *sock);
 
