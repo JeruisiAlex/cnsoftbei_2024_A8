@@ -63,6 +63,8 @@ https://jrsoftware.org/isinfo.php
 
 ![](https://img-blog.csdnimg.cn/img_convert/fc31207d786ab81a5fc0f6e4936e5747.png)
 
+> 版权信息也要写英文，不然会显示乱码
+
 9. 系统用户使用权限等
 
 ![](https://img-blog.csdnimg.cn/img_convert/3a50c293b22252996cbb7bc8213345dc.png)
@@ -72,6 +74,37 @@ https://jrsoftware.org/isinfo.php
 12. 生成脚本代码，编译脚本
 
 ![](https://img-blog.csdnimg.cn/img_convert/dc334622ba7762ea153e2499f1ba9009.png)
+
+13. 在脚本中添加下面这一段。保证我们需要的注册表会在安装后被清理干净
+
+> 防止上一组的人代码有bug或者改了这个注册表
+
+``` shell
+[Code]
+procedure ClearRegistryKey(RootKey: Integer; SubKey: String);
+var
+  S: TArrayOfString;
+  i: Integer;
+begin
+  // 获取指定注册表项的所有子项名称
+  if RegGetSubkeyNames(RootKey, SubKey, S) then
+  begin
+    // 循环遍历所有子项并删除
+    for i := 0 to GetArrayLength(S) - 1 do
+      RegDeleteKeyIncludingSubkeys(RootKey, SubKey + '\' + S[i]);
+  end;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  // 检查当前安装步骤是否为安装后
+  if CurStep = ssPostInstall then
+  begin
+    // 清空指定的注册表项
+    ClearRegistryKey(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications');
+  end;
+end;
+```
 
 13. 选择保存脚本代码
 
