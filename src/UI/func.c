@@ -414,15 +414,13 @@ void ClickReconnect(GtkWidget *widget, gpointer data) {
 void ClickChangeShareFolder(GtkWidget *widget, gpointer data) {
 
     pthread_mutex_lock(&isConnectMutex);
-    int temp = isConnect;
-    pthread_mutex_unlock(&isConnectMutex);
-
-    if(temp) {
+    if(isConnect) {
         ErrDialog("请先断开连接！");
         // 跳转到主页
         OnSwitchPage(GTK_BUTTON(homePage),content);
         return;
     }
+    pthread_mutex_unlock(&isConnectMutex);
 
     GtkWidget *dialog;
     GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
