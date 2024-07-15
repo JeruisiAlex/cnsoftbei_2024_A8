@@ -21,7 +21,9 @@ void CilckPublish(GtkMenuItem *menuitem, gpointer userData);
 void ClickHistory(GtkWidget *widget, gpointer data);
 /* 工具函数 */
 int IsValidIp(char *ip);
+/********** 供Jeruisi调用 ************/
 int AddOneHistoryRecord(char *ip,char *username,char *password);
+/***********************************/
 int ReadAllHistoryRecords();
 void OmitUsername(char *username,char *processedName);
 

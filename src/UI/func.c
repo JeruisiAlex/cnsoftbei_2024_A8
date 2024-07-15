@@ -148,29 +148,8 @@ void ClickConfirm(GtkWidget *widget, gpointer data) {
         // 跳转到主页
         OnSwitchPage(GTK_BUTTON(homePage),content);
 
-        // 开始连接
-        pthread_mutex_lock(&isConnectMutex);
-        isConnect = 1;
-        pthread_mutex_unlock(&isConnectMutex);
-
-
-
         // 调用网络层连接
-        SetNetworkInfo(ip,username,password);
-        if(ConnectToServer() == 1) {
-            UnconnectHome();
-
-            pthread_mutex_lock(&isConnectMutex);
-            isConnect = 0;
-            pthread_mutex_unlock(&isConnectMutex);
-
-            ErrDialog("连接失败！");
-        }
-        else{
-            // 输入合法，执行相关操作
-            AddOneHistoryRecord(ip,username,password);
-            AddHistoryBox(ip,username,password);
-        }
+        ConnectToServer(ip,username,password);
 
         gtk_widget_destroy(dialog); // 销毁对话框
     }
@@ -417,21 +396,11 @@ void ClickHistory(GtkWidget *widget, gpointer data) {
     // 跳转到主页
     OnSwitchPage(GTK_BUTTON(homePage),content);
 
-    pthread_mutex_lock(&isConnectMutex);
-    isConnect = 1;
-    pthread_mutex_unlock(&isConnectMutex);
 
     struct NetworkInfo *info = (struct NetworkInfo *)data;
-    SetNetworkInfo(info->address,info->username,info->password);
-    if(ConnectToServer() == 1) {
-        UnconnectHome();
 
-        pthread_mutex_lock(&isConnectMutex);
-        isConnect = 0;
-        pthread_mutex_unlock(&isConnectMutex);
+    ConnectToServer(info->address,info->username,info->password);
 
-        ErrDialog("连接失败！");
-    }
     free(info);
 }
 
