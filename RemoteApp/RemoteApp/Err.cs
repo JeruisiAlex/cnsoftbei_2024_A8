@@ -14,14 +14,15 @@ namespace RemoteApp
 
         private ErrType errType;
 
-        private string[] ErrContent = new string[6]
+        private string[] ErrContent = new string[7]
         {
             "",
             "获取应用列表或已发布应用列表失败",
-            "发布一个已发布应用",
+            "不能发布一个已经发布的应用",
             "远程打开一个应用发现应用不存在",
             "该应用不能卸载",
-            "路径下不存在该应用，应用可能已经迁移"
+            "路径下不存在该应用，应用可能已经迁移",
+            "不能发布这个应用",
         };
 
         private Err()

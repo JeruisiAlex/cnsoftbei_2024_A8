@@ -33,9 +33,24 @@
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(7F, 17F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(992, 779);
+            Size minSize = new Size(800, 600);
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+            // 设置自动缩放基准尺寸
+            this.AutoScaleDimensions = new SizeF(96F, 96F); // 默认的 DPI 是 96 DPI
+            getResolution();
+
+            screenWidth = (int)(screenWidth*0.5);
+            screenHeight = (int)(screenHeight*0.6);
+            if (screenHeight < minSize.Height)
+            {
+                screenHeight = minSize.Height;
+            }
+            if (screenWidth < minSize.Width)
+            {
+                screenWidth = minSize.Width;
+            }
+            screenHeight =(int)( screenWidth *0.75);
+            ClientSize = new Size(screenWidth, screenHeight);
             Margin = new Padding(4);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;

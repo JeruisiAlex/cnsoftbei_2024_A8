@@ -21,9 +21,12 @@ namespace Server
         public static FlowLayoutPanel historyPanel;
         public static Label lblStatus;
         public static Panel statusPanel;
+        public static Label remoteLabel; 
         //颜色
         public static Brush brush;
         private Kernel kernel;
+        public static double rWidth;
+        private static double rHeight;
         private MouseActionFactory.MouseActionFactory mouseAction;
 
         public Form1()
@@ -93,16 +96,19 @@ namespace Server
         // 增加左侧按钮
         private Button CreateButton(string text)
         {
-            Button button = new Button();
-            button.Text = text;
-            button.Size = new Size(150, 50);
-            button.FlatStyle = FlatStyle.Flat;
-            button.BackColor = Color.LightGray;
-            button.FlatAppearance.BorderSize = 0;
-            button.Margin = new Padding(0, 0, 0, 15); // 设置底部间距为 10 像素
-            button.TextAlign = ContentAlignment.MiddleCenter;
+            Button button = new Button
+            {
+                Text = text,
+                Size = new Size(150,50),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.LightGray,
+                AutoSize = true,
+                Margin = new Padding(0, 0, 0, 15),
+                Font = new Font("等线", 15),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
 
-            button.Font = new Font("等线", 15);
+            button.FlatAppearance.BorderSize = 0; // 设置底部间距为 10 像素
 
             button.Click += mouseAction.BtnSidePanel_Click;
             return button;
@@ -120,11 +126,9 @@ namespace Server
 
             // IP 和 Port 面板
             ipPortPanel = new Panel();
-            addPanel(ipPortPanel, new Point(180, 100));
+            addPanel(ipPortPanel, new Point(180, 105));
             ipPortPanel.MouseEnter += mouseAction.IpPortPanel_MouseEnter;
             ipPortPanel.MouseLeave += mouseAction.IpPortPanel_MouseLeave;
-            ipPortPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-
 
             // 添加内容控件
             addInfoLabel(ipPortPanel, "主机名:", new Point(20, 15), "华文中宋");
@@ -146,7 +150,7 @@ namespace Server
             connectionPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
             ToggleButton chkAllowNetwork = new ToggleButton();
-            chkAllowNetwork.Location = new Point(320, 15);
+            chkAllowNetwork.Location = new Point((int)(0.85*size.Width), 15);
             connectionPanel.Controls.Add(chkAllowNetwork);
 
 
@@ -154,29 +158,38 @@ namespace Server
             addPanel(broadPanel, new Point(180, 240));
             broadPanel.MouseEnter += mouseAction.broadPanel_MouseEnter;
             broadPanel.MouseLeave += mouseAction.broadPanel_MouseLeave;
-            broadPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             addInfoLabel(broadPanel, "是否发送广播", new Point(20, 15), "华文中宋");
 
             ToggleButton chkBroadcast = new ToggleButton();
-            chkBroadcast.Location = new Point(320, 15);
+            chkBroadcast.Location = new Point((int)(0.85 * size.Width), 15);
             broadPanel.Controls.Add(chkBroadcast);
 
             // 顶部logo和连接状态
-            Label lblLogo = new Label();
-            lblLogo.Text = "SKRO";
-            lblLogo.Location = new Point(200, 15);
-            lblLogo.AutoSize = true;
-            lblLogo.Font = new Font("Times New Roman", 42, FontStyle.Bold);
-            lblLogo.ForeColor = Color.DarkBlue;
+            Label lblLogo = new Label
+            {
+                Text = "SKRO",
+                Location = new Point(200, 15),
+                Font = new Font("Times New Roman", 42, FontStyle.Bold),
+                ForeColor = Color.DarkBlue,
+                AutoSize = true
+            };
             contentPanel.Controls.Add(lblLogo);
 
             string ver = version.ToString();
-            addInfoLabel(contentPanel, "v" + ver, new Point(400, 47), "Times New Roman");
+            Label versionLabel = new Label
+            {
+                Text = "v" + ver,
+                Location = new Point((int)(200 + 0.25 * size.Width), 47),
+                Font = new Font("Times New Roman", 14),
+                ForeColor = Color.Black,
+                AutoSize = true
+            };
 
+            contentPanel.Controls.Add(versionLabel);
 
             statusPanel = new Panel
             {
-                Location = new Point(610, 42),
+                Location = new Point((int)(0.85 * size.Width), 42),
                 Size = new Size(180,50),
                 BackColor = Color.White,
             };
@@ -186,7 +199,7 @@ namespace Server
                 Text = status,
                 Location = new Point(0,0),
                 AutoSize = true,
-                Font = new Font("Times New Roman", 14),
+                Font = new Font("华文中宋", 14),
                 ForeColor = Color.Black,
             };
             statusPanel.Controls.Add(lblStatus);
@@ -199,8 +212,10 @@ namespace Server
         private void addPanel(Panel panel, Point location)
         {
             panel.Location = location;
-            panel.Size = new Size(540, 50);
+            panel.Size = new Size(size.Width-180, 50);
             panel.BackColor = Color.Transparent;
+            panel.MouseEnter +=(sender,e)=>panel.BackColor = Color.LightGray;
+            panel.MouseLeave += (sender, e) => panel.BackColor = Color.Transparent;
             contentPanel.Controls.Add(panel);
         }
 
@@ -212,6 +227,8 @@ namespace Server
             label.Location = location;
             label.AutoSize = true;
             label.Font = new Font(font, 13, FontStyle.Regular);
+            label.MouseEnter += (sender, e) => panel.BackColor = Color.LightGray;
+            label.MouseLeave += (sender, e) => panel.BackColor = Color.Transparent;
             panel.Controls.Add(label);
             return label;
 

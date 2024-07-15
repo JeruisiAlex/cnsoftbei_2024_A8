@@ -9,6 +9,8 @@ using System.IO;
 using System.Windows.Forms;
 using RemoteApp;
 using IWshRuntimeLibrary;
+using System.Runtime.InteropServices;
+
 namespace MouseActionFactory
 {
     public class MouseActionFactory : IMouseActionFactory
@@ -74,7 +76,7 @@ namespace MouseActionFactory
                     kernel.addRemoteApp(fileName, selectedFilePath);
 
 
-                    flushAppPanel(kernel.getRemoteAppList());
+                    flushAppPanel(kernel.getRemoteAppList(),new Size(Form1.screenWidth,Form1.screenHeight));
                     // 显示文件信息
                     /*string message = $"文件路径: {selectedFilePath}\n" +
                                      $"文件名: {fileName}\n";*/
@@ -95,50 +97,66 @@ namespace MouseActionFactory
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string selectedFilePath = openFileDialog.FileName;
-                    // 获取文件信息
-                    FileInfo fileInfo = new FileInfo(selectedFilePath);
-                    FileVersionInfo file = FileVersionInfo.GetVersionInfo(selectedFilePath);
-                    string fileName = file.ProductName;
-                    long fileSize = fileInfo.Length; // 文件大小，单位为字节
-                    DateTime creationTime = fileInfo.CreationTime; // 创建时间
-                    DateTime lastAccessTime = fileInfo.LastAccessTime; // 上次访问时间
-                    DateTime lastWriteTime = fileInfo.LastWriteTime; // 上次写入时间
+                    string fileName = "";
 
-                    // 添加到应用程序信息列表
-                    kernel.installApp(fileName, selectedFilePath);
+                    // 获取文件扩展名
+                    string fileExtension = Path.GetExtension(selectedFilePath).ToLower();
 
-                    //flushAppPanel(kernel.getRemoteAppList());
-                    // 显示文件信息
-                    /*string message = $"文件路径: {selectedFilePath}\n" +
-                                     $"文件名: {fileName}\n" +
-                                     $"文件大小: {fileSize} 字节\n" +
-                                     $"创建时间: {creationTime}\n" +
-                                     $"上次访问时间: {lastAccessTime}\n" +
-                                     $"上次写入时间: {lastWriteTime}";*/
-                    //MessageBox.Show(message, "选择的exe程序");
-                    //MessageBox.Show("你选择的文件路径: " + selectedFilePath, "选择的exe程序");
+                    if (fileExtension == ".exe")
+                    {
+                        // 获取 .exe 文件的信息
+                        FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(selectedFilePath);
+                        fileName = fileInfo.FileDescription;
+                        if (string.IsNullOrEmpty(fileName))
+                        {
+                            // 如果 FileDescription 为空，则使用文件名
+                            fileName = Path.GetFileNameWithoutExtension(selectedFilePath);
+                        }
+                    }
+                    else if (fileExtension == ".msi")
+                    {
+                        // 获取 .msi 文件的信息
+                        fileName = GetMsiSubject(selectedFilePath);
+                    }
+
+                    if (!string.IsNullOrEmpty(fileName))
+                    {
+                        //MessageBox.Show($"安装程序名称: {fileName}");
+                        // 添加到应用程序信息列表
+                        kernel.installApp(fileName, selectedFilePath);
+                    }
+                    else
+                    {
+                        MessageBox.Show("无法获取安装程序名称");
+                    }
+
                 }
             }
         }
+        private string GetMsiSubject(string msiFilePath)
+        {
+            string subject = Path.GetFileNameWithoutExtension(msiFilePath);
 
-        public void flushAppPanel(List<App> appList)
+
+            return subject;
+        }
+        public void flushAppPanel(List<App> appList,Size size)
         {
             Form1.appInfoPanel.Controls.Clear();
             foreach (App app in appList)
             {
-                Panel appPanel = createAppPanel(app);
+                Panel appPanel = createAppPanel(app,size);
                 Form1.appInfoPanel.Controls.Add(appPanel);
-                //MessageBox.Show($"{app.Name}\n");
             }
         }
-        public Panel createAppPanel(App app)
+        public Panel createAppPanel(App app,Size size)
         {
             //Kernel kernel = Kernel.getKernel();
             // 创建应用程序面板
             Panel appPanel = new Panel
             {
-                Size = new Size(700, 50),
-                Margin = new Padding(190, 10, 0, 0)
+                Size = new Size((int)(0.9*size.Width), 50),
+                Margin = new Padding(10, 10, 0, 0)
             };
 
             Icon icon = Icon.ExtractAssociatedIcon(app.getIconPath());
@@ -159,7 +177,7 @@ namespace MouseActionFactory
                 Text = app.getFullName(), // 设置名称文本
                 Location = new Point(60, 15), // 设置位置
                 AutoSize = true, // 自动调整大小以适应内容
-                Font = new Font("Arial", 16, FontStyle.Bold), // 设置字体
+                Font = new Font("华文中宋", 16, FontStyle.Bold), // 设置字体
             };
             appPanel.Controls.Add(nameLabel); // 将 Label 添加到面板
 
@@ -184,6 +202,12 @@ namespace MouseActionFactory
             // 绑定鼠标移入和移出事件
             appPanel.MouseEnter += (sender, e) => appPanel.BackColor = Color.WhiteSmoke;
             appPanel.MouseLeave += (sender, e) => appPanel.BackColor = Color.Transparent;
+            appPanel.DoubleClick += (sender, e) => runMenuItem_Click(sender, e, app);
+            nameLabel.MouseEnter += (sender, e) => appPanel.BackColor = Color.WhiteSmoke;
+            nameLabel.MouseLeave += (sender, e) => appPanel.BackColor = Color.Transparent;
+
+            pictureBox.MouseEnter += (sender, e) => appPanel.BackColor = Color.WhiteSmoke;
+            pictureBox.MouseLeave += (sender, e) => appPanel.BackColor = Color.Transparent;
 
             return appPanel;
         }
@@ -193,7 +217,7 @@ namespace MouseActionFactory
         {
             Kernel kernel = Kernel.getKernel();
             kernel.removeApp(app.getFullName());
-            flushAppPanel(kernel.getRemoteAppList());
+            flushAppPanel(kernel.getRemoteAppList(),new Size(Form1.screenWidth,Form1.screenHeight));
         }
         private void runMenuItem_Click(Object sender, EventArgs e, App app)
         {

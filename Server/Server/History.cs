@@ -13,12 +13,15 @@ namespace Server
 
         public string hostName { get; set; }
 
+        public string connectTime { get; set; }
+
 
         public History(string ip, string hostName,string userName)
         {
             this.ip = ip;
             this.userName = userName;
             this.hostName = hostName;
+            connectTime = DateTime.Now.ToString();
         }
     }
 }

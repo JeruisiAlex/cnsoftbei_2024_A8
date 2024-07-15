@@ -53,7 +53,7 @@ namespace Server
             if (!checkRDP())
             {
                 // 错误框,错误框关闭，则整个程序关闭
-                mouseAction.errPDF("没有启用远程桌面！请手动启用。是否参考启用远程桌面教程？");
+                mouseAction.errPDF("没有启用远程桌面！请手动启用。\n是否参考启用远程桌面教程？");
                 return;
             }
             if (!File.Exists(rappPath))
@@ -96,20 +96,19 @@ namespace Server
             RegistryKey key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(remoteAppRegistryKeyPath, true);
             if(key != null)
             {
-                RegistryKey remoteAppKey = key.OpenSubKey(rappFullName, false);
+                RegistryKey remoteAppKey = key.OpenSubKey(rappFullName, true);
                 if (remoteAppKey == null)
                 {
-                    RegistryKey newKey = key.CreateSubKey(rappFullName, true);
-                    newKey.SetValue("Name", name, RegistryValueKind.String);
-                    newKey.SetValue("FullName", rappFullName, RegistryValueKind.String);
-                    newKey.SetValue("Path", Path.GetFullPath(rappPath), RegistryValueKind.String);
-                    newKey.SetValue("IconPath", Path.GetFullPath(rappPath), RegistryValueKind.String);
-                    newKey.SetValue("UninstallPath", "", RegistryValueKind.String);
+                    remoteAppKey = key.CreateSubKey(rappFullName, true);
                 }
-                else
-                {
-                    remoteAppKey.Close();
-                }
+                // 用户可能迁移这个应用，所以每一次应该重新加一遍
+                remoteAppKey.SetValue("Name", name, RegistryValueKind.String);
+                remoteAppKey.SetValue("FullName", rappFullName, RegistryValueKind.String);
+                remoteAppKey.SetValue("Path", Path.GetFullPath(rappPath), RegistryValueKind.String);
+                remoteAppKey.SetValue("IconPath", Path.GetFullPath(rappPath), RegistryValueKind.String);
+                remoteAppKey.SetValue("UninstallPath", "", RegistryValueKind.String);
+                remoteAppKey.SetValue("Type", 1, RegistryValueKind.DWord);
+                remoteAppKey.Close();
                 key.Close();
             }
         }
