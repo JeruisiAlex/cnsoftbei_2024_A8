@@ -293,8 +293,6 @@ void AddHistoryBox(char *ip, char *username, char *password) {
         GtkWidget *child = gtk_grid_get_child_at(GTK_GRID(contentGrid2), col, row);
         gtk_container_remove(GTK_CONTAINER(contentGrid2),child);
 
-        printf("++++++%d++++%d\n",col,row);
-
         GtkWidget *button = gtk_button_new(); // 创建按钮
         GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
 
