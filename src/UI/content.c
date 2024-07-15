@@ -197,7 +197,9 @@ void AddSwitchInGrid(GtkWidget *grid, int row, int col) {
 
 // 添加历史连接
 void AddHistoryBox(char *ip, char *username, char *password) {
-    if(!IsRepeatedHistory(ip)) {
+    int row,col;
+    int res;
+    if( (res = IsRepeatedHistory(ip,username,password,&row,&col)) == 0) {
         GtkWidget *button = gtk_button_new(); // 创建按钮
         GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
 
@@ -246,13 +248,76 @@ void AddHistoryBox(char *ip, char *username, char *password) {
         strcpy(in->password,password);
         g_signal_connect(button, "clicked", G_CALLBACK(ClickHistory), in);
 
-        // 为按钮指定唯一标识
+        // 为按钮指定标识
         g_object_set_data(G_OBJECT(button),"ip",ip);
+        g_object_set_data(G_OBJECT(button),"username",username);
+        g_object_set_data(G_OBJECT(button),"password",password);
 
         // 显示新按钮及其所有子控件
         gtk_widget_show_all(contentGrid2);
 
         col1++;
+    }
+    else if(res == -1) {
+
+        // 删除之前的
+        GtkWidget *child = gtk_grid_get_child_at(GTK_GRID(contentGrid2), col, row);
+        gtk_container_remove(GTK_CONTAINER(contentGrid2),child);
+
+        printf("++++++%d++++%d\n",col,row);
+
+        GtkWidget *button = gtk_button_new(); // 创建按钮
+        GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
+
+        char name[35] = "用户名：";
+        char processedName[10] = "\0";
+        OmitString(username,processedName,5); // 处理用户名，防止用户名过长，导致UI不符合设计
+        strcat(name,processedName);
+
+        GtkWidget *ipLabel = gtk_label_new(ip);
+        GtkWidget *usernameLabel = gtk_label_new(name);
+        GtkWidget *password_label = gtk_label_new("密码：*********");
+
+        gtk_widget_set_name(ipLabel,"inline-label");
+        gtk_widget_set_name(usernameLabel,"head-label");
+        gtk_widget_set_name(password_label,"head-label");
+
+        gtk_box_pack_start(GTK_BOX(box), ipLabel, FALSE, FALSE, 0);
+        gtk_box_pack_start(GTK_BOX(box), usernameLabel, FALSE, FALSE, 0);
+        gtk_box_pack_start(GTK_BOX(box), password_label, FALSE, FALSE, 0);
+
+        // 设置提示框
+        gtk_widget_set_has_tooltip(usernameLabel, TRUE);
+        gtk_widget_set_tooltip_text(usernameLabel, username);
+
+        gtk_container_add(GTK_CONTAINER(button), box); // 将盒子添加到按钮中
+
+        gtk_widget_set_margin_top(button, 5); // 设置按钮的上边距
+        gtk_widget_set_margin_bottom(button, 5); // 设置按钮的下边距
+        gtk_widget_set_margin_start(button, 5); // 设置按钮的左边距
+        gtk_widget_set_margin_end(button, 5); // 设置按钮的右边距
+
+        // 设置按钮的大小
+        gtk_widget_set_size_request(button, (gint)(windowWidth / 5.0), 200); // 调整宽度和高度
+
+        gtk_widget_set_name(button,"inactive-clickbox");
+
+        gtk_grid_attach(GTK_GRID(contentGrid2), button, col, row, 1, 1);
+
+        // 添加点击事件
+        struct NetworkInfo *in = (struct NetworkInfo *)malloc(sizeof(struct NetworkInfo));
+        strcpy(in->address,ip);
+        strcpy(in->username,username);
+        strcpy(in->password,password);
+        g_signal_connect(button, "clicked", G_CALLBACK(ClickHistory), in);
+
+        // 为按钮指定标识
+        g_object_set_data(G_OBJECT(button),"ip",ip);
+        g_object_set_data(G_OBJECT(button),"username",username);
+        g_object_set_data(G_OBJECT(button),"password",password);
+
+        // 显示新按钮及其所有子控件
+        gtk_widget_show_all(contentGrid2);
     }
 }
 
@@ -820,21 +885,32 @@ void ShowReconnectButton() {
     gtk_widget_show_all(contentGrid1);
 }
 
-/* 功能：检测是否是重复的历史连接
+/* 功能：检测是否是重复的历史连接。如果重复，且用户更改了用户名或密码，则之前的按钮会被这个函数移除
  * 参数：
  *   ip：将要加入历史连接的 ip
  *   grid：历史记录在哪个网格中
+ *   row：如果重复，则重复的组件在第几+1行
+ *   col：如果重复，则重复的组件在第几+1列
+ * 返回值：
+ *   -1：ip重复，但用户修改了用户名/密码。这个时候应该移除之前的，将信息更改为一个新的
+ *   0：不重复
+ *   1：ip重复，且用户没有更改用户名和密码。
  */
-int IsRepeatedHistory(char *ip) {
+int IsRepeatedHistory(char *ip,char *username,char *password,int * row,int *col) {
 
     for(int i = 0;i<=row1;i++) {
-        for(int j=0;j<col1;j++) {
+        for(int j=0;j<maxCol1;j++) {
             if(i == 0 && j == 0) {
                 continue;
             }
             GtkWidget *child = gtk_grid_get_child_at(GTK_GRID(contentGrid2), j, i);// 获取第i+1行第j+1列的子部件
-            if (child != NULL && strcmp(ip,g_object_get_data(G_OBJECT(child),"ip")) == 0) {
-                return 1;
+            if (child != NULL && strcmp(ip,g_object_get_data(G_OBJECT(child),"ip")) == 0 ) {
+                *row = i;
+                *col = j;
+                if(strcmp(username,g_object_get_data(G_OBJECT(child),"username")) == 0 && strcmp(password,g_object_get_data(G_OBJECT(child),"password")) == 0) {
+                    return 1;
+                }
+                return -1;
             }
         }
     }
