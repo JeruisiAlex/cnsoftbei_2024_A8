@@ -19,10 +19,13 @@ gboolean ClickFolder(GtkWidget *widget, GdkEventButton *event, gpointer userData
 void ClickRemove(GtkWidget *menuitem, GtkWidget *eventBox);
 void CilckPublish(GtkMenuItem *menuitem, gpointer userData);
 void ClickHistory(GtkWidget *widget, gpointer data);
+void ClickChangeShareFolder(GtkWidget *widget, gpointer data);
 /* 工具函数 */
 int IsValidIp(char *ip);
+/********** 供Jeruisi调用 ************/
 int AddOneHistoryRecord(char *ip,char *username,char *password);
+/***********************************/
 int ReadAllHistoryRecords();
-void OmitUsername(char *username,char *processedName);
+void OmitString(char *src,char *dst,int maxlen);
 
 #endif //UIFUNC_H

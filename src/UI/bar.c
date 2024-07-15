@@ -12,6 +12,14 @@ GtkWidget *content;
 void OnSwitchPage(GtkButton *button, gpointer data) {
     GtkStack *stack = GTK_STACK(data);
     const gchar *pageName = gtk_button_get_label(button);
+
+    // // 如果现在已经连接，则不可以切换到历史连接
+    // pthread_mutex_lock(&isConnectMutex);
+    // if(isConnect == 1 && strcmp(pageName,"历史连接") == 0) {
+    //     return;
+    // }
+    // pthread_mutex_unlock(&isConnectMutex);
+
     gtk_stack_set_visible_child_name(stack, pageName);
 
     // 如果有当前激活的按钮，恢复其背景颜色

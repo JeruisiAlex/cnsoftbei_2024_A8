@@ -145,30 +145,11 @@ void ClickConfirm(GtkWidget *widget, gpointer data) {
     }
     else {
 
-        // 开始连接
-        pthread_mutex_lock(&isConnectMutex);
-        isConnect = 1;
-        pthread_mutex_unlock(&isConnectMutex);
-
         // 跳转到主页
         OnSwitchPage(GTK_BUTTON(homePage),content);
 
         // 调用网络层连接
-        SetNetworkInfo(ip,username,password);
-        if(ConnectToServer() == 1) {
-            UnconnectHome();
-
-            pthread_mutex_lock(&isConnectMutex);
-            isConnect = 0;
-            pthread_mutex_unlock(&isConnectMutex);
-
-            ErrDialog("连接失败！");
-        }
-        else{
-            // 输入合法，执行相关操作
-            AddOneHistoryRecord(ip,username,password);
-            AddHistoryBox(ip,username,password);
-        }
+        ConnectToServer(ip,username,password);
 
         gtk_widget_destroy(dialog); // 销毁对话框
     }
@@ -300,15 +281,15 @@ void ClickUnconnect(GtkWidget *widget, gpointer data) {
  *
  * 逻辑：如果用户名长度小于等于5，则不处理。其他情况下，只显示前5个字母，之后跟省略号
  */
-void OmitUsername(char *username,char *processedName) {
+void OmitString(char *src,char *dst,int maxlen) {
 
-    int len = strlen(username);
+    int len = strlen(src);
 
-    if (len > 5) {
-        memcpy(processedName, username, 5);
-        strcpy(processedName + 5, "...");
+    if (len > maxlen) {
+        memcpy(dst, src, maxlen);
+        strcpy(dst + maxlen, "...");
     } else {
-        strcpy(processedName,username);
+        strcpy(dst,src);
     }
 
 }
@@ -415,21 +396,11 @@ void ClickHistory(GtkWidget *widget, gpointer data) {
     // 跳转到主页
     OnSwitchPage(GTK_BUTTON(homePage),content);
 
-    pthread_mutex_lock(&isConnectMutex);
-    isConnect = 1;
-    pthread_mutex_unlock(&isConnectMutex);
 
     struct NetworkInfo *info = (struct NetworkInfo *)data;
-    SetNetworkInfo(info->address,info->username,info->password);
-    if(ConnectToServer() == 1) {
-        UnconnectHome();
 
-        pthread_mutex_lock(&isConnectMutex);
-        isConnect = 0;
-        pthread_mutex_unlock(&isConnectMutex);
+    ConnectToServer(info->address,info->username,info->password);
 
-        ErrDialog("连接失败！");
-    }
     free(info);
 }
 
@@ -437,4 +408,57 @@ void ClickReconnect(GtkWidget *widget, gpointer data) {
     ReConnectToRemoteApp();
     // 移除并销毁按钮
     gtk_widget_destroy(data);
+}
+
+// 更改共享文件夹
+void ClickChangeShareFolder(GtkWidget *widget, gpointer data) {
+
+    pthread_mutex_lock(&isConnectMutex);
+    if(isConnect) {
+        ErrDialog("请先断开连接！");
+        // 跳转到主页
+        OnSwitchPage(GTK_BUTTON(homePage),content);
+        return;
+    }
+    pthread_mutex_unlock(&isConnectMutex);
+
+    GtkWidget *dialog;
+    GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
+    gint res;
+
+    dialog = gtk_file_chooser_dialog_new("选择文件夹",
+                                         GTK_WINDOW(window),
+                                         action,
+                                         "_取消",
+                                         GTK_RESPONSE_CANCEL,
+                                         "_选择",
+                                         GTK_RESPONSE_ACCEPT,
+                                         NULL);
+
+    res = gtk_dialog_run(GTK_DIALOG(dialog));
+    if (res == GTK_RESPONSE_ACCEPT) {
+        GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
+        char *folder_path = gtk_file_chooser_get_filename(chooser);
+
+        char real_path[PATH_MAX];
+        if (realpath(folder_path, real_path) != NULL) {
+            // 更改共享文件夹路径
+            strcpy(sharePath,real_path);
+            SaveSharePath();
+            // 更改显示的共享文件夹路径
+            GtkWidget *child = gtk_grid_get_child_at(GTK_GRID(data),1,2);
+            if(child != NULL) {
+                gtk_container_remove(GTK_CONTAINER(data),child);
+                AddContent(data,real_path,2,1,-1);
+                // 显示
+                gtk_widget_show_all(data);
+            }
+        } else {
+            ErrDialog("获取共享文件夹路径失败，请重新尝试！");
+        }
+
+        g_free(folder_path);
+    }
+
+    gtk_widget_destroy(dialog);
 }
