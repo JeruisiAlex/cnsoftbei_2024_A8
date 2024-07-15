@@ -25,6 +25,7 @@ namespace RemoteApp
         private string message;
         private int code;
         private string clientName;
+        private bool isShare;
         
         private Network() {
             isRun = true;
@@ -43,7 +44,6 @@ namespace RemoteApp
         {
             try
             {
-                Debug.WriteLine("通信线程开始");
                 server = new TcpListener(port);
                 server.Start();
                 client = server.AcceptTcpClient();
@@ -54,7 +54,17 @@ namespace RemoteApp
                     stateMutex.ReleaseMutex();
 
                     stream = client.GetStream();
-                    readClientName();
+                    /*readClientName();*/
+
+                    int share = receiveInt(stream);
+                    if(share == 1)
+                    {
+                        isShare = true;
+                    }
+                    else
+                    {
+                        isShare = false;
+                    }
                     run();
                     stream.Close();
                     client.Close();
@@ -70,7 +80,6 @@ namespace RemoteApp
             byte[] buffer = new byte[1024];
             int length = stream.Read(buffer, 0, buffer.Length);
             clientName = Encoding.UTF8.GetString(buffer, 0, length);
-            Debug.WriteLine("客户端名称为：" + clientName);
         }
         private void run()
         {
@@ -82,9 +91,7 @@ namespace RemoteApp
                 mutex.WaitOne();
                 /*string name = messages.Dequeue();*/
                 string name = message;
-                int length = name.Length;
                 sendInt(stream, code);
-                sendInt(stream, length);
                 sendString(stream, name);
                 mutex.ReleaseMutex();
 
@@ -95,12 +102,21 @@ namespace RemoteApp
         private void sendString(NetworkStream stream, string message)
         {
             byte[] data = Encoding.UTF8.GetBytes(message);
+            int length = data.Length;
+            sendInt(stream, length);
             stream.Write(data);
         }
         private void sendInt(NetworkStream stream, int number)
         {
             byte[] data = BitConverter.GetBytes(number);
             stream.Write(data);
+        }
+        private int receiveInt(NetworkStream stream)
+        {
+            byte[] data = new byte[4];
+            stream.Read(data, 0, 4);
+            int number = BitConverter.ToInt32(data);
+            return number;
         }
         public void send(int code, string name)
         {
@@ -121,9 +137,9 @@ namespace RemoteApp
             }
             else if(networkState == NetworkState.Connected)
             {
-                send(0, "");
+                send(0, "结束");
             }
-
+            stateMutex.ReleaseMutex();
             release();
 /*            Debug.WriteLine("网络资源释放完毕");*/
         }

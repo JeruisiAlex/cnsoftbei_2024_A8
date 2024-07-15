@@ -34,8 +34,6 @@ namespace Server
         private Kernel kernel;
 
         private Network() {
-            mainThread = new Thread(new ThreadStart(mainStart));
-            serverThread = new Thread(new ThreadStart(serverStart));
             mainListener = new TcpListener(serverPort);
             mainMutex = new Mutex();
             isRun = true;
@@ -50,7 +48,6 @@ namespace Server
         {
             if (!checkPort(serverPort))
             {
-
                 return;
             }
             start();
@@ -80,12 +77,11 @@ namespace Server
         }
         public void start()
         {
-            Debug.WriteLine("开启主线程");
+            mainThread = new Thread(new ThreadStart(mainStart));
             mainThread.Start();
         }
         public void stop()
         {
-            Debug.WriteLine("关闭主线程");
             mainMutex.WaitOne();
             isRun = false;
             mainListener.Stop();
@@ -95,29 +91,25 @@ namespace Server
 
         private void mainStart()
         {
-            try
+            mainMutex.WaitOne();
+            while (isRun)
             {
-                mainMutex.WaitOne();
-                while (isRun)
+                mainMutex.ReleaseMutex();
+                try
                 {
-                    mainMutex.ReleaseMutex();
                     mainListener.Start();
                     TcpClient client = null;
-                    Debug.WriteLine("开启等待数据");
                     client = mainListener.AcceptTcpClient();
-                    Debug.WriteLine("开始接收数据");
+                    isConnectMutex.WaitOne();
+                    isConnect = true;
+                    isConnectMutex.ReleaseMutex();
                     if (client != null)
                     {
                         NetworkStream stream = client.GetStream();
                         if (checkUserInfo(stream))
                         {
-                            choosePort(stream);
-
-                            isConnectMutex.WaitOne();
-                            isConnect = true;
                             kernel.lockCurrentUser();
-                            isConnectMutex.ReleaseMutex();
-
+                            choosePort(stream);
                             serverListener = new TcpListener(port);
                             serverListener.Start();
                             serverThread = new Thread(new ThreadStart(serverStart));
@@ -126,23 +118,26 @@ namespace Server
                             sendHostName(stream);
                             isConnectMutex.WaitOne();
                             kernel.histories.Add(new History((client.Client.RemoteEndPoint as IPEndPoint).ToString(), clientName, username));
+                            MouseActionFactory.MouseActionFactory.Instance.showConnection(clientName);
                             isConnectMutex.ReleaseMutex();
                         }
                         else
                         {
-                            sendInt(stream, 0);
+                            isConnectMutex.WaitOne();
+                            isConnect = false;
+                            isConnectMutex.ReleaseMutex();
                         }
                         if(stream != null) stream.Close();
                         client.Close();
                     }
-                    mainMutex.WaitOne();
                 }
-                mainMutex.ReleaseMutex();
+                catch (Exception e)
+                {
+                    
+                }
+                mainMutex.WaitOne();
             }
-            catch (Exception e)
-            {
-                
-            }
+            mainMutex.ReleaseMutex();
         }
         private void serverStart()
         {
@@ -153,7 +148,6 @@ namespace Server
                 {
                     NetworkStream stream = client.GetStream();
                     string name = "RemoteApp";
-                    sendInt(stream, name.Length);
                     sendString(stream, name);
                     receiveInt(stream);
                     Debug.WriteLine("error1");
@@ -192,7 +186,7 @@ namespace Server
             }
             else if (isConnect == true)
             {
-                sendInt(stream, 1);
+                sendInt(stream, 3);
             }
             else
             {
@@ -224,12 +218,13 @@ namespace Server
             clientName = receiveString(stream, length);
             string hostname = kernel.getHostName();
             Debug.WriteLine(hostname);
-            sendInt(stream, hostname.Length);
             sendString(stream, hostname);
         }
         private void sendString(NetworkStream stream, string message)
         {
             byte[] data = Encoding.UTF8.GetBytes(message);
+            int length = data.Length;
+            sendInt(stream, length);
             stream.Write(data);
         }
         private void sendInt(NetworkStream stream, int number)
