@@ -25,6 +25,7 @@
      example-1.0/
      ├── DEBIAN/
      │   ├── control
+     |   ├── postinst
      │   └── install
      ├── usr/
      │   ├── local/
@@ -99,6 +100,18 @@ Maintainer: Your Name <your.email@example.com>
 Description: An example package
 ```
 
+**Section**: `base`
+
+- 这个字段用来指定软件包所属的分类或部分。在 Debian 系统中，软件包被划分到不同的部分（Sections）中，比如 `base`, `devel`, `utils` 等。`base` 部分通常包含了基本的系统工具和库。
+
+**Priority**: `optional`
+
+- 这个字段指定了软件包的优先级。软件包可以有不同的优先级，比如 `required`, `important`, `standard`, `optional`, `extra` 等。这个优先级决定了在安装时软件包的处理顺序和重要性。
+
+**Architecture**: `amd64`
+
+- 这个字段指定了软件包适用的硬件架构。软件包可以编译为多种硬件架构，比如 `amd64`（64位的x86架构）、`i386`（32位的x86架构）、`armhf`（ARM架构的硬浮点支持版本）等。
+
 ### .desktop
 
 ``` makefile
@@ -158,6 +171,34 @@ bin/myapp usr/bin
 
 这表示将 `bin/myapp` 安装到 `/usr/bin` 目录。
 
+### postinst
+
+这个脚本会在安装后执行。我这里用来创建桌面快捷方式。
+
+``` shell
+#!/bin/sh
+set -e
+
+case "$1" in
+    configure)
+        # Create a desktop shortcut for the application
+        cp /usr/share/applications/yourapp.desktop /usr/share/desktop-directories/yourapp.desktop
+        ;;
+    *)
+        # Do nothing if not in configure phase
+        ;;
+esac
+
+# Exit successfully
+exit 0
+```
+
+记得更改路径。和确保该脚本的权限
+
+``` shell
+chmod +x postinst
+```
+
 ## 权限解释
 
 举例：
@@ -171,6 +212,8 @@ bin/myapp usr/bin
 - **读（4）**：允许读取文件内容。
 - **写（2）**：允许修改文件内容。
 - **执行（1）**：允许执行文件（通常用于脚本和程序）。
+
+> +x：可执行权限
 
 ## 注意事项
 
