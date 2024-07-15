@@ -46,18 +46,17 @@ void CreateUI(int argc,char *argv[]) {
 
 
 // 主窗口关闭时的回调函数
-void OnWindowDestroy(GtkWidget *widget, gpointer data) {
-    int temp;
-    pthread_mutex_lock(&isConnectMutex);
-    temp = isConnect;
-    pthread_mutex_unlock(&isConnectMutex);
+gboolean OnWindowDestroy(GtkWidget *widget, GdkEvent *event, gpointer data) {
 
-    if(temp) {
+    pthread_mutex_lock(&isConnectMutex);
+    if(isConnect) {
         ErrDialog("请断开连接后关闭应用！");
+        pthread_mutex_unlock(&isConnectMutex);
+        return TRUE;
     }
-    else {
-        gtk_main_quit();
-    }
+    pthread_mutex_unlock(&isConnectMutex);
+    gtk_main_quit();
+    return FALSE;
 }
 
 // 加载CSS
@@ -83,7 +82,7 @@ GtkWidget * CreateWindow(int width,int height) {
     gtk_window_set_deletable(GTK_WINDOW(window), TRUE);
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
 
-    g_signal_connect(window, "destroy", G_CALLBACK(OnWindowDestroy), NULL);
+    g_signal_connect(window, "delete-event", G_CALLBACK(OnWindowDestroy), NULL);
     return window;
 }
 

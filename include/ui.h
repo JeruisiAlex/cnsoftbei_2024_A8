@@ -132,7 +132,7 @@ void CreateUI(int argc,char *argv[]);
 
 /* 基本的函数 */
 
-void OnWindowDestroy(GtkWidget *widget, gpointer data);
+gboolean OnWindowDestroy(GtkWidget *widget, GdkEvent *event, gpointer data);
 void LoadCss();
 void CreateTitle(GtkWidget* window);
 GtkWidget * CreateWindow(int width,int height);

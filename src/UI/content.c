@@ -903,7 +903,7 @@ void ShowReconnectButton() {
     gtk_widget_set_margin_start(button, 0);
     gtk_widget_set_margin_end(button, 0);
     gtk_widget_set_size_request(button, (gint)(windowWidth/6.0), 25); // 设置按钮大小
-    g_signal_connect(button,"clicked",G_CALLBACK(ClickReconnect),button);
+    g_signal_connect(button,"clicked",G_CALLBACK(ClickReconnect),contentGrid1);
 
     // 将按钮放入网格
     gtk_grid_attach(GTK_GRID(contentGrid1), button, 0, 4, 1, 1);

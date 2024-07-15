@@ -406,7 +406,9 @@ void ClickHistory(GtkWidget *widget, gpointer data) {
 void ClickReconnect(GtkWidget *widget, gpointer data) {
     ReConnectToRemoteApp();
     // 移除并销毁按钮
-    gtk_widget_destroy(data);
+    gtk_container_remove(GTK_CONTAINER(data),widget);
+    // 显示
+    gtk_widget_show_all((GtkWidget *)data);
 }
 
 // 更改共享文件夹
