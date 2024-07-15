@@ -977,4 +977,12 @@ void AddAboutUs() {
     AddContent(contentGrid6,"感谢我自己。\n能够很幸运的和他们在一个团队。",row,0,0);
     row++;
     AddContent(contentGrid6,"不是因为有这个团队才有我们，\n而是因为我们，SSSS.软件王才是一个团队。",row,0,0);
+    row++;
+
+    // 加载图片并调整大小
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("../assets/logo.png", NULL);
+    GdkPixbuf *scaledPixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint)(windowWidth / 3.0), (gint)(windowWidth / 3.0), GDK_INTERP_BILINEAR);
+    GtkWidget *image = gtk_image_new_from_pixbuf(scaledPixbuf);
+
+    gtk_grid_attach(GTK_GRID(contentGrid6), image, 0, row, 1, 1);
 }
