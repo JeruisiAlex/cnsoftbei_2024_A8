@@ -49,7 +49,7 @@
             {
                 screenWidth = minSize.Width;
             }
-
+            screenHeight =(int)( screenWidth *0.75);
             ClientSize = new Size(screenWidth, screenHeight);
             Margin = new Padding(4);
             Name = "Form1";

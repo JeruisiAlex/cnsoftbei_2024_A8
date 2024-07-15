@@ -49,23 +49,33 @@ namespace RemoteApp
                 RegistryKey remoteAppKey;
                 foreach (String fullName in key.GetSubKeyNames())
                 {
-                    if (!fullName.Equals(rappName))
+                    if (!fullName.Equals(rappName) && !fullName.Equals(serveName))
                     {
                         remoteAppKey = key.OpenSubKey(fullName, false);
 
-                        App uninstall;
-                        string uninstallPath = remoteAppKey.GetValue("UninstallPath") as string;
-                        if ("".Equals(uninstallPath))
+                        // 如果是一个应用，则添加到remoteAppList
+                        if (Convert.ToInt32(remoteAppKey.GetValue("Type")) == 1)
                         {
-                            uninstall = null;
+                            App uninstall;
+                            string uninstallPath = remoteAppKey.GetValue("UninstallPath") as string;
+                            if ("".Equals(uninstallPath))
+                            {
+                                uninstall = null;
+                            }
+                            else
+                            {
+                                uninstall = new App(Path.GetFileNameWithoutExtension(uninstallPath), uninstallPath);
+                            }
+
+                            App remoteApp = new App(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string, uninstall);
+                            remoteAppList.Add(remoteApp);
                         }
+                        // 如果是卸载程序或安装程序，则从注册表移除
                         else
                         {
-                            uninstall = new App(Path.GetFileNameWithoutExtension(uninstallPath), uninstallPath);
+                            removeAppFromRegistry(fullName);
                         }
 
-                        App remoteApp = new App(remoteAppKey.GetValue("Name") as string, fullName, remoteAppKey.GetValue("Path") as string, remoteAppKey.GetValue("IconPath") as string, uninstall);
-                        remoteAppList.Add(remoteApp);
                     }
                 }
                 key.Close();
@@ -234,6 +244,7 @@ namespace RemoteApp
                     newKey.SetValue("Path", path, RegistryValueKind.String);
                     newKey.SetValue("IconPath", iconPath, RegistryValueKind.String);
                     newKey.SetValue("UninstallPath", uninstallPath, RegistryValueKind.String);
+                    newKey.SetValue("Type",flag, RegistryValueKind.DWord);
                     err.setErrType(ErrType.SUCCESS);
                 }
                 else if(flag == 1)
