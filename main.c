@@ -21,8 +21,6 @@ int main(int argc, char *argv[]) {
         NetworkClose();
         return 0;
     }
-    SetNetworkInfo("192.168.134.129", "Jeruisi", "lhty.9527");
-    ReConnectToRemoteApp();
     // 进入GTK主循环
     gtk_main();
 

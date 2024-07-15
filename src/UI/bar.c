@@ -94,6 +94,8 @@ GtkWidget * CreateBar(GtkWidget *mainBox) {
     // AddBarButton(contentStack, sidebarBox, "已发布应用");
     AddSeparator(sidebarBox);
     AddBarButton(contentStack, sidebarBox, "主机信息");
+    AddSeparator(sidebarBox);
+    AddBarButton(contentStack, sidebarBox, "关于");
 
     // 加载CSS
     LoadCss();

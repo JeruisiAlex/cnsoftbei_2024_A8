@@ -462,3 +462,12 @@ void ClickChangeShareFolder(GtkWidget *widget, gpointer data) {
 
     gtk_widget_destroy(dialog);
 }
+
+void ClickOpenTutorial(GtkWidget *widget, GdkEventButton *event, gpointer data) {
+    if (event->type == GDK_BUTTON_PRESS && event->button == 1) {
+        gtk_widget_set_name(data,"visited-label");
+        char command[256];
+        snprintf(command, sizeof(command), "xdg-open %s", tutorialPath);
+        g_spawn_command_line_async(command, NULL);
+    }
+}

@@ -9,6 +9,8 @@
 
 #include <gtk/gtk.h>
 
+#define tutorialPath "../assets/用户手册.pdf"
+
 /* 按钮的回调函数 */
 void ClickAddIP(GtkWidget *widget, gpointer user_data);
 void ClickConfirm(GtkWidget *widget, gpointer dialog);
@@ -20,6 +22,7 @@ void ClickRemove(GtkWidget *menuitem, GtkWidget *eventBox);
 void CilckPublish(GtkMenuItem *menuitem, gpointer userData);
 void ClickHistory(GtkWidget *widget, gpointer data);
 void ClickChangeShareFolder(GtkWidget *widget, gpointer data);
+void ClickOpenTutorial(GtkWidget *widget, GdkEventButton *event, gpointer data);
 /* 工具函数 */
 int IsValidIp(char *ip);
 /********** 供Jeruisi调用 ************/
