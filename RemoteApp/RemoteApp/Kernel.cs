@@ -390,6 +390,7 @@ namespace RemoteApp
                     {
                         remoteAppList.Remove(app);
                         removeAppFromRegistry(app.getFullName());
+                        MouseActionFactory.MouseActionFactory.Instance.flushAppPanel(remoteAppList,new Size(Form1.screenWidth,Form1.screenHeight));
                         MessageBox.Show("该应用已迁移，请重新发布应用");
                     }
                 }
