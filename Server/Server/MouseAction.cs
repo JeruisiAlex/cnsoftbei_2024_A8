@@ -78,6 +78,7 @@ namespace MouseActionFactory
         {
             // 隐藏所有内容面板
             Form1.contentPanel.Visible = false;
+            Form1.titlePanel.Visible = false;
             //appPanel.Visible = false;
 
             // 根据按钮文本显示相关面板
@@ -85,6 +86,7 @@ namespace MouseActionFactory
             {
                 case "主机信息":
                     Form1.contentPanel.Visible = true;
+                    Form1.titlePanel.Visible= true;
                     break;
                 case "历史连接":
                     //Form1.appInfoPanel.Visible = true;
@@ -92,15 +94,6 @@ namespace MouseActionFactory
                     Form1.historyPanel.Visible = true;
                     break;
             }
-        }
-
-        public void broadPanel_MouseEnter(object sender, EventArgs e)
-        {
-            Form1.broadPanel.BackColor = Color.LightGray;
-        }
-        public void broadPanel_MouseLeave(object sender, EventArgs e)
-        {
-            Form1.broadPanel.BackColor = Color.Transparent;
         }
 
 

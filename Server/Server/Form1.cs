@@ -17,11 +17,11 @@ namespace Server
         public static Panel ipPortPanel;
         public static Panel connectionPanel;
         public static Panel contentPanel;
-        public static Panel broadPanel;
         public static FlowLayoutPanel historyPanel;
         public static Label lblStatus;
         public static Panel statusPanel;
-        public static Label remoteLabel; 
+        public static Label remoteLabel;
+        public static Panel titlePanel;
         //颜色
         public static Brush brush;
         private Kernel kernel;
@@ -49,6 +49,8 @@ namespace Server
             sidePanel = createSidePanel();
             this.Controls.Add(sidePanel);
 
+            createTitlePanel();
+            this.Controls.Add(titlePanel);
             // 内容面板
             contentPanel = createContentPanel();
             this.Controls.Add(contentPanel);
@@ -68,6 +70,47 @@ namespace Server
             historyPanel.Location = new Point(150, 0);
         }
 
+        public void createTitlePanel()
+        {
+            titlePanel = new Panel
+            {
+                Size = new Size(800, 100),
+                Location = new Point(200, 0),
+            };
+            // 顶部logo和连接状态
+            Label lblLogo = new Label
+            {
+                Text = "SKRO",
+                Location = new Point(0, 15),
+                Font = new Font("Times New Roman", 42, FontStyle.Bold),
+                ForeColor = Color.DarkBlue,
+                AutoSize = true
+            };
+            titlePanel.Controls.Add(lblLogo);
+
+
+  
+            PictureBox pictureBox = new PictureBox
+            {
+                Size = new Size(64, 64),
+                Location = new Point(10, 10)
+            };
+            pictureBox.Image = Image.FromFile("./Resources/img.ico");
+            titlePanel.Controls.Add(pictureBox);
+
+            version = new Version(1, 0, 0);
+            string ver = version.ToString();
+            Label versionLabel = new Label
+            {
+                Text = "v" + ver,
+                Location = new Point(400, 60),
+                Font = new Font("Times New Roman", 14),
+                ForeColor = Color.Black,
+                AutoSize = true
+            };
+
+            titlePanel.Controls.Add(versionLabel);
+        }
         public Panel createSidePanel()
         {
             Panel sidePanel = new Panel
@@ -120,7 +163,7 @@ namespace Server
         public Panel createContentPanel()
         {
             brush = Brushes.Red;
-            version = new Version(1, 0, 0);
+            
             contentPanel = new Panel();
             contentPanel.BackColor = Color.White;
             contentPanel.Dock = DockStyle.Fill;
@@ -155,41 +198,6 @@ namespace Server
             ToggleButton chkAllowNetwork = new ToggleButton();
             chkAllowNetwork.Location = new Point((int)(0.85*size.Width), 15);
             connectionPanel.Controls.Add(chkAllowNetwork);
-
-
-            broadPanel = new Panel();
-            addPanel(broadPanel, new Point(180, 240));
-            broadPanel.MouseEnter += mouseAction.broadPanel_MouseEnter;
-            broadPanel.MouseLeave += mouseAction.broadPanel_MouseLeave;
-            addInfoLabel(broadPanel, "是否发送广播", new Point(20, 15), "华文中宋");
-
-            ToggleButton chkBroadcast = new ToggleButton();
-            chkBroadcast.Location = new Point((int)(0.85 * size.Width), 15);
-            broadPanel.Controls.Add(chkBroadcast);
-
-            // 顶部logo和连接状态
-            Label lblLogo = new Label
-            {
-                Text = "SKRO",
-                Location = new Point(200, 15),
-                Font = new Font("Times New Roman", 42, FontStyle.Bold),
-                ForeColor = Color.DarkBlue,
-                AutoSize = true
-            };
-            contentPanel.Controls.Add(lblLogo);
-
-            string ver = version.ToString();
-            Label versionLabel = new Label
-            {
-                Text = "v" + ver,
-                Location = new Point((int)(200 + 0.25 * size.Width), 47),
-                Font = new Font("Times New Roman", 14),
-                ForeColor = Color.Black,
-                AutoSize = true
-            };
-
-            contentPanel.Controls.Add(versionLabel);
-
             statusPanel = new Panel
             {
                 Location = new Point((int)(0.85 * size.Width), 42),
