@@ -41,8 +41,9 @@ static char * css =
     "  border-bottom: 2px dashed #85C1E9;"
     "  padding-bottom: 2px;"
     "}"
-    "#classic-label {"
-    "  font-size: 20px;"
+    "#bold-label {"
+    "  font-weight: bold;"
+    "  font-size: 22px;"
     "}"
     "#head-label {"
     "  font-size: 22px;"
@@ -50,6 +51,18 @@ static char * css =
     "#warning-label {"
     "  font-size: 22px;"
     "  color : red;"
+    "}"
+    "#link-label {"
+    "  font-size: 22px;"
+    "  text-decoration: underline;"
+    "  padding-bottom: 2px;"
+    "  color: #004999;"
+    "}"
+    "#visited-label {"
+    "  color: purple;"
+    "  text-decoration: underline;"
+    "  padding-bottom: 2px;"
+    "  font-size: 22px;"
     "}"
     "#custom-switch {"
     "  min-width: 60px;" /* 调整宽度 */
@@ -137,7 +150,7 @@ void AddSeparator(GtkWidget* box);
 /* 构建右侧内容栈 */
 void CreateContent(GtkWidget* window,GtkWidget* contentStack);
 GtkWidget* CreateAndAddGrid(GtkWidget *contentStack, char *title);
-void AddContent(GtkWidget *grid, char *content, int row, int col, int type);
+GtkWidget *AddContent(GtkWidget *grid, char *content, int row, int col, int type);
 void AddSwitchInBox(GtkWidget *box);
 void AddSwitchInGrid(GtkWidget *grid, int row, int col);
 GtkWidget * CreateAndAddGridWithScrollFuc(GtkWidget *content_stack,char * label);
@@ -146,7 +159,8 @@ GtkWidget * CreateHome(GtkWidget* contentStack,char * label);
 void AddIPBox(GtkWidget * window);
 void RemoveAllChild(GtkWidget *grid,int row,int col,int flag);
 void AddSoftware(char * name,char * iconData,int iconLength);
-int IsRepeatedHistory(char *ip);
+int IsRepeatedHistory(char *ip,char *username,char *password,int * row,int *col) ;
+void AddAboutUs();
 // 下面的函数供 Jeruisi 调用
 void AddHistoryBox(char *ip, char *username, char *password);
 void AddLanBox(char *ip);
