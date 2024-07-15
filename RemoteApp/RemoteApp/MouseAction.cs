@@ -9,10 +9,30 @@ using System.IO;
 using System.Windows.Forms;
 using RemoteApp;
 using IWshRuntimeLibrary;
+using System.Runtime.InteropServices;
+
 namespace MouseActionFactory
 {
     public class MouseActionFactory : IMouseActionFactory
     {
+        // 添加 P/Invoke 声明
+        [DllImport("msi.dll", CharSet = CharSet.Auto)]
+        private static extern int MsiOpenDatabase(string szDatabasePath, IntPtr szPersist, out IntPtr phDatabase);
+
+        [DllImport("msi.dll", CharSet = CharSet.Auto)]
+        private static extern int MsiDatabaseOpenView(IntPtr hDatabase, string szQuery, out IntPtr phView);
+
+        [DllImport("msi.dll", CharSet = CharSet.Auto)]
+        private static extern int MsiViewExecute(IntPtr hView, IntPtr hRecord);
+
+        [DllImport("msi.dll", CharSet = CharSet.Auto)]
+        private static extern int MsiViewFetch(IntPtr hView, out IntPtr hRecord);
+
+        [DllImport("msi.dll", CharSet = CharSet.Auto)]
+        private static extern int MsiRecordGetString(IntPtr hRecord, int iField, System.Text.StringBuilder szValueBuf, ref int pcchValueBuf);
+
+        [DllImport("msi.dll", CharSet = CharSet.Auto)]
+        private static extern int MsiCloseHandle(IntPtr hAny);
         public static MouseActionFactory mouseAction;
 
         // 私有构造函数防止外部实例化
@@ -95,32 +115,49 @@ namespace MouseActionFactory
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string selectedFilePath = openFileDialog.FileName;
-                    // 获取文件信息
-                    FileInfo fileInfo = new FileInfo(selectedFilePath);
-                    FileVersionInfo file = FileVersionInfo.GetVersionInfo(selectedFilePath);
-                    string fileName = file.ProductName;
-                    long fileSize = fileInfo.Length; // 文件大小，单位为字节
-                    DateTime creationTime = fileInfo.CreationTime; // 创建时间
-                    DateTime lastAccessTime = fileInfo.LastAccessTime; // 上次访问时间
-                    DateTime lastWriteTime = fileInfo.LastWriteTime; // 上次写入时间
+                    string fileName = "";
 
-                    // 添加到应用程序信息列表
-                    kernel.installApp(fileName, selectedFilePath);
+                    // 获取文件扩展名
+                    string fileExtension = Path.GetExtension(selectedFilePath).ToLower();
 
-                    //flushAppPanel(kernel.getRemoteAppList());
-                    // 显示文件信息
-                    /*string message = $"文件路径: {selectedFilePath}\n" +
-                                     $"文件名: {fileName}\n" +
-                                     $"文件大小: {fileSize} 字节\n" +
-                                     $"创建时间: {creationTime}\n" +
-                                     $"上次访问时间: {lastAccessTime}\n" +
-                                     $"上次写入时间: {lastWriteTime}";*/
-                    //MessageBox.Show(message, "选择的exe程序");
-                    //MessageBox.Show("你选择的文件路径: " + selectedFilePath, "选择的exe程序");
+                    if (fileExtension == ".exe")
+                    {
+                        // 获取 .exe 文件的信息
+                        FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(selectedFilePath);
+                        fileName = fileInfo.FileDescription;
+                        if (string.IsNullOrEmpty(fileName))
+                        {
+                            // 如果 FileDescription 为空，则使用文件名
+                            fileName = Path.GetFileNameWithoutExtension(selectedFilePath);
+                        }
+                    }
+                    else if (fileExtension == ".msi")
+                    {
+                        // 获取 .msi 文件的信息
+                        fileName = GetMsiSubject(selectedFilePath);
+                    }
+
+                    if (!string.IsNullOrEmpty(fileName))
+                    {
+                        MessageBox.Show($"安装程序名称: {fileName}");
+                        // 添加到应用程序信息列表
+                        kernel.installApp(fileName, selectedFilePath);
+                    }
+                    else
+                    {
+                        MessageBox.Show("无法获取安装程序名称");
+                    }
+
                 }
             }
         }
+        private string GetMsiSubject(string msiFilePath)
+        {
+            string subject = Path.GetFileNameWithoutExtension(msiFilePath);
 
+
+            return subject;
+        }
         public void flushAppPanel(List<App> appList,Size size)
         {
             Form1.appInfoPanel.Controls.Clear();
