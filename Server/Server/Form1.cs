@@ -43,8 +43,6 @@ namespace Server
 
         private void initializeCustomComponents()
         {
-            rWidth = 800 / 2200;
-            rHeight = 600 / 1300;
             // 获取 MouseActionFactory 的唯一实例
             mouseAction = MouseActionFactory.MouseActionFactory.Instance;
             // 左侧面板
