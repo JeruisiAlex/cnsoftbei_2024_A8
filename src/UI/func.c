@@ -444,6 +444,7 @@ void ClickChangeShareFolder(GtkWidget *widget, gpointer data) {
             // 更改共享文件夹路径
             strcpy(sharePath,real_path);
             SaveSharePath();
+            isShare = 1;
             // 更改显示的共享文件夹路径
             GtkWidget *child = gtk_grid_get_child_at(GTK_GRID(data),1,2);
             if(child != NULL) {
