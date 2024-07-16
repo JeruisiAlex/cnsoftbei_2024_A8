@@ -186,13 +186,11 @@ namespace MouseActionFactory
             ToolStripMenuItem runMenuItem = new ToolStripMenuItem("运行");
             ToolStripMenuItem deleteMenuItem = new ToolStripMenuItem("移除");
             ToolStripMenuItem unistallMenuItem = new ToolStripMenuItem("卸载");
-            ToolStripMenuItem saveDataMenuItem = new ToolStripMenuItem("保存数据");
 
             // 添加菜单项到 ContextMenuStrip
             contextMenu.Items.Add(runMenuItem);
             contextMenu.Items.Add(deleteMenuItem);
             contextMenu.Items.Add(unistallMenuItem);
-            contextMenu.Items.Add(saveDataMenuItem);
             appPanel.ContextMenuStrip = contextMenu;
             // 处理菜单项的点击事件
             runMenuItem.Click += (sender, e) => runMenuItem_Click(sender, e, app);
