@@ -399,8 +399,6 @@ void ClickHistory(GtkWidget *widget, gpointer data) {
     struct NetworkInfo *info = (struct NetworkInfo *)data;
 
     ConnectToServer(info->address,info->username,info->password);
-
-    free(info);
 }
 
 void ClickReconnect(GtkWidget *widget, gpointer data) {
