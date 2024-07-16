@@ -37,6 +37,7 @@ namespace RemoteApp
         }
         public void init()
         {
+            isRun = true;
             mutex.WaitOne();
             thread.Start();
         }
@@ -66,6 +67,9 @@ namespace RemoteApp
                         isShare = false;
                     }
                     run();
+                    stateMutex.WaitOne();
+                    networkState = NetworkState.Disconnected;
+                    stateMutex.ReleaseMutex();
                     stream.Close();
                     client.Close();
                 }
