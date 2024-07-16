@@ -108,7 +108,6 @@ static char * css =
     "  background-color: #D3D3D3;"
     "  color: black;"
     "  font-size: 22px;"
-    "  cursor: pointer;"
     "  padding-bottom: 2px;"
     "  border: none;"
     "}"
@@ -117,7 +116,6 @@ static char * css =
     "  background-color: #3DA3FF;"
     "  color: white;"
     "  font-size: 22px;"
-    "  cursor: pointer;"
     "  padding-bottom: 2px;"
     "  border: none;"
     "}";
