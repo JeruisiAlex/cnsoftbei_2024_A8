@@ -87,7 +87,19 @@ namespace MouseActionFactory
             }
         }
 
-
+        // 按钮 事件处理程序
+        // 供调用
+        public void MyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Form1.chkAllowNetwork.Checked)
+            {
+                MessageBox.Show("打开了");
+            }
+            else
+            {
+                MessageBox.Show("关闭了");
+            }
+        }
         // 绘制虚线
         public void ContentPanel_Paint(object sender, PaintEventArgs e)
         {

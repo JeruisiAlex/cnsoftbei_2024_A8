@@ -6,6 +6,7 @@ using MyClass;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using System.Net;
 using System.Drawing;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 namespace Server
 {
     public partial class Form1 : Form
@@ -25,6 +26,7 @@ namespace Server
         private Kernel kernel;
         public static double rWidth;
         private static double rHeight;
+        public static ToggleButton chkAllowNetwork;
         private MouseActionFactory.MouseActionFactory mouseAction;
 
         public Form1()
@@ -256,14 +258,17 @@ namespace Server
                 Size = new Size(400, 100)
             };
             connectionPanel.Controls.Add(connectableLabel);
-            ToggleButton chkAllowNetwork = new ToggleButton();
+            chkAllowNetwork = new ToggleButton();
             chkAllowNetwork.Location = new Point(560, 15);
+            chkAllowNetwork.CheckedChanged += mouseAction.MyCheckBox_CheckedChanged;
             connectionPanel.Controls.Add(chkAllowNetwork);
 
             // 增加paint事件
             contentPanel.Paint += mouseAction.ContentPanel_Paint;
             return contentPanel;
         }
+
+        
         private void addPanel(Panel panel, Point location)
         {
             panel.Location = location;
