@@ -8,7 +8,6 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Windows.Forms;
 using RemoteApp;
-using IWshRuntimeLibrary;
 using System.Runtime.InteropServices;
 
 namespace MouseActionFactory
@@ -228,6 +227,74 @@ namespace MouseActionFactory
         {
             Kernel kernel = Kernel.getKernel();
             kernel.uninstallApp(app.getFullName());
+        }
+
+        public void copyFileButton_Click(object sender, EventArgs e)
+        {
+            string[] sourcePath = null;
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Title = "选择文件";
+                openFileDialog.ValidateNames = false;
+                openFileDialog.CheckFileExists = false;
+                openFileDialog.CheckPathExists = true;
+                openFileDialog.Multiselect = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    sourcePath = openFileDialog.FileNames;
+                }
+            }
+            string destinationPath = "";
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            {
+                folderBrowserDialog.Tag = "选择目标文件夹";
+                folderBrowserDialog.ShowNewFolderButton = true;
+
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    destinationPath = folderBrowserDialog.SelectedPath;
+                }
+            }
+            if (!string.IsNullOrEmpty(destinationPath) && sourcePath != null)
+            {
+                foreach(string path in sourcePath)
+                {
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        string destination = Path.Combine(destinationPath, Path.GetFileName(path));
+                        File.Copy(path, destination, true);
+                    }
+                }
+            }
+        }
+
+        public void deleteFileButton_click(object sender, EventArgs e)
+        {
+            string[] filePath = null;
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Title = "选择要删除的文件";
+                openFileDialog.ValidateNames = false;
+                openFileDialog.CheckFileExists = false;
+                openFileDialog.CheckPathExists = true;
+                openFileDialog.Multiselect = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    filePath = openFileDialog.FileNames;
+                }
+            }
+            if (filePath != null)
+            {
+                foreach (string path in filePath)
+                {
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        File.Delete(path);
+                    }
+                }
+            }
         }
     }
 }

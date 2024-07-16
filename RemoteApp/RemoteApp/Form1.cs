@@ -125,21 +125,50 @@ namespace RemoteApp
                 Text = "选择安装程序",
                 Font = new Font("Arial", 16, FontStyle.Bold),
                 Size = new Size(220,50),
-                Location = new Point(screenWidth-500,15),
+                Location = new Point(screenWidth-450,15),
                 BackColor = Color.LightGray,
                 FlatAppearance = { BorderSize = 0 },
                 FlatStyle = FlatStyle.Flat,
                 AutoSize = true
             };
+            Button copyFileButton = new Button
+            {
+                Text = "文件备份",
+                Font = new Font("Arial", 16, FontStyle.Bold),
+                Size = new Size(120, 50),
+                Location = new Point(screenWidth - 600, 15),
+                BackColor = Color.LightGray,
+                FlatAppearance = { BorderSize = 0 },
+                FlatStyle = FlatStyle.Flat,
+                AutoSize = true
+
+            };
+            Button deleteFileButton = new Button
+            {
+                Text = "文件删除",
+                Font = new Font("Arial", 16, FontStyle.Bold),
+                Size = new Size(120, 50),
+                Location = new Point(screenWidth - 750, 15),
+                BackColor = Color.LightGray,
+                FlatAppearance = { BorderSize = 0 },
+                FlatStyle = FlatStyle.Flat,
+                AutoSize = true
+
+            };
             // 添加按钮到按钮容器面板
             buttonPanel.Controls.Add(addButton);
             buttonPanel.Controls.Add(installButton);
+            buttonPanel.Controls.Add(copyFileButton);
+            buttonPanel.Controls.Add(deleteFileButton);
 
             // 将按钮容器面板添加到 FlowLayoutPanel
             contentPanel.Controls.Add(buttonPanel);
 
             addButton.MouseClick += mouseAction.SelectExeButton_Click;
             installButton.MouseClick += mouseAction.SelectInstallButton_Click;
+            copyFileButton.MouseClick += mouseAction.copyFileButton_Click;
+            deleteFileButton.MouseClick += mouseAction.deleteFileButton_click;
+           
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
