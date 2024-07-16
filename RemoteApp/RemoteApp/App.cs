@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace RemoteApp
@@ -16,7 +17,7 @@ namespace RemoteApp
 
         public App(string fullName, string path)
         {
-            this.name = fullName;
+            this.name = getAlias(fullName);
             this.fullName = fullName;
             this.path = path;
             this.iconPath = path;
@@ -84,5 +85,18 @@ namespace RemoteApp
         {
             this.iconPath = iconPath;
         }
+
+        private string getAlias(string fullName)
+        {
+            Regex rx = new Regex(@"[^\p{L}0-9\-_"" ]");
+            string name = fullName;
+            if (rx.IsMatch(fullName))
+            {
+                name = rx.Replace(fullName, string.Empty);
+            }
+            name = name.Trim();
+            return name;
+        }
+
     }
 }
