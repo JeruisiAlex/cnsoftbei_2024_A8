@@ -55,6 +55,12 @@ namespace Server
         {
             if (!checkPort(serverPort))
             {
+                MouseActionFactory.MouseActionFactory.Instance.errMessage("端口"+serverPort+"已被占用，请清理占用程序并重启软件");
+                return;
+            }
+            if (!checkPort(remoteAppPort))
+            {
+                MouseActionFactory.MouseActionFactory.Instance.errMessage("端口" + remoteAppPort + "已被占用，请清理占用程序并重启软件");
                 return;
             }
             start();
