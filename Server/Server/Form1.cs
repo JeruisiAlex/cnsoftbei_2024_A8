@@ -298,7 +298,9 @@ namespace Server
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             Network network = Network.getNetwork();
+            Debug.WriteLine("开始关闭");
             network.isConnectMutex.WaitOne();
+            Debug.WriteLine("继续关闭");
             if (network.isConnect)
             {
                 MessageBox.Show("服务端已被连接，请断开连接后再关闭！");
@@ -307,6 +309,7 @@ namespace Server
             else
             {
                 kernel.writeHistories();
+                Debug.WriteLine("关闭网络线程");
                 network.stop();
             }
             network.isConnectMutex.ReleaseMutex();

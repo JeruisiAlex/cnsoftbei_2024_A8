@@ -212,5 +212,6 @@ namespace Server
         {
             return System.Net.Dns.GetHostName();
         }
+        public string getRppName() { return rappFullName; }
     }
 }

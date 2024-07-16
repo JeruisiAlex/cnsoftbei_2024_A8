@@ -361,7 +361,6 @@ namespace RemoteApp
         // 安装
         public void installApp(string fullName, string path)
         {
-
             App app = new App(fullName, path);
             installList.Add(app);
             addRemoteAppToRegistry(fullName, path, path, "",2);
