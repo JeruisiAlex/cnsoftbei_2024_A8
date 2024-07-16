@@ -47,17 +47,14 @@ void CreateUI(int argc,char *argv[]) {
 
 // 主窗口关闭时的回调函数
 void OnWindowDestroy(GtkWidget *widget, gpointer data) {
-    int temp;
     pthread_mutex_lock(&isConnectMutex);
-    temp = isConnect;
-    pthread_mutex_unlock(&isConnectMutex);
-
-    if(temp) {
+    if(isConnect) {
         ErrDialog("请断开连接后关闭应用！");
     }
     else {
         gtk_main_quit();
     }
+    pthread_mutex_unlock(&isConnectMutex);
 }
 
 // 加载CSS

@@ -396,12 +396,9 @@ void ClickHistory(GtkWidget *widget, gpointer data) {
     // 跳转到主页
     OnSwitchPage(GTK_BUTTON(homePage),content);
 
-
     struct NetworkInfo *info = (struct NetworkInfo *)data;
 
     ConnectToServer(info->address,info->username,info->password);
-
-    free(info);
 }
 
 void ClickReconnect(GtkWidget *widget, gpointer data) {

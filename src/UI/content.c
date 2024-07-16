@@ -288,7 +288,6 @@ void AddHistoryBox(char *ip, char *username, char *password) {
         col1++;
     }
     else if(res == -1) {
-
         // 删除之前的
         GtkWidget *child = gtk_grid_get_child_at(GTK_GRID(contentGrid2), col, row);
         gtk_container_remove(GTK_CONTAINER(contentGrid2),child);

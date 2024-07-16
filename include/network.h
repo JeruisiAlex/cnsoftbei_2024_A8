@@ -19,7 +19,7 @@ struct NetworkInfo {
 };
 
 struct RDPInfo {
-    char *name;
+    char name[1024];
     int pid;
 };
 
