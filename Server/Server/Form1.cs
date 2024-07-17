@@ -247,22 +247,6 @@ namespace Server
             portNumLable.MouseLeave += (sender, e) => portPanel.BackColor = Color.Transparent;
             portPanel.Controls.Add(portNumLable);
 
-            // 开关控件
-            connectionPanel = new Panel();
-            addPanel(connectionPanel, new Point(0, 170));
-            Label connectableLabel = new Label
-            {
-                Text = "允许局域网连接",
-                Location = new Point(10, 15),
-                Font = new Font("华文中宋", 16, FontStyle.Regular),
-                Size = new Size(400, 100)
-            };
-            connectionPanel.Controls.Add(connectableLabel);
-            chkAllowNetwork = new ToggleButton();
-            chkAllowNetwork.Location = new Point(560, 15);
-            chkAllowNetwork.CheckedChanged += mouseAction.MyCheckBox_CheckedChanged;
-            connectionPanel.Controls.Add(chkAllowNetwork);
-
             // 增加paint事件
             contentPanel.Paint += mouseAction.ContentPanel_Paint;
             return contentPanel;
