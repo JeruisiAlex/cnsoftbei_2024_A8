@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RemoteApp
+namespace SKRO_rdp
 {
     public class Err
     {

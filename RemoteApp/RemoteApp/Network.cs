@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RemoteApp
+namespace SKRO_rdp
 {
     public class Network
     {

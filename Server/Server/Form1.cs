@@ -7,7 +7,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using System.Net;
 using System.Drawing;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
-namespace Server
+namespace SKRO_server
 {
     public partial class Form1 : Form
     {
@@ -112,7 +112,7 @@ namespace Server
             };
 
             string currentDirectory = Directory.GetCurrentDirectory();
-            String imgPath = Path.GetFullPath(Path.Combine(currentDirectory, "./Resources/img.ico"));
+            String imgPath = Path.GetFullPath(Path.Combine(currentDirectory, "./img.ico"));
             pictureBox.Image = Image.FromFile(imgPath);
             titlePanel.Controls.Add(pictureBox);
 

@@ -1,4 +1,4 @@
-namespace RemoteApp
+namespace SKRO_rdp
 {
     internal static class Program
     {

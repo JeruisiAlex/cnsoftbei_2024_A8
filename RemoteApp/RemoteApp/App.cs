@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace RemoteApp
+namespace SKRO_rdp
 {
     public class App
     {

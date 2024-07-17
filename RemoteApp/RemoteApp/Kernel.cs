@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
 
-namespace RemoteApp
+namespace SKRO_rdp
 {
     public partial class Kernel
     {
@@ -349,6 +349,7 @@ namespace RemoteApp
                 network.send(1, app.getUninstall().getName());
                 removeAppFromRegistry(fullname);
                 removeAppFromList(fullname);
+                MouseActionFactory.MouseActionFactory.Instance.flushAppPanel(remoteAppList, new Size(Form1.screenWidth, Form1.screenHeight)); 
                 err.setErrType(ErrType.SUCCESS);
             }
             else

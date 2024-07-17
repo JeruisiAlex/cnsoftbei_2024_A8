@@ -15,7 +15,7 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace RemoteApp
+namespace SKRO_rdp
 {
     public partial class Form1 : Form
     {

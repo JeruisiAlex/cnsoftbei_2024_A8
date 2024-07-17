@@ -1,4 +1,4 @@
-namespace Server
+namespace SKRO_server
 {
     internal static class Program
     {

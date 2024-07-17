@@ -7,8 +7,8 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Windows.Forms;
-using Server;
-using Server;
+using SKRO_server;
+using SKRO_server;
 namespace MouseActionFactory
 {
     public class MouseActionFactory : IMouseActionFactory

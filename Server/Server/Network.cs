@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Server
+namespace SKRO_server
 {
     public class Network
     {

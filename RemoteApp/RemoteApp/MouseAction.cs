@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Windows.Forms;
-using RemoteApp;
+using SKRO_rdp;
 using System.Runtime.InteropServices;
 
 namespace MouseActionFactory

@@ -1,4 +1,4 @@
-﻿namespace Server
+﻿namespace SKRO_server
 {
     partial class Form1
     {

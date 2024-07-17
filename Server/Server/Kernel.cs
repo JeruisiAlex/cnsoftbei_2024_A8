@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using Microsoft.Win32;
 
-namespace Server
+namespace SKRO_server
 {
     public class Kernel
     {
@@ -24,8 +24,8 @@ namespace Server
         public List<History> histories;
         private MouseActionFactory.MouseActionFactory mouseAction;
         private string historiesPath = "./history.json"; // 历史记录的路径
-        private string rappFullName = "RemoteApp"; // remoteApp.exe 的全称
-        private string rappPath = "./RemoteApp.exe"; // remoteApp.exe 的路径
+        private string rappFullName = "SKRO_rdp"; // remoteApp.exe 的全称
+        private string rappPath = "./SKRO_rdp.exe"; // remoteApp.exe 的路径
         public string tutorialPath; // 启用远程桌面教程的路径
         private string rdpRegistryKeyPath = @"SYSTEM\CurrentControlSet\Control\Terminal Server";
         private string remoteAppRegistryKeyPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications";
