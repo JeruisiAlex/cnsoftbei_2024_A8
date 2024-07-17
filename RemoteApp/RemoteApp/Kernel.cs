@@ -18,8 +18,8 @@ namespace SKRO_rdp
         private List<App> remoteAppList;
         private List<App> installList;
         private List<App> uninstallList;
-        private string rappName = "RemoteApp";
-        private string serveName = "Server";
+        private string rappName = "SKRO_rdp";
+        private string serveName = "SKRO_server";
         private string remoteAppRegistryKeyPath = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Terminal Server\TSAppAllowList\Applications";
         private string[] unistallRegistryPaths = new string[]{
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
