@@ -226,7 +226,7 @@ namespace SKRO_server
             addPanel(portPanel, new Point(0, 80));
             Label portNameLabel = new Label
             {
-                Text = "IP",
+                Text = "端口",
                 Location = new Point(10, 15),
                 Font = new Font("华文中宋", 16, FontStyle.Regular),
                 Size = new Size(200, 100)
