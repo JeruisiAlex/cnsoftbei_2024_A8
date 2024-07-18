@@ -190,7 +190,6 @@ GtkWidget *AddContent(GtkWidget *grid, char *content, int row, int col, int type
         GtkWidget *eventBox = gtk_event_box_new();
         gtk_widget_set_events(eventBox, GDK_BUTTON_PRESS_MASK);
 
-        const char *pdf_path = "../assets/用户手册.pdf";
         g_signal_connect(eventBox, "button-press-event", G_CALLBACK(ClickOpenTutorial), label);
 
         gtk_widget_set_name(label,"link-label");
@@ -353,7 +352,7 @@ void AddLanBox(char *ip) {
     GtkWidget *button = gtk_button_new();
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5); // 创建垂直盒子
 
-    GtkWidget *image = gtk_image_new_from_file("../assets/monitor.png");
+    GtkWidget *image = gtk_image_new_from_file("/usr/local/share/SKRO/assets/monitor.png");
     gtk_box_pack_start(GTK_BOX(box), image, FALSE, FALSE, 0);
 
     GtkWidget *ip_label = gtk_label_new(ip);
@@ -434,7 +433,7 @@ GtkWidget *CreatePublishSoftware(GtkWidget *contentStack,char *label) {
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5); // 创建水平盒子
 
     // 加载图片并调整大小
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("../assets/return.png", NULL); // 加载原始图片
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("/usr/local/share/SKRO/assets/return.png", NULL); // 加载原始图片
     GdkPixbuf *scaledPixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint)(windowWidth / 30.0), (gint)(windowWidth / 30.0), GDK_INTERP_BILINEAR); // 调整大小
     GtkWidget *image = gtk_image_new_from_pixbuf(scaledPixbuf); // 使用调整后的图片创建图像控件
 
@@ -606,7 +605,7 @@ void AddIPBox(GtkWidget * window) {
     gtk_widget_set_tooltip_text(button, "手动添加PC");
 
     // 加载图片并调整大小
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("assets/add.png", NULL); // 加载原始图片
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("/usr/local/share/SKRO/assets/add.png", NULL); // 加载原始图片
     GdkPixbuf *scaled_pixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint)(windowWidth / 10.0), (gint)(windowWidth / 10.0), GDK_INTERP_BILINEAR); // 调整大小
     GtkWidget *image = gtk_image_new_from_pixbuf(scaled_pixbuf); // 使用调整后的图片创建图像控件
 
@@ -756,7 +755,7 @@ void AddFolder(char * folderName) {
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 
     // 加载图片并调整大小
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("../assets/folder.png", NULL);
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("/usr/local/share/SKRO/assets/folder.png", NULL);
     GdkPixbuf *scaledPixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint)(windowWidth / 10.0), (gint)(windowWidth / 10.0), GDK_INTERP_BILINEAR);
     GtkWidget *image = gtk_image_new_from_pixbuf(scaledPixbuf);
 
@@ -825,7 +824,7 @@ void AddSoftware(char * name,char * iconData,int iconLength) {
     // gtk_box_pack_start(GTK_BOX(box), image, TRUE, TRUE, 0);
 
     // 加载图片并调整大小
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("../assets/software/clion.svg", NULL);
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("/usr/local/share/SKRO/assets/software/clion.svg", NULL);
     GdkPixbuf *scaledPixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint)(windowWidth / 13.0), (gint)(windowWidth / 13.0), GDK_INTERP_BILINEAR);
     GtkWidget *image = gtk_image_new_from_pixbuf(scaledPixbuf);
 
@@ -976,15 +975,15 @@ void AddAboutUs() {
     row++;
     AddContent(contentGrid6,"感谢组长Jeruisi为我们找到了完成所有功能的思路，\n带领我们一遍遍地推翻错误的思想，又不断指引我们新的方向。",row,0,0);
     row++;
-    AddContent(contentGrid6,"感谢Pin为我们搭建windows的UI。\n没有学过C#、winform还是做出了预期甚至超出预期的效果。",row,0,0);
+    AddContent(contentGrid6,"感谢Tiezhu从零开始学习gtk搭建linux端的UI，\n提前完成任务帮助完成了windows核心层的功能搭建，为团队提供重要助力。",row,0,0);
     row++;
-    AddContent(contentGrid6,"感谢我自己。\n能够很幸运的和他们在一个团队。",row,0,0);
+    AddContent(contentGrid6,"感谢Pin为我们搭建windows的UI。\n没有学过C#、winform还是做出了预期甚至超出预期的效果。",row,0,0);
     row++;
     AddContent(contentGrid6,"不是因为有这个团队才有我们，\n而是因为我们，SSSS.软件王才是一个团队。",row,0,0);
     row++;
 
     // 加载图片并调整大小
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("../assets/logo.png", NULL);
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("/usr/local/share/SKRO/assets/logo.png", NULL);
     GdkPixbuf *scaledPixbuf = gdk_pixbuf_scale_simple(pixbuf, (gint)(windowWidth / 3.0), (gint)(windowWidth / 3.0), GDK_INTERP_BILINEAR);
     GtkWidget *image = gtk_image_new_from_pixbuf(scaledPixbuf);
 

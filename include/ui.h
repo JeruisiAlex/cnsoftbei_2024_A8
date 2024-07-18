@@ -140,7 +140,7 @@ extern struct NetworkInfo *historyRecords;
 // 记录共有多少个历史连接记录
 extern int cnt;
 // 记录历史连接数据路径（相对于UI实现的.c文件的路径）
-#define HISTORY_PATH "../data/history"
+#define HISTORY_PATH "/usr/local/share/SKRO/data/history"
 
 // 记录主页的按钮（因为连接后要跳到主页，此时应该设置主页按钮为激活状态）
 extern GtkWidget *homePage;

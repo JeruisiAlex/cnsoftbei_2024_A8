@@ -9,7 +9,7 @@
 
 #include <gtk/gtk.h>
 
-#define tutorialPath "../assets/用户手册.pdf"
+#define tutorialPath "/usr/local/share/SKRO/assets/用户手册.pdf"
 
 /* 按钮的回调函数 */
 void ClickAddIP(GtkWidget *widget, gpointer user_data);

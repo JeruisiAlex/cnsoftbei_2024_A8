@@ -7,10 +7,10 @@
 #define KERNEL_H
 
 #define LOCK_FILE "/tmp/SKRO_lockfile.lock"
-#define PATH_FILE "../data/path"
-#define SHARE_PATH "../share"
-#define FREE_RDP_PATH "../assets/xfreerdp"
-#define OPEN_FREE_RDP_PATH "../assets/open"
+#define PATH_FILE "/usr/local/share/SKRO/data/path"
+#define SHARE_PATH "/usr/local/share/SKRO/share"
+#define FREE_RDP_PATH "/usr/local/share/SKRO/assets/xfreerdp"
+#define OPEN_FREE_RDP_PATH "/usr/local/share/SKRO/assets/open"
 
 struct PIDList {
     int pid;
