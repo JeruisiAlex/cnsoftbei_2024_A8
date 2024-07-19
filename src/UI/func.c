@@ -417,6 +417,7 @@ void ClickChangeShareFolder(GtkWidget *widget, gpointer data) {
         ErrDialog("请先断开连接！");
         // 跳转到主页
         OnSwitchPage(GTK_BUTTON(homePage),content);
+        pthread_mutex_unlock(&isConnectMutex);
         return;
     }
     pthread_mutex_unlock(&isConnectMutex);
